@@ -4,6 +4,22 @@ description: A new Flutter project.
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: none # Remove this line if you wish to publish to pub.dev
 
+msix_config:
+  display_name: Scout Ops Android
+  publisher_display_name: FEDS201
+  identity_name: feds.suite.scoutingapp
+  msix_version: 3.0.0.0
+  logo_path: P:/FEDS201/Scouting_Suite/logo.ico
+  capabilities: internetClient,location,microphone,webcam
+  app_installer:
+    publish_folder_path: P:\FEDS201\Scouting_Suite\Scout-Ops-Android\publish
+    hours_between_update_checks: 0
+    automatic_background_task: true
+    update_blocks_activation: true
+    show_prompt: true
+    force_update_from_any_version: false
+  store: false
+
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
 # followed by an optional build number separated by a +.
@@ -16,14 +32,7 @@ publish_to: none # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+1
-
-# msix_config:
-#   display_name: Scout Ops
-#   publisher_display_name: FEDS201
-#   identity_name: feds.suite.scoutingapp
-#   msix_version: 1.0.0.0
-#   capabilities: internetClient, location, microphone, webcam
+version: 1.0.1+2
 
 environment:
   sdk: '>=3.4.3 <5.0.0'
@@ -60,7 +69,7 @@ dev_dependencies:
   hive_generator: ^1.1.0
   flutter_test:
     sdk: flutter
-
+  msix: ^3.16.8
 
 flutter:
 

@@ -993,6 +993,6 @@ class BotLocation {
 
   String toCsv() {
     return "null";
-    return '${position.dx},${position.dy},${size.width},${size.height},$angle';
+    // return '${position.dx},${position.dy},${size.width},${size.height},$angle';
   }
 }
