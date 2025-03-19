@@ -6,7 +6,6 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 
 import 'components/Chips.dart';
 import 'components/nav.dart';
-import 'main.dart';
 
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});

@@ -98,11 +98,13 @@ String _getRandomInsult() {
     "Timothy, the referee, Accidentally called a foul on a tree (The tree protested, but Tim stood firmly.) ",
     "SPREAD SHEETS SPREADSHEETS SPREADSHEETS",
     "Bring back the buzz",
-// Shorty king
-// Do you need someone to reach the top shelf
-// Lock-in...
+    "let’s give it up for Timothy—the trumpet-tooting, tea-spilling, snack-napping king! Thanks for being the friend we didn’t know we needed, and make sure you watch out for those rocks, buddy!",
 
     //Sukhesh
+    // GAy
+    // Shamppo bottle
+    // Moistorure
+    //
 
     //Adit
     "Adit, oh Adit, Hit his head on a door—just a bit!(Now he ducks, but still gets stuck.)",
@@ -110,24 +112,18 @@ String _getRandomInsult() {
     "Adit, so very tall,Bumped the fan and broke the wall. (His height’s a gift… until ceilings exist.)",
     "Adit, the BBQ king,  Burnt the snags and lost his zing. (Flames went high, now sausages fly.)",
 
-    //ritesh
-    "Ritesh, oh Ritesh, he thinks he's Rizztesh but he's Ritech",
-
     //clifford
     "Clifford, eyes open wide,Typing fast with zero pride. (Sleep is a myth, just one more line… or fifth.)",
-
-    //Avanti
-    "Avanti, Asked for water, got ‘wa’er’ instead.(British depression and vowels got harmed.)",
 
     //Rishi
 
     "Rishi, always on the go, Writes one line, then says ‘Uh-oh.’ (Fixes none, but claims he’s done.)",
 
     //Nisha
-    "Nisha Misha Dish Pisha Gisha Jisha Yisha Risha Bisa"
+    "Nisha Misha Dish Pisha Gisha Jisha Yisha Risha Bisa",
 
-        //Sacheth
-        "Sacheth’s mustache is so peachy, even peaches are filing a copyright claim.",
+    //Sacheth
+    "Sacheth’s mustache is so peachy, even peaches are filing a copyright claim.",
     "His hair is so greasy, McDonald's is trying to use it for frying fries.",
     "Every time Sacheth laughs, dolphins in the ocean get confused and start looking for their lost cousin.",
     "If oil prices keep rising, Sacheth’s scalp might become the next major fuel source.",
@@ -157,6 +153,10 @@ String _getRandomInsult() {
     "Ikshita might be short, but her ego’s about 10 feet tall—too bad she can’t see over it. ",
     "Ikshita’s tennis game is so weak, even the ball’s trying to avoid her racket.",
     "She’s so short, when she plays tennis, she’s practically under the net instead of over it.",
+    "Ikshita's confidence level is at an all-time high; the only thing shorter than her is her attention span! ",
+    "Ikshita; you’re a legend in your own right. Just… maybe keep those tennis balls on a leash! ",
+    "Ikshita gets on the court, and it’s like, “Okay, folks, get ready for a masterclass in what not to do!” ",
+    "Every note Ikshita plays seems like a real-life crying emoji on steroids.",
 
     //rishi
     "Rishi’s idea of making a move is sending a ceiling snap instead of actually talking to his crush.",
@@ -181,17 +181,9 @@ String _getRandomInsult() {
     //gunhong
     "Gunhong loves trash talking so much, he probably talks more than he swims—though, I’m sure he’s good at both. ",
     "Gunhong’s dedication to swimming is impressive, but he’s even more dedicated to making everyone feel bad with his trash talk. ",
-    "Gunhong eats 1 dog every meal? At this point, he’s probably part of a dog’s worst nightmare.",
     "He’s dedicated to swimming, but I think the only thing he’s really good at floating is his ego.",
     "He doesn’t care about anything, except maybe finishing his dog every meal. G-money’s a man of simple tastes.",
-
-    //avanti
-    "She’s always skipping meetings but wants to be a doctor—good luck diagnosing anything when you can’t even diagnose a meeting on your calendar. ",
-    "Avanti’s British accent might sound like she knows what she’s talking about, but her ability to show up to meetings says otherwise.",
-    "Avanti’s always skipping meetings, but at least she’s got the British accent to make it sound like she’s doing something important. ",
-    "Her British accent makes everything sound smarter, but it’s hard to take her seriously when she’s never around for the important stuff. ",
-    "Avanti and Gunhong argue more than they actually get anything done—at this point, they should just start a podcast about their beef. ",
-    "The only thing more consistent than Avanti skipping meetings is her ongoing beef with Gunhong.",
+    // Swizzmasss
 
     //shreevaishnavi
     "Shreevaishnavi wants to be a doctor but spends more time diagnosing which Starbucks drink to get.",
@@ -206,8 +198,33 @@ String _getRandomInsult() {
     "Ritesh says something bad, then immediately takes it back—guess he’s still learning how to program his mouth to stop talking",
     "He sleeps through school, works at night, and lives on coffee—Ritesh is proving that ‘living the dream’ is just an endless loop of caffeine and code.",
     "Ritesh trades sleep for work at night—he’s out here living the ‘sleep is optional’ life, but coffee is mandatory. ",
+    "Ritesh, oh Ritesh, he thinks he's Rizztesh but he's Ritech",
+    "Ritesh, your indian wife is not real, stop putting it on the tablet",
+    "Ritesh has no good angles when taking photos",
+    "Ritesh will wear a tank-top in any weather to show off the non-existent muscular body.",
+    "Ritesh turns the light off trips on a wire and turns the eye wash on.",
 
     //andrew salmopnson
+
+    // FREASHMENSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+    // TAPE INCIDENT
+    // WHiteboi
+
+    //Avanti
+    "Avanti's got the attitude of an entire spice rack",
+    "Avanti’s got more drama than a reality TV show—someone get her a camera!",
+    "You can always find Avanti using her height to her advantage—like standing on her tiptoes to just barely reach the top shelf…or pretending to be invisible so she can avoid gym class. ",
+    "She’s always skipping meetings but wants to be a doctor—good luck diagnosing anything when you can’t even diagnose a meeting on your calendar. ",
+    "Avanti’s always skipping meetings, but at least she’s got the British accent to make it sound like she’s doing something important. ",
+    "Avanti and Gunhong argue more than they actually get anything done—at this point, they should just start a podcast about their beef. ",
+    "The only thing more consistent than Avanti skipping meetings is her ongoing beef with Gunhong.",
+    "I mean, how do you want to be a doctor if you're missing classes left, right, and center?",
+    "Avanti could write a thesis on ‘How to Avoid Responsibility 101.’",
+
+    // Advay
+    // Peachy Mustache
+    // Fake Thugs
+    //
   ];
   return insults[DateTime.now().second % insults.length];
 }
