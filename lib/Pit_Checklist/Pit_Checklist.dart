@@ -395,6 +395,7 @@ class PitCheckListPageState extends State<PitCheckListPage>
     int matchNumber,
     int index,
   ) {
+    PitCheckListDatabase.LoadAll();
     // Create alliance teams lists
     final redAlliance = match['alliances']['red']['team_keys']
         .map((team) => team.toString().replaceAll('frc', ''))
