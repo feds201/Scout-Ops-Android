@@ -565,9 +565,9 @@ class _Checklist_recordState extends State<Checklist_record> {
                     outgoing_battery_replacd == true ? "Good" : "Replace",
                     (value) {
                   setState(() {
+                    print(value);
                     if (value.isNotEmpty) {
-                      outgoing_battery_replacd =
-                          value == "Replace" ? true : false;
+                      outgoing_battery_replacd = !outgoing_battery_replacd;
                     }
                   });
                 }),

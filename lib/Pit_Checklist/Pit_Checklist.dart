@@ -27,7 +27,7 @@ class PitCheckListPageState extends State<PitCheckListPage>
   @override
   void initState() {
     super.initState();
-    selectedMatchType = 0;
+    selectedMatchType = 1;
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 400),
       vsync: this,
