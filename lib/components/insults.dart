@@ -101,6 +101,8 @@ String _getRandomInsult() {
     "let’s give it up for Timothy—the trumpet-tooting, tea-spilling, snack-napping king! Thanks for being the friend we didn’t know we needed, and make sure you watch out for those rocks, buddy!",
 
     //Sukhesh
+
+    "Sukhesh, the thigh loving twink",
     // GAy
     // Shamppo bottle
     // Moistorure
@@ -207,7 +209,7 @@ String _getRandomInsult() {
     "Ritesh says something bad, then immediately takes it back—guess he’s still learning how to program his mouth to stop talking",
     "He sleeps through school, works at night, and lives on coffee—Ritesh is proving that ‘living the dream’ is just an endless loop of caffeine and code.",
     "Ritesh trades sleep for work at night—he’s out here living the ‘sleep is optional’ life, but coffee is mandatory. ",
-    "Ritesh, oh Ritesh, he thinks he's Rizztesh but he's Ritech",
+    "Rituzz, oh Rituzz, he thinks he's Rizztesh but he's Ritech",
     "Ritesh, your indian wife is not real, stop putting it on the tablet",
     "Ritesh has no good angles when taking photos",
     "Ritesh will wear a tank-top in any weather to show off the non-existent muscular body.",
@@ -218,6 +220,7 @@ String _getRandomInsult() {
     "Ritesh is bad Programming lead.",
 
     //andrew salmopnson
+    "'Andrew groped my butt!' - Freshman 2025",
 
     // FREASHMENSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
     // TAPE INCIDENT
@@ -263,12 +266,11 @@ String _getRandomInsult() {
 
     // Julia
     "Leasbiannnnnnnnnnnnnnnnnnnnnnnn!",
-    ""
+    "julia thuggin",
 
-        //abraham
-        "So bad a german, es ist traurig...",
-    "Bean boy"
-        ""
+    //abraham
+    "So bad a german, es ist traurig...",
+    "Bean boy",
   ];
   return insults[DateTime.now().second % insults.length];
 }

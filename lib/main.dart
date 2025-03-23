@@ -28,6 +28,7 @@ void main() async {
   await Hive.openBox('local');
   await Hive.openBox('qualitative');
   await Hive.openBox('pitcheck');
+  await Hive.openBox('responces');
   Hive.registerAdapter(AutonPointsAdapter());
 
   runApp(const MyApp());

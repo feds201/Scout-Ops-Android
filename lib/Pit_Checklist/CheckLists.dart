@@ -28,7 +28,7 @@ class _Checklist_recordState extends State<Checklist_record> {
 
   late ConfettiController _confettiController;
 
-  late int matchNumber;
+  late String matchkey;
 
   late bool chassis_drive_motors;
   late bool chassis_steer_motors;
@@ -116,7 +116,7 @@ class _Checklist_recordState extends State<Checklist_record> {
     image = "";
     notes = TextEditingController();
     // Initialize with empty values
-    matchNumber = 0;
+    matchkey = "";
     chassis_drive_motors = false;
     chassis_steer_motors = false;
     chassis_gearboxes = false;
@@ -197,7 +197,7 @@ class _Checklist_recordState extends State<Checklist_record> {
     PitCheckListDatabase.LoadAll();
     try {
       PitChecklistItem? existingRecord =
-          PitCheckListDatabase.GetData(widget.list_item.matchNumber);
+          PitCheckListDatabase.GetData(widget.list_item.matchkey);
       if (existingRecord != null) {
         // Populate UI state variables with existing data
         setState(() {
@@ -352,13 +352,13 @@ class _Checklist_recordState extends State<Checklist_record> {
           if (gooseneck_surgical_tubing) gooseneck.add("Surgical Tubing");
           if (gooseneck_nuts_and_bolts) gooseneck.add("Nuts and Bolts");
 
-          // Set matchNumber from existing record
-          matchNumber = existingRecord.matchNumber;
+          // Set matchkey from existing record
+          matchkey = existingRecord.matchkey;
         });
-        print("Loaded existing data for match ${widget.list_item.matchNumber}");
+        print("Loaded existing data for match ${widget.list_item.matchkey}");
       } else {
         print(
-            "No existing record found for match ${widget.list_item.matchNumber}");
+            "No existing record found for match ${widget.list_item.matchkey}");
       }
     } catch (e) {
       print("Error retrieving team data: $e");
@@ -377,7 +377,7 @@ class _Checklist_recordState extends State<Checklist_record> {
                   end: Alignment.bottomRight,
                 ).createShader(bounds),
             child: Text(
-              widget.list_item.matchNumber.toString(),
+              widget.list_item.matchkey,
               style: GoogleFonts.museoModerno(
                 fontSize: 30,
                 fontWeight: FontWeight.w500,
@@ -394,22 +394,6 @@ class _Checklist_recordState extends State<Checklist_record> {
     return SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(children: [
-          buildTextBoxs(
-            "General Questions",
-            [
-              buildChoiceBox(
-                  "What alliance is your robot?",
-                  Icon(Icons.car_crash_outlined,
-                      size: 30, color: Colors.purple),
-                  ["Blue Alliance", "Red Alliance"],
-                  alliance_color, (value) {
-                setState(() {
-                  alliance_color = value;
-                });
-              }),
-            ],
-            Icon(Icons.question_answer),
-          ),
           buildMultiChoiceBox(
               "Chassis",
               Icon(Icons.mood_rounded, size: 30, color: Colors.blue),
@@ -522,7 +506,6 @@ class _Checklist_recordState extends State<Checklist_record> {
               [
                 "Panels",
                 "Wheels",
-                "Motors",
                 "Belts",
                 "Nuts and Bolts",
                 "Surgical Tubing",
@@ -582,7 +565,7 @@ class _Checklist_recordState extends State<Checklist_record> {
                     "Battery Status",
                     Icon(Icons.battery_full),
                     ["Good", "Replace"],
-                    outgoing_battery_replacd == true ? "Replace" : "Good",
+                    outgoing_battery_replacd == true ? "Good" : "Replace",
                     (value) {
                   setState(() {
                     if (value.isNotEmpty) {
@@ -674,7 +657,7 @@ class _Checklist_recordState extends State<Checklist_record> {
 
   void _recordData() {
     PitChecklistItem record = PitChecklistItem(
-      matchNumber: matchNumber,
+      matchkey: matchkey,
       chassis_drive_motors: chassis.contains("Drive motors"),
       chassis_steer_motors: chassis.contains("Steer motors"),
       chassis_gearboxes: chassis.contains("Gearboxes"),
@@ -741,10 +724,10 @@ class _Checklist_recordState extends State<Checklist_record> {
 
     print('Recording data: $record');
     print("Hiv ${record.toJson()}");
-    print(widget.list_item.matchNumber.toString());
-    print("Data recorded for match number: ${record.matchNumber}");
+    print(widget.list_item.matchkey.toString());
+    print("Data recorded for match key: ${record.matchkey}");
 
-    PitCheckListDatabase.PutData(widget.list_item.matchNumber, record);
+    PitCheckListDatabase.PutData(widget.list_item.matchkey, record);
     PitCheckListDatabase.SaveAll();
 
     PitCheckListDatabase.PrintAll();

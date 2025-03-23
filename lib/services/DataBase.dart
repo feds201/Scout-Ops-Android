@@ -1000,7 +1000,7 @@ class BotLocation {
 
 class PitChecklistItem {
   String note = "";
-  int matchNumber = 0;
+  String matchkey = "";
   bool chassis_drive_motors = false;
   bool chassis_steer_motors = false;
   bool chassis_gearboxes = false;
@@ -1071,7 +1071,7 @@ class PitChecklistItem {
   String broken_part_image = "";
   String alliance_color = "Blue";
   PitChecklistItem({
-    required this.matchNumber,
+    required this.matchkey,
     required this.chassis_drive_motors,
     required this.chassis_steer_motors,
     required this.chassis_gearboxes,
@@ -1136,12 +1136,12 @@ class PitChecklistItem {
     required this.note,
   });
 
-  PitChecklistItem.defaultConstructor(int matchnumber) {
-    this.matchNumber = matchnumber;
+  PitChecklistItem.defaultConstructor(String matchkey) {
+    this.matchkey = matchkey;
   }
 
   String to_Csv() {
-    return '$matchNumber,'
+    return '$matchkey,'
         '$chassis_drive_motors,$chassis_steer_motors,$chassis_gearboxes,$chassis_tread_conditions,$chassis_wires,$chassis_bumpers,$chassis_limelight_protectors,'
         '$ethernet_front_left_limelight,$ethernet_front_right_limlight,$ethernet_back_right_limlight,$ethernet_back_left_limlight,$ethernet_swtich,$ethernet_radio,'
         '$climber_w_shape,$climber_w_clips,$climber_surgical_tubing,$climber_string,$climber_springs,$climber_gearbox,$climber_motors,$climber_wires,$climber_nuts_and_bolts,$climber_reset,'
@@ -1156,7 +1156,7 @@ class PitChecklistItem {
 
   Map<String, dynamic> toJson() {
     return {
-      'matchNumber': matchNumber,
+      'matchkey': matchkey,
       'chassis_drive_motors': chassis_drive_motors,
       'chassis_steer_motors': chassis_steer_motors,
       'chassis_gearboxes': chassis_gearboxes,
@@ -1225,7 +1225,7 @@ class PitChecklistItem {
   factory PitChecklistItem.fromJson(Map<String, dynamic> json) {
     return PitChecklistItem(
       note: json['note'] ?? "",
-      matchNumber: json['matchNumber'] ?? 0,
+      matchkey: json['matchkey'] ?? " ",
       chassis_drive_motors: json['chassis_drive_motors'] ?? false,
       chassis_steer_motors: json['chassis_steer_motors'] ?? false,
       chassis_gearboxes: json['chassis_gearboxes'] ?? false,
@@ -1358,15 +1358,29 @@ class PitCheckListDatabase {
     log(_storage.toString());
   }
 
-  static List<int> GetRecorderTeam() {
-    List<int> teams = [];
+  static List<dynamic> GetRecorderTeam() {
+    // Change return type to List<dynamic>
+    List<dynamic> teams = [];
     _storage.forEach((key, value) {
-      teams.add(value.matchNumber);
+      teams.add(value.matchkey);
     });
     return teams;
   }
 
   static dynamic Export() {
     return _storage;
+  }
+
+  static void Import(Map<String, dynamic> data) {
+    data.forEach((key, value) {
+      _storage[key] = value is Map
+          ? PitChecklistItem.fromJson(value as Map<String, dynamic>)
+          : value;
+    });
+  }
+
+  static void ImportFromJson(String jsonString) {
+    Map<String, dynamic> data = json.decode(jsonString);
+    Import(data);
   }
 }

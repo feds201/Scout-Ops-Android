@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:scouting_app/Pit_Checklist/CheckLists.dart';
@@ -53,13 +54,24 @@ class PitCheckListPageState extends State<PitCheckListPage>
     }
     return Scaffold(
       appBar: _buildAppBar(),
-      body: matchSelection(context, selectedMatchType, (int index) {
-        setState(() {
-          selectedMatchType = index;
-          _animationController.reset();
-          _animationController.forward();
-        });
-      }, jsonEncode(data)),
+      body: FutureBuilder<Widget>(
+        future: matchSelection(context, selectedMatchType, (int index) {
+          setState(() {
+            selectedMatchType = index;
+            _animationController.reset();
+            _animationController.forward();
+          });
+        }, jsonEncode(data)),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            return snapshot.data ?? Container();
+          }
+        },
+      ),
     );
   }
 
@@ -143,8 +155,11 @@ class PitCheckListPageState extends State<PitCheckListPage>
     );
   }
 
-  Widget matchSelection(BuildContext context, int currentSelectedMatchType,
-      Function onMatchTypeSelected, String matchData) {
+  Future<Widget> matchSelection(
+      BuildContext context,
+      int currentSelectedMatchType,
+      Function onMatchTypeSelected,
+      String matchData) async {
     return Row(
       children: [
         // Enhanced Navigation Rail
@@ -175,28 +190,40 @@ class PitCheckListPageState extends State<PitCheckListPage>
             ),
             destinations: [
               _buildNavDestination(
+                Icons.flag_circle,
+                'Practice',
+                Colors.pink,
+                currentSelectedMatchType == 0,
+              ),
+              _buildNavDestination(
                 Icons.sports_soccer,
                 'Quals',
                 Colors.blue,
-                currentSelectedMatchType == 0,
+                currentSelectedMatchType == 1,
               ),
               _buildNavDestination(
                 Icons.sports_basketball,
                 'Playoffs',
                 Colors.orange,
-                currentSelectedMatchType == 1,
+                currentSelectedMatchType == 2,
               ),
               _buildNavDestination(
                 Icons.sports_rugby,
                 'Finals',
                 Colors.red,
-                currentSelectedMatchType == 2,
+                currentSelectedMatchType == 3,
               ),
               _buildNavDestination(
                 Icons.settings,
                 'Settings',
                 Colors.purple,
-                currentSelectedMatchType == 3,
+                currentSelectedMatchType == 4,
+              ),
+              _buildNavDestination(
+                Icons.cloud,
+                'Share',
+                Colors.purple,
+                currentSelectedMatchType == 5,
               ),
             ],
           ),
@@ -207,7 +234,7 @@ class PitCheckListPageState extends State<PitCheckListPage>
         Expanded(
           child: FadeTransition(
             opacity: _animationController..forward(),
-            child: _buildMatchList(currentSelectedMatchType, matchData),
+            child: await _buildMatchList(currentSelectedMatchType, matchData),
           ),
         ),
       ],
@@ -257,16 +284,30 @@ class PitCheckListPageState extends State<PitCheckListPage>
     return false;
   }
 
-  Widget _buildMatchList(int selectedMatchType, String matchData) {
+  Future<Widget> _buildMatchList(
+    int selectedMatchType,
+    String matchData,
+  ) async {
     // Decode the JSON string to a Dart object
     List<dynamic> allMatches = jsonDecode(matchData);
-
     // Filter matches where Team 201 is participating
     List<dynamic> matches =
         allMatches.where((match) => _hasTeam201(match)).toList();
 
     switch (selectedMatchType) {
       case 0:
+        final String jsonString =
+            await rootBundle.loadString('assets/day_zero.json');
+        List<dynamic> practiceMatches = jsonDecode(jsonString);
+        return _buildMatchListView(
+          practiceMatches,
+          'Practice',
+          Icons.flag_circle,
+          Colors.pink,
+          (match) => int.parse(match['match_number'].toString()),
+        );
+
+      case 1:
         var filteredMatches = matches
             .where((match) => match['comp_level'] == 'qm')
             .toList()
@@ -281,7 +322,7 @@ class PitCheckListPageState extends State<PitCheckListPage>
           (match) => int.parse(match['match_number'].toString()),
         );
 
-      case 1:
+      case 2:
         var filteredMatches =
             matches.where((match) => match['comp_level'] == 'sf').toList()
               ..sort((a, b) {
@@ -304,7 +345,7 @@ class PitCheckListPageState extends State<PitCheckListPage>
               : int.parse(match['match_number'].toString()),
         );
 
-      case 2:
+      case 3:
         var filteredMatches = matches
             .where((match) => match['comp_level'] == 'f')
             .toList()
@@ -319,10 +360,11 @@ class PitCheckListPageState extends State<PitCheckListPage>
           (match) => int.parse(match['match_number'].toString()),
         );
 
-      case 3:
-        // Settings Page
-        // Using the existing settings page implementation but with total match count of team 201
+      case 4:
         return _buildSettingsView(matches, allMatches);
+
+      case 5:
+        return const Center(child: Text('Will be done before States'));
 
       default:
         return const Center(child: Text('Unknown Match Type'));
@@ -608,8 +650,7 @@ class PitCheckListPageState extends State<PitCheckListPage>
   }
 
   void _handleMatchSelection(dynamic match) {
-    PitChecklistItem record =
-        PitChecklistItem.defaultConstructor(match['match_number']);
+    PitChecklistItem record = PitChecklistItem.defaultConstructor(match['key']);
 
     Navigator.push(
       context,
