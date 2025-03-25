@@ -213,7 +213,7 @@ class _TeleOperatedState extends State<TeleOperated> {
                 Expanded(
                   flex: 3,
                   child:
-                      buildCounter("Algae Pick Up", algaePickUp, (int value) {
+                      buildCounter("Algae Retrieval", algaePickUp, (int value) {
                     setState(() {
                       algaePickUp = value;
                     });

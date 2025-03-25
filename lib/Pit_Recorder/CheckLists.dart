@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -34,6 +35,7 @@ class _RecordState extends State<Record> {
   late bool? hello;
   late String selectedChoice;
   late String ImageBlob;
+  List<String> imageBlobs = []; // List to store multiple image blobs
 
   @override
   void initState() {
@@ -51,6 +53,7 @@ class _RecordState extends State<Record> {
     hello = null;
     selectedChoice = '';
     ImageBlob = "";
+    imageBlobs = [];
 
     // Load database and try to get existing data for this team
     PitDataBase.LoadAll();
@@ -66,6 +69,10 @@ class _RecordState extends State<Record> {
           ClimbTypeController = existingRecord.climbType;
           ScoreObjectController = existingRecord.scoreObject;
           ImageBlob = existingRecord.imageblob;
+          // If we have existing image, add it to the list
+          if (ImageBlob.isNotEmpty) {
+            imageBlobs = [ImageBlob];
+          }
         });
         print("Loaded existing data for team ${widget.team.teamNumber}");
       } else {
@@ -74,6 +81,46 @@ class _RecordState extends State<Record> {
     } catch (e) {
       print("Error retrieving team data: $e");
     } finally {}
+  }
+
+  // Helper method to convert base64 strings to File objects
+  Future<List<File>> _getImagesFromBase64Strings(String base64Image) async {
+    List<File> imageFiles = [];
+    if (base64Image.isEmpty) return imageFiles;
+
+    try {
+      final tempDir = await Directory.systemTemp.createTemp('images');
+      final bytes = base64Decode(base64Image);
+      final file = File('${tempDir.path}/image.jpg');
+      await file.writeAsBytes(bytes);
+      imageFiles.add(file);
+    } catch (e) {
+      print('Error converting base64 to file: $e');
+    }
+
+    return imageFiles;
+  }
+
+  // Helper method to convert a list of base64 strings
+  Future<List<File>> _getMultipleImagesFromBase64(
+      List<String> base64Images) async {
+    List<File> imageFiles = [];
+    final tempDir = await Directory.systemTemp.createTemp('images');
+
+    for (int i = 0; i < base64Images.length; i++) {
+      if (base64Images[i].isEmpty) continue;
+
+      try {
+        final bytes = base64Decode(base64Images[i]);
+        final file = File('${tempDir.path}/image_$i.jpg');
+        await file.writeAsBytes(bytes);
+        imageFiles.add(file);
+      } catch (e) {
+        print('Error converting base64 to file: $e');
+      }
+    }
+
+    return imageFiles;
   }
 
   @override
@@ -167,12 +214,37 @@ class _RecordState extends State<Record> {
                 });
               }),
               Icon(Icons.question_answer),
-              CameraPhotoCapture(onPhotoTaken: (photo) {
-                print('Photo captured: $photo');
-                // Convert the captured photo to base64
-                ImageBlob = base64Encode(photo.readAsBytesSync());
-                developer.log(ImageBlob);
-              }),
+
+              // Camera component with previously captured images
+              FutureBuilder<List<File>>(
+                future: _getImagesFromBase64Strings(ImageBlob),
+                builder: (context, snapshot) {
+                  List<File> existingFiles = snapshot.data ?? [];
+
+                  return CameraPhotoCapture(
+                    title: "Robot Photos",
+                    description: "Take photos of the robot",
+                    maxPhotos: 3,
+                    initialImages: existingFiles,
+                    onPhotosTaken: (photos) {
+                      // Convert all photos to base64 strings
+                      List<String> base64Images = [];
+                      for (var photo in photos) {
+                        base64Images.add(base64Encode(photo.readAsBytesSync()));
+                      }
+
+                      setState(() {
+                        imageBlobs = base64Images;
+                        // For backward compatibility with single image
+                        ImageBlob =
+                            base64Images.isNotEmpty ? base64Images.last : "";
+                      });
+
+                      print('Photos captured: ${photos.length}');
+                    },
+                  );
+                },
+              ),
               const SizedBox(height: 20),
               _buildFunButton(),
             ],

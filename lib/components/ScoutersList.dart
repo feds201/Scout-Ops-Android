@@ -222,9 +222,9 @@ class _ScouterListState extends State<ScouterList>
                               _avatarIcons[newList.length % _avatarIcons.length]
                                   .codePoint,
                         });
-                      } else if (item is Map) {
+                      } else if (item is Map<String, dynamic>) {
                         // Keep existing map
-                        newList.add(item as Map<String, dynamic>);
+                        newList.add(item);
                       }
                     }
 

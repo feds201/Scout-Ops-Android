@@ -24,6 +24,12 @@ class PitCheckListPageState extends State<PitCheckListPage>
   late AnimationController _animationController;
   final _scrollController = ScrollController();
 
+  // Add these variables for team filtering
+  final TextEditingController _teamFilterController = TextEditingController();
+  final List<String> _selectedTeams = [];
+  bool _isFilterActive = false;
+  String _filteredTeam = ""; // Added for single team filtering
+
   @override
   void initState() {
     super.initState();
@@ -32,10 +38,66 @@ class PitCheckListPageState extends State<PitCheckListPage>
       duration: const Duration(milliseconds: 400),
       vsync: this,
     );
+    _loadFilteredTeam(); // Load filtered team from storage
+  }
+
+  // Load filtered team from Hive
+  void _loadFilteredTeam() async {
+    var box = Hive.box('settings');
+    setState(() {
+      _filteredTeam = box.get('filteredTeam', defaultValue: "");
+      if (_filteredTeam.isNotEmpty) {
+        _teamFilterController.text = _filteredTeam;
+        _selectedTeams.clear();
+        _selectedTeams.add(_filteredTeam);
+        _isFilterActive = true;
+      }
+    });
+  }
+
+  // Save filtered team to Hive
+  void _saveFilteredTeam(String team) async {
+    var box = Hive.box('settings');
+    await box.put('filteredTeam', team);
+    setState(() {
+      _filteredTeam = team;
+    });
+  }
+
+  // Get filtered matches based on team number
+  List<dynamic> _getFilteredMatches(List<dynamic> matches) {
+    if (_filteredTeam.isEmpty && !_isFilterActive) {
+      return matches;
+    }
+
+    return matches.where((match) {
+      if (match['alliances'] == null) return false;
+
+      List<dynamic> teamKeys = [];
+      if (match['alliances']['blue'] != null &&
+          match['alliances']['blue']['team_keys'] != null) {
+        teamKeys.addAll(match['alliances']['blue']['team_keys']);
+      }
+
+      if (match['alliances']['red'] != null &&
+          match['alliances']['red']['team_keys'] != null) {
+        teamKeys.addAll(match['alliances']['red']['team_keys']);
+      }
+
+      // Check if any selected team is in this match
+      for (String teamNum in _selectedTeams) {
+        if (teamKeys.any((team) => team.toString().contains(teamNum))) {
+          return true;
+        }
+      }
+
+      return false;
+    }).toList();
   }
 
   @override
   void dispose() {
+    _teamFilterController.dispose();
     _animationController.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -74,6 +136,9 @@ class PitCheckListPageState extends State<PitCheckListPage>
   }
 
   AppBar _buildAppBar() {
+    String filterTitle =
+        _filteredTeam.isNotEmpty ? " - Team $_filteredTeam" : "";
+
     return AppBar(
       elevation: 0,
       actions: [
@@ -106,7 +171,7 @@ class PitCheckListPageState extends State<PitCheckListPage>
                 end: Alignment.bottomRight,
               ).createShader(bounds),
           child: Text(
-            'Pit Checklist',
+            'Pit Checklist$filterTitle',
             style: GoogleFonts.museoModerno(
               fontSize: 30,
               fontWeight: FontWeight.w500,
@@ -140,7 +205,7 @@ class PitCheckListPageState extends State<PitCheckListPage>
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 40),
             child: Text(
-              'Please load match data from the TBA',
+              'Please load match data from The Blue Alliance',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
@@ -148,9 +213,37 @@ class PitCheckListPageState extends State<PitCheckListPage>
               ),
             ),
           ),
+          const SizedBox(height: 24),
+          ElevatedButton.icon(
+            icon: const Icon(Icons.download_rounded),
+            label: const Text('Load Match Data'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            onPressed: () {
+              _navigateToDataLoader();
+            },
+          ),
         ],
       ),
     );
+  }
+
+  void _navigateToDataLoader() async {
+    // Navigate to the TBA data loading screen
+    await Navigator.pushNamed(context, '/tba_data_loader');
+
+    // After returning, check if data is now available
+    if (Hive.box('matchData').get('matches') != null) {
+      setState(() {
+        // This will refresh the UI
+      });
+    }
   }
 
   Future<Widget> matchSelection(
@@ -261,7 +354,7 @@ class PitCheckListPageState extends State<PitCheckListPage>
     );
   }
 
-  // Filter matches to include only those where team 201 is participating
+  // Fix the _hasTeam201 method
   bool _hasTeam201(dynamic match) {
     if (match == null || match['alliances'] == null) return false;
 
@@ -288,15 +381,24 @@ class PitCheckListPageState extends State<PitCheckListPage>
   ) async {
     // Decode the JSON string to a Dart object
     List<dynamic> allMatches = jsonDecode(matchData);
-    // Filter matches where Team 201 is participating
-    List<dynamic> matches =
-        allMatches.where((match) => _hasTeam201(match)).toList();
+
+    // Filter matches by filtered team if enabled
+    List<dynamic> filteredByTeam = _getFilteredMatches(allMatches);
+
+    // Filter matches where Team 201 is participating if no team filter active
+    List<dynamic> matches = _filteredTeam.isEmpty && !_isFilterActive
+        ? filteredByTeam.where((match) => _hasTeam201(match)).toList()
+        : filteredByTeam;
 
     switch (selectedMatchType) {
       case 0:
         final String jsonString =
             await rootBundle.loadString('assets/day_zero.json');
         List<dynamic> practiceMatches = jsonDecode(jsonString);
+        // Apply team filter to practice matches too
+        if (_filteredTeam.isNotEmpty || _isFilterActive) {
+          practiceMatches = _getFilteredMatches(practiceMatches);
+        }
         return _buildMatchListView(
           practiceMatches,
           'Practice',
@@ -321,21 +423,49 @@ class PitCheckListPageState extends State<PitCheckListPage>
         );
 
       case 2:
-        var filteredMatches =
-            matches.where((match) => match['comp_level'] == 'sf').toList()
-              ..sort((a, b) {
-                int aValue = a['comp_level'].startsWith('sf')
-                    ? int.parse(a['set_number'].toString())
-                    : int.parse(a['match_number'].toString());
-                int bValue = b['comp_level'].startsWith('sf')
-                    ? int.parse(b['set_number'].toString())
-                    : int.parse(b['match_number'].toString());
-                return aValue.compareTo(bValue);
-              });
+        // Modified - Playoff matches including manual entries
+        var filteredMatches = matches
+            .where((match) =>
+                match['comp_level'] == 'sf' || match['comp_level'] == 'qf')
+            .toList();
 
-        return _buildMatchListView(
+        // Add manual playoff matches
+        List<dynamic> manualMatches = _loadManualMatches();
+
+        // Apply team filter to manual matches too
+        if (_filteredTeam.isNotEmpty || _isFilterActive) {
+          manualMatches = _getFilteredMatches(manualMatches);
+        }
+
+        var manualPlayoffMatches = manualMatches
+            .where((match) =>
+                match['comp_level'] == 'sf' || match['comp_level'] == 'qf')
+            .toList();
+
+        // Combine TBA and manual matches
+        filteredMatches.addAll(manualPlayoffMatches);
+
+        // Sort all matches
+        filteredMatches.sort((a, b) {
+          // First sort by comp_level (qf before sf)
+          int compLevelComparison = a['comp_level'].compareTo(b['comp_level']);
+          if (compLevelComparison != 0) return compLevelComparison;
+
+          // Then by set number
+          int aSet = int.parse(a['set_number'].toString());
+          int bSet = int.parse(b['set_number'].toString());
+          int setComparison = aSet.compareTo(bSet);
+          if (setComparison != 0) return setComparison;
+
+          // Finally by match number
+          int aMatch = int.parse(a['match_number'].toString());
+          int bMatch = int.parse(b['match_number'].toString());
+          return aMatch.compareTo(bMatch);
+        });
+
+        return _buildPlayoffsMatchList(
           filteredMatches,
-          'Semifinal',
+          'Playoff',
           Icons.sports_basketball,
           Colors.orange,
           (match) => match['comp_level'].startsWith('sf')
@@ -344,11 +474,26 @@ class PitCheckListPageState extends State<PitCheckListPage>
         );
 
       case 3:
-        var filteredMatches = matches
-            .where((match) => match['comp_level'] == 'f')
-            .toList()
-          ..sort((a, b) => int.parse(a['match_number'].toString())
-              .compareTo(int.parse(b['match_number'].toString())));
+        var filteredMatches =
+            matches.where((match) => match['comp_level'] == 'f').toList();
+
+        // Add manual final matches
+        List<dynamic> manualMatches = _loadManualMatches();
+
+        // Apply team filter to manual matches too
+        if (_filteredTeam.isNotEmpty || _isFilterActive) {
+          manualMatches = _getFilteredMatches(manualMatches);
+        }
+
+        var manualFinalMatches =
+            manualMatches.where((match) => match['comp_level'] == 'f').toList();
+
+        // Combine TBA and manual matches
+        filteredMatches.addAll(manualFinalMatches);
+
+        // Sort all matches
+        filteredMatches.sort((a, b) => int.parse(a['match_number'].toString())
+            .compareTo(int.parse(b['match_number'].toString())));
 
         return _buildMatchListView(
           filteredMatches,
@@ -376,53 +521,74 @@ class PitCheckListPageState extends State<PitCheckListPage>
     Color themeColor,
     Function(dynamic) getMatchNumber,
   ) {
+    // Extract all teams from these matches
+    List<String> allTeams = _extractTeamsFromMatches(matches);
+
     if (matches.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              matchIcon,
-              size: 60,
-              color: themeColor.withOpacity(0.3),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'No $matchTypeName Matches for Team 201',
-              style: GoogleFonts.museoModerno(
-                fontSize: 20,
-                color: Colors.grey.shade600,
+      return Column(
+        children: [
+          // Add team filter at the top
+
+          Expanded(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    matchIcon,
+                    size: 60,
+                    color: themeColor.withOpacity(0.3),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    _isFilterActive
+                        ? 'No matches found with selected teams'
+                        : 'No $matchTypeName Matches for Team 201',
+                    style: GoogleFonts.museoModerno(
+                      fontSize: 20,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       );
     }
 
-    return ListView.builder(
-      controller: _scrollController,
-      physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(8, 16, 8, 24),
-      itemCount: matches.length + 1,
-      itemBuilder: (BuildContext context, int index) {
-        if (index == 0) {
-          return ShowInsults();
-        }
-        index -= 1;
+    return Column(
+      children: [
+        // Add team filter at the top
 
-        final match = matches[index];
-        final matchNumber = getMatchNumber(match);
+        Expanded(
+          child: ListView.builder(
+            controller: _scrollController,
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(8, 8, 8, 24),
+            itemCount: matches.length + 1,
+            itemBuilder: (BuildContext context, int index) {
+              if (index == 0) {
+                return ShowInsults();
+              }
+              index -= 1;
 
-        return _buildEnhancedMatchCard(
-          context,
-          match,
-          matchTypeName,
-          matchIcon,
-          themeColor,
-          matchNumber,
-          index,
-        );
-      },
+              final match = matches[index];
+              final matchNumber = getMatchNumber(match);
+
+              return _buildEnhancedMatchCard(
+                context,
+                match,
+                matchTypeName,
+                matchIcon,
+                themeColor,
+                matchNumber,
+                index,
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 
@@ -436,6 +602,9 @@ class PitCheckListPageState extends State<PitCheckListPage>
     int index,
   ) {
     PitCheckListDatabase.LoadAll();
+    // Check if this is a manual entry
+    final bool isManual = match['manual_entry'] == true;
+
     // Create alliance teams lists
     final redAlliance = match['alliances']['red']['team_keys']
         .map((team) => team.toString().replaceAll('frc', ''))
@@ -447,201 +616,248 @@ class PitCheckListPageState extends State<PitCheckListPage>
     // Determine which alliance has Team 201
     final bool team201InRed = redAlliance.contains('201');
 
+    // Add a badge for manual entries
+    Widget? badgeWidget = isManual
+        ? Positioned(
+            top: 8,
+            right: 8,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.purple.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.edit_note,
+                    size: 14,
+                    color: Colors.purple,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Manual',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.purple,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
+        : null;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
-      child: Card(
-        elevation: 4,
-        shadowColor: themeColor.withOpacity(0.3),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: BorderSide(
-            color: themeColor.withOpacity(0.2),
-            width: 1,
-          ),
-        ),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () => _handleMatchSelection(match),
-          splashColor: themeColor.withOpacity(0.1),
-          highlightColor: themeColor.withOpacity(0.05),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header row with match number, icon, and Team 201 indicator
-                Row(
+      child: Stack(
+        children: [
+          Card(
+            elevation: 4,
+            shadowColor: themeColor.withOpacity(0.3),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+              side: BorderSide(
+                color: isManual
+                    ? Colors.purple.withOpacity(0.3)
+                    : themeColor.withOpacity(0.2),
+                width: isManual ? 1.5 : 1,
+              ),
+            ),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: () => _handleMatchSelection(match),
+              splashColor: themeColor.withOpacity(0.1),
+              highlightColor: themeColor.withOpacity(0.05),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: themeColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        matchIcon,
-                        color: themeColor,
-                        size: 24,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '$matchTypeName $matchNumber',
-                            style: GoogleFonts.museoModerno(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: themeColor,
-                            ),
+                    // Header row with match number, icon, and Team 201 indicator
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: themeColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                          Row(
+                          child: Icon(
+                            matchIcon,
+                            color: themeColor,
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '$matchTypeName Match',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey.shade600,
+                                '$matchTypeName $matchNumber',
+                                style: GoogleFonts.museoModerno(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: themeColor,
                                 ),
                               ),
-                              const SizedBox(width: 8),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 2),
-                                decoration: BoxDecoration(
-                                  color: team201InRed
-                                      ? Colors.red.withOpacity(0.2)
-                                      : Colors.blue.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  '${team201InRed ? 'Red' : 'Blue'}',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12,
-                                    color: team201InRed
-                                        ? Colors.red.shade700
-                                        : Colors.blue.shade700,
+                              Row(
+                                children: [
+                                  Text(
+                                    '$matchTypeName Match',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey.shade600,
+                                    ),
                                   ),
-                                ),
+                                  const SizedBox(width: 8),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: team201InRed
+                                          ? Colors.red.withOpacity(0.2)
+                                          : Colors.blue.withOpacity(0.2),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      '${team201InRed ? 'Red' : 'Blue'}',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12,
+                                        color: team201InRed
+                                            ? Colors.red.shade700
+                                            : Colors.blue.shade700,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
-                        ],
-                      ),
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          color: themeColor.withOpacity(0.6),
+                          size: 18,
+                        ),
+                      ],
                     ),
-                    Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      color: themeColor.withOpacity(0.6),
-                      size: 18,
+
+                    const SizedBox(height: 12),
+                    const Divider(),
+                    const SizedBox(height: 8),
+
+                    // Alliance information with Team 201 highlighted
+                    Row(
+                      children: [
+                        // Red Alliance
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 12,
+                                    height: 12,
+                                    decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Red Alliance',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.red.shade700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+                              ...redAlliance.map((team) => Padding(
+                                    padding:
+                                        const EdgeInsets.only(left: 20, top: 2),
+                                    child: Text(
+                                      team,
+                                      style: TextStyle(
+                                        color: team == '201'
+                                            ? Colors.red.shade700
+                                            : (_filteredTeam == team
+                                                ? Colors.purple.shade700
+                                                : Colors.grey.shade700),
+                                        fontWeight: (team == '201' ||
+                                                _filteredTeam == team)
+                                            ? FontWeight.bold
+                                            : FontWeight.normal,
+                                      ),
+                                    ),
+                                  )),
+                            ],
+                          ),
+                        ),
+
+                        // Blue Alliance
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 12,
+                                    height: 12,
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue,
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Blue Alliance',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.blue.shade700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+                              ...blueAlliance.map((team) => Padding(
+                                    padding:
+                                        const EdgeInsets.only(left: 20, top: 2),
+                                    child: Text(
+                                      team,
+                                      style: TextStyle(
+                                        color: team == '201'
+                                            ? Colors.blue.shade700
+                                            : (_filteredTeam == team
+                                                ? Colors.purple.shade700
+                                                : Colors.grey.shade700),
+                                        fontWeight: (team == '201' ||
+                                                _filteredTeam == team)
+                                            ? FontWeight.bold
+                                            : FontWeight.normal,
+                                      ),
+                                    ),
+                                  )),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-
-                const SizedBox(height: 12),
-                const Divider(),
-                const SizedBox(height: 8),
-
-                // Alliance information with Team 201 highlighted
-                Row(
-                  children: [
-                    // Red Alliance
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                width: 12,
-                                height: 12,
-                                decoration: BoxDecoration(
-                                  color: Colors.red,
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Red Alliance',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.red.shade700,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 6),
-                          ...redAlliance.map((team) => Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 20, top: 2),
-                                child: Text(
-                                  team,
-                                  style: TextStyle(
-                                    color: team == '201'
-                                        ? Colors.red.shade700
-                                        : Colors.grey.shade700,
-                                    fontWeight: team == '201'
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
-                                  ),
-                                ),
-                              )),
-                        ],
-                      ),
-                    ),
-
-                    // Blue Alliance
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                width: 12,
-                                height: 12,
-                                decoration: BoxDecoration(
-                                  color: Colors.blue,
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Blue Alliance',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.blue.shade700,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 6),
-                          ...blueAlliance.map((team) => Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 20, top: 2),
-                                child: Text(
-                                  team,
-                                  style: TextStyle(
-                                    color: team == '201'
-                                        ? Colors.blue.shade700
-                                        : Colors.grey.shade700,
-                                    fontWeight: team == '201'
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
-                                  ),
-                                ),
-                              )),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+              ),
             ),
           ),
-        ),
+          if (badgeWidget != null) badgeWidget,
+        ],
       ),
     );
   }
@@ -1085,5 +1301,404 @@ class PitCheckListPageState extends State<PitCheckListPage>
     } else {
       return name[0].toUpperCase();
     }
+  }
+
+  // Add this method to the PitCheckListPageState class
+  Widget _buildPlayoffsMatchList(
+    List<dynamic> matches,
+    String matchTypeName,
+    IconData matchIcon,
+    Color themeColor,
+    Function(dynamic) getMatchNumber,
+  ) {
+    // Extract all teams from these matches
+    List<String> allTeams = _extractTeamsFromMatches(matches);
+
+    return Column(
+      children: [
+        // Add "Create Playoff Match" button
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+          child: ElevatedButton.icon(
+            icon: const Icon(Icons.add_circle_outline),
+            label: const Text('Create Manual Playoff Match'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              minimumSize: const Size(double.infinity, 50),
+            ),
+            onPressed: () => _showCreatePlayoffMatchDialog(context),
+          ),
+        ),
+
+        // Show existing matches (if any) or a message
+        Expanded(
+          child: matches.isEmpty
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        matchIcon,
+                        size: 60,
+                        color: themeColor.withOpacity(0.3),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        _isFilterActive
+                            ? 'No matches found with selected teams'
+                            : 'No $matchTypeName Matches for Team 201 yet',
+                        style: GoogleFonts.museoModerno(
+                          fontSize: 20,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Use the button above to create a manual entry',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey.shade500,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : ListView.builder(
+                  controller: _scrollController,
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 24),
+                  itemCount: matches.length + 1,
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index == 0) {
+                      return ShowInsults();
+                    }
+                    index -= 1;
+
+                    final match = matches[index];
+                    final matchNumber = getMatchNumber(match);
+
+                    return _buildEnhancedMatchCard(
+                      context,
+                      match,
+                      matchTypeName,
+                      matchIcon,
+                      themeColor,
+                      matchNumber,
+                      index,
+                    );
+                  },
+                ),
+        ),
+      ],
+    );
+  }
+
+  // Dialog for creating manual playoff matches
+  void _showCreatePlayoffMatchDialog(BuildContext context) {
+    String selectedMatchType = 'Quarterfinal';
+    int allianceNumber = 1;
+    String alliancePosition = 'Captain';
+    int matchNumber = 1;
+    String allianceColor = 'Red';
+    int setNumber = 1;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: Text(
+            'Create Playoff Match',
+            style: GoogleFonts.museoModerno(
+              fontWeight: FontWeight.bold,
+              color: Colors.orange,
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Match Type
+                DropdownButtonFormField<String>(
+                  decoration: InputDecoration(
+                    labelText: 'Match Type',
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                  value: selectedMatchType,
+                  items: ['Quarterfinal', 'Semifinal', 'Final'].map((type) {
+                    return DropdownMenuItem(
+                      value: type,
+                      child: Text(type),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    selectedMatchType = value!;
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // Alliance Number
+                DropdownButtonFormField<int>(
+                  decoration: InputDecoration(
+                    labelText: 'Alliance Number',
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                  value: allianceNumber,
+                  items: List.generate(8, (index) {
+                    return DropdownMenuItem(
+                      value: index + 1,
+                      child: Text('Alliance ${index + 1}'),
+                    );
+                  }),
+                  onChanged: (value) {
+                    allianceNumber = value!;
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // Alliance Position
+                DropdownButtonFormField<String>(
+                  decoration: InputDecoration(
+                    labelText: 'Team 201 Position',
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                  value: alliancePosition,
+                  items: ['Captain', 'First Pick', 'Second Pick'].map((pos) {
+                    return DropdownMenuItem(
+                      value: pos,
+                      child: Text(pos),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    alliancePosition = value!;
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // Match Number and Set Number in a row
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          labelText: 'Match Number',
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                        ),
+                        keyboardType: TextInputType.number,
+                        initialValue: matchNumber.toString(),
+                        onChanged: (value) {
+                          matchNumber = int.tryParse(value) ?? 1;
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          labelText: 'Set Number',
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                        ),
+                        keyboardType: TextInputType.number,
+                        initialValue: setNumber.toString(),
+                        onChanged: (value) {
+                          setNumber = int.tryParse(value) ?? 1;
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                // Alliance Color
+                DropdownButtonFormField<String>(
+                  decoration: InputDecoration(
+                    labelText: 'Alliance Color',
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                  value: allianceColor,
+                  items: ['Red', 'Blue'].map((color) {
+                    return DropdownMenuItem(
+                      value: color,
+                      child: Text(color),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    allianceColor = value!;
+                  },
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child:
+                  Text('Cancel', style: TextStyle(color: Colors.grey.shade700)),
+              onPressed: () => Navigator.of(dialogContext).pop(),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Create Match'),
+              onPressed: () {
+                // Generate match ID based on match type
+                String matchTypeCode = selectedMatchType == 'Quarterfinal'
+                    ? 'qf'
+                    : selectedMatchType == 'Semifinal'
+                        ? 'sf'
+                        : 'f';
+
+                String matchKey =
+                    '2025mimid_${matchTypeCode}${setNumber}m$matchNumber';
+
+                // Create synthetic match object
+                Map<String, dynamic> syntheticMatch = {
+                  'key': matchKey,
+                  'comp_level': matchTypeCode,
+                  'match_number': matchNumber,
+                  'set_number': setNumber,
+                  'event_key': '2025mimid',
+                  'manual_entry': true,
+                  'alliance_selection_data': {
+                    'alliance_number': allianceNumber,
+                    'position': alliancePosition,
+                  },
+                  'alliances': {
+                    'red': {
+                      'team_keys': allianceColor == 'Red'
+                          ? ['frc201', 'frcXXXX', 'frcYYYY']
+                          : ['frcAAAA', 'frcBBBB', 'frcCCCC'],
+                    },
+                    'blue': {
+                      'team_keys': allianceColor == 'Blue'
+                          ? ['frc201', 'frcXXXX', 'frcYYYY']
+                          : ['frcAAAA', 'frcBBBB', 'frcCCCC'],
+                    },
+                  }
+                };
+
+                // Store the manual match in Hive
+                _saveManualMatch(syntheticMatch);
+
+                // Handle the synthetic match
+                _handleMatchSelection(syntheticMatch);
+                Navigator.of(dialogContext).pop();
+
+                // Refresh the UI to show the new match
+                setState(() {});
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // New method to save manual matches
+  void _saveManualMatch(Map<String, dynamic> match) {
+    // Get existing manual matches or create new list
+    List<Map<String, dynamic>> manualMatches = [];
+    final box = Hive.box('matchData');
+    final existingData = box.get('manualMatches');
+
+    if (existingData != null) {
+      try {
+        List<dynamic> decodedData = jsonDecode(existingData);
+        manualMatches = List<Map<String, dynamic>>.from(decodedData);
+      } catch (e) {
+        print('Error loading manual matches: $e');
+      }
+    }
+
+    // Check if a match with this key already exists
+    final matchIndex =
+        manualMatches.indexWhere((m) => m['key'] == match['key']);
+    if (matchIndex >= 0) {
+      manualMatches[matchIndex] = match; // Replace existing
+    } else {
+      manualMatches.add(match); // Add new
+    }
+
+    // Save back to Hive
+    box.put('manualMatches', jsonEncode(manualMatches));
+  }
+
+  // New method to load manual matches
+  List<dynamic> _loadManualMatches() {
+    final box = Hive.box('matchData');
+    final existingData = box.get('manualMatches');
+
+    if (existingData != null) {
+      try {
+        List<dynamic> decodedData = jsonDecode(existingData);
+        return decodedData;
+      } catch (e) {
+        print('Error loading manual matches: $e');
+      }
+    }
+    return [];
+  }
+
+  // Add this method to extract all teams from matches
+  List<String> _extractTeamsFromMatches(List<dynamic> matches) {
+    Set<String> teams = {};
+
+    for (var match in matches) {
+      if (match['alliances'] != null) {
+        // Extract red alliance teams
+        if (match['alliances']['red'] != null &&
+            match['alliances']['red']['team_keys'] != null) {
+          for (var team in match['alliances']['red']['team_keys']) {
+            teams.add(team.toString().replaceAll('frc', ''));
+          }
+        }
+
+        // Extract blue alliance teams
+        if (match['alliances']['blue'] != null &&
+            match['alliances']['blue']['team_keys'] != null) {
+          for (var team in match['alliances']['blue']['team_keys']) {
+            teams.add(team.toString().replaceAll('frc', ''));
+          }
+        }
+      }
+    }
+
+    // Convert to List and sort
+    List<String> teamsList = teams.toList();
+    teamsList.sort((a, b) => int.tryParse(a) != null && int.tryParse(b) != null
+        ? int.parse(a).compareTo(int.parse(b))
+        : a.compareTo(b));
+
+    return teamsList;
+  }
+
+  // Add team filtering UI component
+
+  Widget _buildTeamChip(String teamNum, bool isSelected, VoidCallback onTap) {
+    return FilterChip(
+      label: Text(
+        teamNum,
+        style: TextStyle(
+          color: isSelected ? Colors.white : Colors.black87,
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+        ),
+      ),
+      selected: isSelected,
+      selectedColor: Colors.purple.shade700,
+      backgroundColor: Colors.grey.shade200,
+      checkmarkColor: Colors.white,
+      onSelected: (_) => onTap(),
+    );
   }
 }

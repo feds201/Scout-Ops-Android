@@ -4,15 +4,20 @@ import 'package:image_picker/image_picker.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class CameraPhotoCapture extends StatefulWidget {
-  final Function(File) onPhotoTaken;
+  // Updated callback to handle multiple photos
+  final Function(List<File>) onPhotosTaken;
   final String title;
   final String description;
+  final int maxPhotos;
+  final List<File> initialImages; // Parameter for initial images
 
   const CameraPhotoCapture({
     Key? key,
-    required this.onPhotoTaken,
+    required this.onPhotosTaken,
     this.title = "Take Photo",
     this.description = "Capture a photo of the robot",
+    this.maxPhotos = 10, // Default maximum number of photos
+    this.initialImages = const [], // Default to empty list
   }) : super(key: key);
 
   @override
@@ -21,13 +26,16 @@ class CameraPhotoCapture extends StatefulWidget {
 
 class _CameraPhotoCaptureState extends State<CameraPhotoCapture>
     with WidgetsBindingObserver {
-  File? _image;
+  late List<File> _images; // Now using a list to store multiple images
   final ImagePicker _picker = ImagePicker();
   bool _processingPhoto = false;
 
   @override
   void initState() {
     super.initState();
+    // Initialize with provided images
+    _images = List<File>.from(widget.initialImages);
+
     // Add observer to detect when app resumes
     WidgetsBinding.instance.addObserver(this);
   }
@@ -51,6 +59,18 @@ class _CameraPhotoCaptureState extends State<CameraPhotoCapture>
 
   // Use a dedicated method to launch the camera using system intent
   Future<void> _launchCamera() async {
+    if (_images.length >= widget.maxPhotos) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Maximum of ${widget.maxPhotos} photos reached'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+      return;
+    }
+
     try {
       setState(() {
         _processingPhoto = true;
@@ -75,9 +95,9 @@ class _CameraPhotoCaptureState extends State<CameraPhotoCapture>
       if (photo != null) {
         final File imageFile = File(photo.path);
         setState(() {
-          _image = imageFile;
+          _images.add(imageFile);
         });
-        widget.onPhotoTaken(imageFile);
+        widget.onPhotosTaken(_images); // Pass the entire list
       }
     } catch (e) {
       setState(() {
@@ -93,6 +113,14 @@ class _CameraPhotoCaptureState extends State<CameraPhotoCapture>
         );
       }
     }
+  }
+
+  // Remove a specific image from the list
+  void _removeImage(int index) {
+    setState(() {
+      _images.removeAt(index);
+    });
+    widget.onPhotosTaken(_images); // Update parent with new list
   }
 
   @override
@@ -127,6 +155,15 @@ class _CameraPhotoCaptureState extends State<CameraPhotoCapture>
                   color: Colors.grey,
                 ),
               ),
+              const Spacer(),
+              if (_images.isNotEmpty)
+                Text(
+                  "${_images.length}/${widget.maxPhotos} photos",
+                  style: GoogleFonts.museoModerno(
+                    fontSize: 12,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
             ],
           ),
           const SizedBox(height: 8),
@@ -139,32 +176,87 @@ class _CameraPhotoCaptureState extends State<CameraPhotoCapture>
           ),
           const SizedBox(height: 16),
 
-          // Image Preview or Placeholder
-          Container(
-            width: double.infinity,
-            height: 200,
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.grey.shade300),
-            ),
-            child: _image != null
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.file(
-                      _image!,
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                    ),
-                  )
-                : Center(
-                    child: Icon(
+          // Display captured photos in a horizontal scrollable list
+          if (_images.isNotEmpty)
+            SizedBox(
+              height: 120,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: _images.length,
+                itemBuilder: (context, index) {
+                  return Stack(
+                    children: [
+                      Container(
+                        margin:
+                            const EdgeInsets.only(right: 8, top: 8, left: 2),
+                        width: 100,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.grey.shade300),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.file(
+                            _images[index],
+                            fit: BoxFit.cover,
+                            height: double.infinity,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        top: 0,
+                        right: 0,
+                        child: GestureDetector(
+                          onTap: () => _removeImage(index),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.red.withOpacity(0.7),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.close,
+                              color: Colors.white,
+                              size: 18,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            )
+          else
+            // Placeholder when no images are captured
+            Container(
+              width: double.infinity,
+              height: 120,
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
                       Icons.image,
-                      size: 80,
+                      size: 50,
                       color: Colors.grey[400],
                     ),
-                  ),
-          ),
+                    const SizedBox(height: 8),
+                    Text(
+                      "No photos yet",
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
 
           const SizedBox(height: 16),
 
@@ -183,14 +275,16 @@ class _CameraPhotoCaptureState extends State<CameraPhotoCapture>
                       ))
                   : const Icon(Icons.camera_alt),
               label: Text(
-                _image == null ? "Take Photo" : "Retake Photo",
+                _images.isEmpty ? "Take Photo" : "Take Another Photo",
                 style: GoogleFonts.museoModerno(
                   fontWeight: FontWeight.bold,
                 ),
               ),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 12),
-                backgroundColor: Colors.blue,
+                backgroundColor: _images.length >= widget.maxPhotos
+                    ? Colors.grey
+                    : Colors.blue,
                 foregroundColor: Colors.white,
                 disabledBackgroundColor: Colors.blue.shade300,
                 shape: RoundedRectangleBorder(
@@ -205,15 +299,40 @@ class _CameraPhotoCaptureState extends State<CameraPhotoCapture>
   }
 }
 
-// Optional function to easily use the widget
+// Optional function to easily use the widget with the same interface as before
+// Now returns a list of Files instead of a single File
 Widget buildCameraCapture(
+  Function(List<File>) onPhotosTaken, {
+  String title = "Take Photo",
+  String description = "Capture a photo of the robot",
+  int maxPhotos = 10,
+  List<File> initialImages = const [],
+}) {
+  return CameraPhotoCapture(
+    onPhotosTaken: onPhotosTaken,
+    title: title,
+    description: description,
+    maxPhotos: maxPhotos,
+    initialImages: initialImages,
+  );
+}
+
+// For backward compatibility - wrapper that adapts the new interface to the old one
+Widget buildSingleCameraCapture(
   Function(File) onPhotoTaken, {
   String title = "Take Photo",
   String description = "Capture a photo of the robot",
+  File? initialImage,
 }) {
   return CameraPhotoCapture(
-    onPhotoTaken: onPhotoTaken,
+    onPhotosTaken: (photos) {
+      if (photos.isNotEmpty) {
+        onPhotoTaken(photos.last); // Pass only the most recent photo
+      }
+    },
     title: title,
     description: description,
+    maxPhotos: 1, // Limit to one photo for backward compatibility
+    initialImages: initialImage != null ? [initialImage] : [],
   );
 }

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:scouting_app/Pit_Checklist/CheckLists.dart';
 import 'package:scouting_app/Pit_Checklist/Pit_Checklist.dart';
 import 'package:scouting_app/Qualitative/qualitative.dart';
-import 'package:scouting_app/services/DataBase.dart';
 
 import 'Experiment/ExpStateManager.dart';
 import 'Match_Pages/match_page.dart';

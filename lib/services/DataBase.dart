@@ -1069,7 +1069,10 @@ class PitChecklistItem {
   bool outgoing_battery_replacd = false;
 
   String broken_part_image = "";
+  List<String>? broken_part_images; // New field for multiple images
   String alliance_color = "Blue";
+  Map<String, dynamic>? alliance_selection_data;
+
   PitChecklistItem({
     required this.matchkey,
     required this.chassis_drive_motors,
@@ -1132,8 +1135,10 @@ class PitChecklistItem {
     required this.outgoing_number,
     required this.outgoing_battery_replacd,
     required this.broken_part_image,
+    this.broken_part_images,
     required this.alliance_color,
     required this.note,
+    this.alliance_selection_data,
   });
 
   PitChecklistItem.defaultConstructor(String matchkey) {
@@ -1217,8 +1222,10 @@ class PitChecklistItem {
       'outgoing_number': outgoing_number,
       'outgoing_battery_replacd': outgoing_battery_replacd,
       'broken_part_image': broken_part_image,
+      'broken_part_images': broken_part_images,
       'alliance_color': alliance_color,
       'note': note,
+      'alliance_selection_data': alliance_selection_data,
     };
   }
 
@@ -1292,7 +1299,11 @@ class PitChecklistItem {
       outgoing_number: (json['outgoing_number'] ?? 0.0).toDouble(),
       outgoing_battery_replacd: json['outgoing_battery_replacd'] ?? false,
       broken_part_image: json['broken_part_image'] ?? "",
+      broken_part_images: json['broken_part_images'] != null
+          ? List<String>.from(json['broken_part_images'])
+          : null,
       alliance_color: json['aliance_color'] ?? "",
+      alliance_selection_data: json['alliance_selection_data'],
     );
   }
 }

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:core';
 import 'dart:developer' as developer;
 import 'dart:math';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:scouting_app/components/CameraComposit.dart';
@@ -103,7 +104,14 @@ class _Checklist_recordState extends State<Checklist_record> {
 
   late String alliance_color;
   late String image;
+  List<String> images =
+      []; // New list to store multiple images as base64 strings
   late TextEditingController notes;
+
+  late bool isPlayoffMatch;
+  late String manualPlayoffMatchType; // "Quarterfinal", "Semifinal", "Final"
+  late int manualAllianceNumber;
+  late String manualAlliancePosition;
 
   @override
   void initState() {
@@ -111,9 +119,39 @@ class _Checklist_recordState extends State<Checklist_record> {
     _confettiController =
         ConfettiController(duration: const Duration(seconds: 2));
     image = "";
+    images = []; // Initialize empty list for multiple images
     notes = TextEditingController();
     // Initialize with empty values
-    matchkey = "";
+    matchkey = widget.list_item.matchkey;
+    isPlayoffMatch = widget.list_item.matchkey.contains('_qf') ||
+        widget.list_item.matchkey.contains('_sf') ||
+        widget.list_item.matchkey.contains('_f');
+
+    // If this is a manual playoff entry from TBA with alliance selection data
+    if (widget.list_item.alliance_selection_data != null) {
+      manualAllianceNumber =
+          widget.list_item.alliance_selection_data!['alliance_number'] ?? 1;
+      manualAlliancePosition =
+          widget.list_item.alliance_selection_data!['position'] ?? 'Captain';
+
+      if (widget.list_item.matchkey.contains('_qf')) {
+        manualPlayoffMatchType = "Quarterfinal";
+      } else if (widget.list_item.matchkey.contains('_sf')) {
+        manualPlayoffMatchType = "Semifinal";
+      } else {
+        manualPlayoffMatchType = "Final";
+      }
+    } else {
+      manualPlayoffMatchType = "Quarterfinal";
+      manualAllianceNumber = 1;
+      manualAlliancePosition = "Captain";
+    }
+
+    // Set alliance color if passed from the match
+    if (widget.list_item.alliance_color.isNotEmpty) {
+      alliance_color = widget.list_item.alliance_color;
+    }
+
     chassis_drive_motors = false;
     chassis_steer_motors = false;
     chassis_gearboxes = false;
@@ -155,6 +193,8 @@ class _Checklist_recordState extends State<Checklist_record> {
     elevator_motors = false;
     elevator_wires = false;
     elevator_nuts_and_bolts = false;
+    elevator_belts = false;
+
     elevator = [];
 
     trapdoor_panels = false;
@@ -180,6 +220,7 @@ class _Checklist_recordState extends State<Checklist_record> {
     gooseneck_belts = false;
     gooseneck_surgical_tubing = false;
     gooseneck_nuts_and_bolts = false;
+    gooseneck_gears = false;
     gooseneck = [];
 
     returning_battery_voltage = 0;
@@ -273,6 +314,14 @@ class _Checklist_recordState extends State<Checklist_record> {
 
           alliance_color = existingRecord.alliance_color;
           image = existingRecord.broken_part_image;
+          // Handle loading multiple images if they exist
+          if (existingRecord.broken_part_images != null &&
+              existingRecord.broken_part_images!.isNotEmpty) {
+            images = existingRecord.broken_part_images!;
+          } else if (image.isNotEmpty) {
+            // For backward compatibility, add the single image to the images list
+            images = [image];
+          }
           notes.text = existingRecord.note;
 
           // Populate lists from boolean values
@@ -360,6 +409,28 @@ class _Checklist_recordState extends State<Checklist_record> {
     } catch (e) {
       print("Error retrieving team data: $e");
     } finally {}
+  }
+
+  // Add a method to convert base64 strings to File objects
+  Future<List<File>> _getImagesFromBase64Strings(
+      List<String> base64Images) async {
+    List<File> imageFiles = [];
+    final tempDir = await Directory.systemTemp.createTemp('images');
+
+    for (int i = 0; i < base64Images.length; i++) {
+      if (base64Images[i].isEmpty) continue;
+
+      try {
+        final bytes = base64Decode(base64Images[i]);
+        final file = File('${tempDir.path}/image_$i.jpg');
+        await file.writeAsBytes(bytes);
+        imageFiles.add(file);
+      } catch (e) {
+        print('Error converting base64 to file: $e');
+      }
+    }
+
+    return imageFiles;
   }
 
   @override
@@ -574,12 +645,37 @@ class _Checklist_recordState extends State<Checklist_record> {
               ],
               Icon(Icons.add_ic_call_outlined)),
           buildTextBox("Notes", "", Icon(Icons.note), notes),
-          CameraPhotoCapture(onPhotoTaken: (photo) {
-            print('Photo captured: $photo');
-            // Convert the captured photo to base64
-            image = base64Encode(photo.readAsBytesSync());
-            developer.log(image);
-          }),
+
+          // Use FutureBuilder to load previously saved images
+          FutureBuilder<List<File>>(
+            future: _getImagesFromBase64Strings(images),
+            builder: (context, snapshot) {
+              List<File> existingFiles = snapshot.data ?? [];
+
+              return CameraPhotoCapture(
+                title: "Robot Images",
+                description: "Take photos of robot issues",
+                maxPhotos: 5, // Allow up to 5 photos
+                initialImages: existingFiles, // Pass existing images here
+                onPhotosTaken: (photos) {
+                  // Convert all photos to base64 strings and store them
+                  List<String> base64Images = [];
+                  for (var photo in photos) {
+                    base64Images.add(base64Encode(photo.readAsBytesSync()));
+                  }
+
+                  setState(() {
+                    images = base64Images;
+                    // For backward compatibility, update the single image variable with the latest photo
+                    image = base64Images.isNotEmpty ? base64Images.last : "";
+                  });
+
+                  print('Photos captured: ${photos.length}');
+                },
+              );
+            },
+          ),
+
           const SizedBox(height: 20),
           _buildFunButton(),
         ]));
@@ -715,6 +811,7 @@ class _Checklist_recordState extends State<Checklist_record> {
       outgoing_number: outgoing_number,
       outgoing_battery_replacd: outgoing_battery_replacd,
       broken_part_image: image,
+      broken_part_images: images, // Add the new list of images
       alliance_color: alliance_color,
       note: notes.text,
     );
