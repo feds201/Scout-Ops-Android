@@ -1010,7 +1010,7 @@ class PitChecklistItem {
   bool chassis_limelight_protectors = false;
 
   bool ethernet_front_left_limelight = false;
-  bool ethernet_front_right_limlight = false;
+  bool ethernet_front_right_limelight = false;
   bool ethernet_swtich = false;
   bool ethernet_radio = false;
 
@@ -1023,6 +1023,7 @@ class PitChecklistItem {
   bool climber_wires = false;
   bool climber_nuts_and_bolts = false;
   bool climber_reset = false;
+  bool climber_clips = false;
 
   bool elevator_rod_of_doom = false;
   bool elevator_stage_0 = false;
@@ -1050,11 +1051,11 @@ class PitChecklistItem {
   bool carriage_nuts_and_bolts = false;
   bool carriage_coral_slide = false;
   bool carriage_carriage = false;
+  bool climber_number = false;
 
   bool gooseneck_panels = false;
   bool gooseneck_wheels = false;
   bool gooseneck_belts = false;
-  bool gooseneck_surgical_tubing = false;
   bool gooseneck_nuts_and_bolts = false;
   bool gooseneck_gears = false;
 
@@ -1064,7 +1065,7 @@ class PitChecklistItem {
   double outgoing_battery_voltage = 0.0;
   double outgoing_battery_cca = 0.0;
   double outgoing_number = 0.0;
-  bool outgoing_battery_replacd = false;
+  bool outgoing_battery_replaced = false;
 
   String broken_part_image = "";
   List<String>? broken_part_images; // New field for multiple images
@@ -1081,11 +1082,13 @@ class PitChecklistItem {
     required this.chassis_bumpers,
     required this.chassis_limelight_protectors,
     required this.ethernet_front_left_limelight,
-    required this.ethernet_front_right_limlight,
+    required this.ethernet_front_right_limelight,
     required this.ethernet_swtich,
     required this.ethernet_radio,
     required this.climber_string,
+    required this.climber_number,
     required this.climber_hooks,
+    required this.climber_clips,
     required this.climber_springs,
     required this.climber_bumper, 
     required this.climber_gearbox,
@@ -1128,7 +1131,7 @@ class PitChecklistItem {
     required this.outgoing_battery_voltage,
     required this.outgoing_battery_cca,
     required this.outgoing_number,
-    required this.outgoing_battery_replacd,
+    required this.outgoing_battery_replaced,
     required this.broken_part_image,
     this.broken_part_images,
     required this.alliance_color,
@@ -1143,14 +1146,14 @@ class PitChecklistItem {
   String to_Csv() {
     return '$matchkey,'
         '$chassis_drive_motors,$chassis_steer_motors,$chassis_gearboxes,$chassis_tread_conditions,$chassis_wires,$chassis_bumpers,$chassis_limelight_protectors,'
-        '$ethernet_front_left_limelight,$ethernet_front_right_limlight,$ethernet_swtich,$ethernet_radio,'
-        '$climber_string,$climber_springs,$climber_gearbox,$climber_motors,$climber_wires,$climber_nuts_and_bolts,$climber_reset,'
+        '$ethernet_front_left_limelight,$ethernet_front_right_limelight,$ethernet_swtich,$ethernet_radio,'
+        '$climber_string,$climber_springs,$climber_gearbox,$climber_motors,$climber_wires,$climber_nuts_and_bolts,$climber_bumper,$climber_reset,$climber_number,$climber_clips,'
         '$elevator_rod_of_doom,$elevator_stage_0,$elevator_stage_1,$elevator_stage_2,$elevator_chain,$elevator_gearbox,$elevator_motors,$elevator_wires,$elevator_nuts_and_bolts,'
-        '$trapdoor_panels,$trapdoor_supports,$trapdoor_hinges,$trapdoor_tensioners,$trapdoor_nuts_and_bolts,$trapdoor_reset,'
+        '$trapdoor_panels,$trapdoor_supports,$trapdoor_hinges,$trapdoor_tensioners,$trapdoor_nuts_and_bolts,$trapdoor_reset,$trapdoor_wires,'
         '$carriage_gearbox,$carriage_beltbox,$carriage_motors,$carriage_wires,$carriage_nuts_and_bolts,$carriage_coral_slide,$carriage_carriage,'
-        '$gooseneck_panels,$gooseneck_wheels,$gooseneck_belts,$gooseneck_surgical_tubing,$gooseneck_nuts_and_bolts,'
+        '$gooseneck_panels,$gooseneck_wheels,$gooseneck_belts,$gooseneck_nuts_and_bolts,'
         '$returning_battery_voltage,$returning_battery_cca,$returning_number,'
-        '$outgoing_battery_voltage,$outgoing_battery_cca,$outgoing_number,$outgoing_battery_replacd,'
+        '$outgoing_battery_voltage,$outgoing_battery_cca,$outgoing_number,$outgoing_battery_replaced,'
         '$broken_part_image,$alliance_color';
   }
 
@@ -1165,16 +1168,19 @@ class PitChecklistItem {
       'chassis_bumpers': chassis_bumpers,
       'chassis_limelight_protectors': chassis_limelight_protectors,
       'ethernet_front_left_limelight': ethernet_front_left_limelight,
-      'ethernet_front_right_limlight': ethernet_front_right_limlight,
+      'ethernet_front_right_limlight': ethernet_front_right_limelight,
       'ethernet_swtich': ethernet_swtich,
       'ethernet_radio': ethernet_radio,
       'climber_string': climber_string,
+      'climber_clips': climber_clips,
       'climber_springs': climber_springs,
+      'climber_bumper': climber_bumper,
       'climber_gearbox': climber_gearbox,
       'climber_motors': climber_motors,
       'climber_wires': climber_wires,
       'climber_nuts_and_bolts': climber_nuts_and_bolts,
       'climber_reset': climber_reset,
+      'climber_number': climber_number,
       'elevator_rod_of_doom': elevator_rod_of_doom,
       'elevator_stage_0': elevator_stage_0,
       'elevator_stage_1': elevator_stage_1,
@@ -1185,6 +1191,7 @@ class PitChecklistItem {
       'elevator_wires': elevator_wires,
       'elevator_nuts_and_bolts': elevator_nuts_and_bolts,
       'trapdoor_panels': trapdoor_panels,
+      'trapdoor_wires' : trapdoor_wires,
       'trapdoor_supports': trapdoor_supports,
       'trapdoor_hinges': trapdoor_hinges,
       'trapdoor_tensioners': trapdoor_tensioners,
@@ -1200,7 +1207,6 @@ class PitChecklistItem {
       'gooseneck_panels': gooseneck_panels,
       'gooseneck_wheels': gooseneck_wheels,
       'gooseneck_belts': gooseneck_belts,
-      'gooseneck_surgical_tubing': gooseneck_surgical_tubing,
       'gooseneck_nuts_and_bolts': gooseneck_nuts_and_bolts,
       'returning_battery_voltage': returning_battery_voltage,
       'returning_battery_cca': returning_battery_cca,
@@ -1208,7 +1214,7 @@ class PitChecklistItem {
       'outgoing_battery_voltage': outgoing_battery_voltage,
       'outgoing_battery_cca': outgoing_battery_cca,
       'outgoing_number': outgoing_number,
-      'outgoing_battery_replacd': outgoing_battery_replacd,
+      'outgoing_battery_replacd': outgoing_battery_replaced,
       'broken_part_image': broken_part_image,
       'broken_part_images': broken_part_images,
       'alliance_color': alliance_color,
@@ -1231,18 +1237,23 @@ class PitChecklistItem {
           json['chassis_limelight_protectors'] ?? false,
       ethernet_front_left_limelight:
           json['ethernet_front_left_limelight'] ?? false,
-      ethernet_front_right_limelight:
+      ethernet_front_right_limelight: 
           json['ethernet_front_right_limelight'] ?? false,
       ethernet_swtich: json['ethernet_swtich'] ?? false,
       ethernet_radio: json['ethernet_radio'] ?? false,
+      climber_hooks: json['climber_hooks'] ?? false,
+      climber_wires: json['wires'] ?? false,
+      climber_clips: json['climber_clips'] ?? false,
+      climber_number: json['climber_number'] ?? false,
+      climber_bumper: json['climber_bumper'] ?? false,
       climber_string: json['climber_string'] ?? false,
       climber_springs: json['climber_springs'] ?? false,
       climber_gearbox: json['climber_gearbox'] ?? false,
       climber_motors: json['climber_motors'] ?? false,
-      climber_wires: json['climber_wires'] ?? false,
       climber_nuts_and_bolts: json['climber_nuts_and_bolts'] ?? false,
       climber_reset: json['climber_reset'] ?? false,
       elevator_rod_of_doom: json['elevator_rod_of_doom'] ?? false,
+      elevator_belts: json['elevator_belts'] ?? false,
       elevator_stage_0: json['elevator_stage_0'] ?? false,
       elevator_stage_1: json['elevator_stage_1'] ?? false,
       elevator_stage_2: json['elevator_stage_2'] ?? false,
@@ -1252,6 +1263,7 @@ class PitChecklistItem {
       elevator_wires: json['elevator_wires'] ?? false,
       elevator_nuts_and_bolts: json['elevator_nuts_and_bolts'] ?? false,
       trapdoor_panels: json['trapdoor_panels'] ?? false,
+      trapdoor_wires: json['trapdoor_wires'] ?? false,
       trapdoor_supports: json['trapdoor_supports'] ?? false,
       trapdoor_hinges: json['trapdoor_hinges'] ?? false,
       trapdoor_tensioners: json['trapdoor_tensioners'] ?? false,
@@ -1265,6 +1277,7 @@ class PitChecklistItem {
       carriage_coral_slide: json['carriage_coral_slide'] ?? false,
       carriage_carriage: json['carriage_carriage'] ?? false,
       gooseneck_panels: json['gooseneck_panels'] ?? false,
+      gooseneck_gears: json['gooseneck_gears'] ?? false,
       gooseneck_wheels: json['gooseneck_wheels'] ?? false,
       gooseneck_belts: json['gooseneck_belts'] ?? false,
       gooseneck_nuts_and_bolts: json['gooseneck_nuts_and_bolts'] ?? false,
@@ -1276,7 +1289,7 @@ class PitChecklistItem {
           (json['outgoing_battery_voltage'] ?? 0.0).toDouble(),
       outgoing_battery_cca: (json['outgoing_battery_cca'] ?? 0.0).toDouble(),
       outgoing_number: (json['outgoing_number'] ?? 0.0).toDouble(),
-      outgoing_battery_replacd: json['outgoing_battery_replacd'] ?? false,
+      outgoing_battery_replaced: json['outgoing_battery_replacd'] ?? false,
       broken_part_image: json['broken_part_image'] ?? "",
       broken_part_images: json['broken_part_images'] != null
           ? List<String>.from(json['broken_part_images'])

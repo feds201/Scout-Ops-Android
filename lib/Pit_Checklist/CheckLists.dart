@@ -74,6 +74,7 @@ class _Checklist_recordState extends State<Checklist_record> {
   late bool trapdoor_tensioners;
   late bool trapdoor_nuts_and_bolts;
   late bool trapdoor_reset;
+  late bool trapdoor_wires;
   late List<String> trapdoor;
 
   late bool carriage_gearbox;
@@ -99,6 +100,7 @@ class _Checklist_recordState extends State<Checklist_record> {
   late double returning_battery_voltage;
   late double returning_battery_cca;
   late bool returning_battery_replacd;
+  late bool outgoing_battery_replaced; 
 
   late String alliance_color;
   late String image;
@@ -300,7 +302,7 @@ class _Checklist_recordState extends State<Checklist_record> {
           outgoing_battery_voltage = existingRecord.outgoing_battery_voltage;
           outgoing_battery_cca = existingRecord.outgoing_battery_cca;
           outgoing_number = existingRecord.outgoing_number;
-          returning_battery_replacd = existingRecord.outgoing_battery_replacd;
+          returning_battery_replacd = existingRecord.outgoing_battery_replaced;
 
           alliance_color = existingRecord.alliance_color;
           image = existingRecord.broken_part_image;
@@ -363,7 +365,7 @@ class _Checklist_recordState extends State<Checklist_record> {
           if (trapdoor_panels) trapdoor.add("Panels");
           if (trapdoor_supports) trapdoor.add("Supports");
           if (trapdoor_hinges) trapdoor.add("Hinges");
-          if (trapdoor_wires) climber.add("Wires");
+          if (trapdoor_wires) trapdoor.add("Wires");
           if (trapdoor_tensioners) trapdoor.add("Tensioners");
           if (trapdoor_nuts_and_bolts) trapdoor.add("Nuts and Bolts");
           if (trapdoor_reset) trapdoor.add("Reset");
@@ -467,7 +469,7 @@ class _Checklist_recordState extends State<Checklist_record> {
               chassis = value;
             });
           }),
-          buildMultiChoiceBox(
+           buildMultiChoiceBox(
               "Ethernet",
               Icon(Icons.star_outline, size: 30, color: Colors.blue),
               [
@@ -479,6 +481,27 @@ class _Checklist_recordState extends State<Checklist_record> {
               ethernet, (value) {
             setState(() {
               ethernet = value;
+            });
+          }),
+           buildMultiChoiceBox(
+              "Elevator",
+              Icon(Icons.star_outline, size: 30, color: Colors.blue),
+              [
+                "Rod of Doom",
+                "Stage 0",
+                "Stage 1",
+                "Stage 2",
+                "Chain",
+                "Belts",
+                "String",
+                "Gearbox",
+                "Motors",
+                "Wires",
+                "Nuts and Bolts",
+              ],
+              elevator, (value) {
+            setState(() {
+              elevator = value;
             });
           }),
           buildMultiChoiceBox(
@@ -500,27 +523,8 @@ class _Checklist_recordState extends State<Checklist_record> {
               climber = value;
             });
           }),
-          buildMultiChoiceBox(
-              "Elevator",
-              Icon(Icons.star_outline, size: 30, color: Colors.blue),
-              [
-                "Rod of Doom",
-                "Stage 0",
-                "Stage 1",
-                "Stage 2",
-                "Chain",
-                "Belts",
-                "String",
-                "Gearbox",
-                "Motors",
-                "Wires",
-                "Nuts and Bolts",
-              ],
-              elevator, (value) {
-            setState(() {
-              elevator = value;
-            });
-          }),
+         
+         
           buildMultiChoiceBox(
               "Trapdoor",
               Icon(Icons.star_outline, size: 30, color: Colors.blue),
@@ -574,31 +578,7 @@ class _Checklist_recordState extends State<Checklist_record> {
             });
           }),
           buildTextBoxs(
-              "Returning Battery",
-              [
-                buildNumberBox("Battery Tag", returning_number, Icon(Icons.tag),
-                    (value) {
-                  setState(() {
-                    returning_number = (double.tryParse(value) ?? 0);
-                  });
-                }),
-                buildNumberBox("Battery Voltage", returning_battery_voltage,
-                    Icon(Icons.tag), (value) {
-                  setState(() {
-                    returning_battery_voltage = (double.tryParse(value) ?? 0);
-                  });
-                }),
-                buildNumberBox(
-                    "Battery CCA", returning_battery_cca, Icon(Icons.tag),
-                    (value) {
-                  setState(() {
-                    returning_battery_cca = (double.tryParse(value) ?? 0);
-                  });
-                })
-              ],
-              Icon(Icons.add_ic_call_outlined)),
-          buildTextBoxs(
-              "Ogoing Battery",
+              "Outgoing Battery",
               [
 
                 buildNumberBox("Battery Voltage", outgoing_battery_voltage,
@@ -624,15 +604,39 @@ class _Checklist_recordState extends State<Checklist_record> {
                     "Battery Status",
                     Icon(Icons.battery_full),
                     ["Good", "Replace"],
-                    outgoing_battery_replacd == true ? "Good" : "Replace",
+                    returning_battery_replacd == true ? "Good" : "Replace",
                     (value) {
                   setState(() {
                     print(value);
                     if (value.isNotEmpty) {
-                      outgoing_battery_replacd = !outgoing_battery_replacd;
+                      returning_battery_replacd = !returning_battery_replacd;
                     }
                   });
                 }),
+              ],
+              Icon(Icons.add_ic_call_outlined)),
+          buildTextBoxs(
+              "Returning Battery",
+              [
+                buildNumberBox("Battery Tag", returning_number, Icon(Icons.tag),
+                    (value) {
+                  setState(() {
+                    returning_number = (double.tryParse(value) ?? 0);
+                  });
+                }),
+                buildNumberBox("Battery Voltage", returning_battery_voltage,
+                    Icon(Icons.tag), (value) {
+                  setState(() {
+                    returning_battery_voltage = (double.tryParse(value) ?? 0);
+                  });
+                }),
+                buildNumberBox(
+                    "Battery CCA", returning_battery_cca, Icon(Icons.tag),
+                    (value) {
+                  setState(() {
+                    returning_battery_cca = (double.tryParse(value) ?? 0);
+                  });
+                })
               ],
               Icon(Icons.add_ic_call_outlined)),
           buildTextBox("Notes", "", Icon(Icons.note), notes),
@@ -752,11 +756,11 @@ class _Checklist_recordState extends State<Checklist_record> {
       chassis_bumpers: chassis.contains("Bumpers"),
       chassis_limelight_protectors: chassis.contains("LL Protectors"),
       ethernet_front_left_limelight: ethernet.contains("FL Limelight"),
-      ethernet_front_right_limelight: ethernet.contains("FR Limelight")
-      ethernet_switch: ethernet.contains("Ethernet Switch"),
+      ethernet_front_right_limelight: ethernet.contains("FR Limelight"),
+      ethernet_swtich: ethernet.contains("Ethernet Switch"),
       ethernet_radio: ethernet.contains("Radio"),
-      climber_bumper: climber.contains("Bumper"),
-      climber_hooks: climber.contains("Hooks")
+      climber_hooks: climber.contains("Hooks"),
+      climber_bumper: climber.contains("Climber Bumper"),
       climber_number: climber.contains("Number"),
       climber_clips: climber.contains("Clips"),
       climber_string: climber.contains("String"),
@@ -801,7 +805,7 @@ class _Checklist_recordState extends State<Checklist_record> {
       outgoing_battery_voltage: outgoing_battery_voltage,
       outgoing_battery_cca: outgoing_battery_cca,
       outgoing_number: outgoing_number,
-      outgoing_battery_replacd: returning_battery_replacd,
+      outgoing_battery_replaced: outgoing_battery_replaced,
       broken_part_image: image,
       broken_part_images: images, // Add the new list of images
       alliance_color: alliance_color,
