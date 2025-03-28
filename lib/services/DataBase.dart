@@ -1011,6 +1011,8 @@ class PitChecklistItem {
 
   bool ethernet_front_left_limelight = false;
   bool ethernet_front_right_limelight = false;
+  bool ethernet_back_left_limelight = false;
+  bool ethernet_back_right_limelight = false;
   bool ethernet_swtich = false;
   bool ethernet_radio = false;
 
@@ -1083,6 +1085,8 @@ class PitChecklistItem {
     required this.chassis_limelight_protectors,
     required this.ethernet_front_left_limelight,
     required this.ethernet_front_right_limelight,
+    required this.ethernet_back_left_limelight,
+    required this.ethernet_back_right_limelight,
     required this.ethernet_swtich,
     required this.ethernet_radio,
     required this.climber_string,
@@ -1090,7 +1094,7 @@ class PitChecklistItem {
     required this.climber_hooks,
     required this.climber_clips,
     required this.climber_springs,
-    required this.climber_bumper, 
+    required this.climber_bumper,
     required this.climber_gearbox,
     required this.climber_motors,
     required this.climber_wires,
@@ -1110,7 +1114,7 @@ class PitChecklistItem {
     required this.trapdoor_supports,
     required this.trapdoor_hinges,
     required this.trapdoor_tensioners,
-    required this.trapdoor_wires, 
+    required this.trapdoor_wires,
     required this.trapdoor_nuts_and_bolts,
     required this.trapdoor_reset,
     required this.carriage_gearbox,
@@ -1168,7 +1172,9 @@ class PitChecklistItem {
       'chassis_bumpers': chassis_bumpers,
       'chassis_limelight_protectors': chassis_limelight_protectors,
       'ethernet_front_left_limelight': ethernet_front_left_limelight,
-      'ethernet_front_right_limlight': ethernet_front_right_limelight,
+      'ethernet_front_right_limelight': ethernet_front_right_limelight,
+      'ethernet_back_left_limelight': ethernet_back_left_limelight,
+      'ethernet_back_right_limelight': ethernet_back_right_limelight,
       'ethernet_swtich': ethernet_swtich,
       'ethernet_radio': ethernet_radio,
       'climber_string': climber_string,
@@ -1185,13 +1191,13 @@ class PitChecklistItem {
       'elevator_stage_0': elevator_stage_0,
       'elevator_stage_1': elevator_stage_1,
       'elevator_stage_2': elevator_stage_2,
-      'elevator_chain': elevator_chain, 
+      'elevator_chain': elevator_chain,
       'elevator_gearbox': elevator_gearbox,
       'elevator_motors': elevator_motors,
       'elevator_wires': elevator_wires,
       'elevator_nuts_and_bolts': elevator_nuts_and_bolts,
       'trapdoor_panels': trapdoor_panels,
-      'trapdoor_wires' : trapdoor_wires,
+      'trapdoor_wires': trapdoor_wires,
       'trapdoor_supports': trapdoor_supports,
       'trapdoor_hinges': trapdoor_hinges,
       'trapdoor_tensioners': trapdoor_tensioners,
@@ -1237,7 +1243,11 @@ class PitChecklistItem {
           json['chassis_limelight_protectors'] ?? false,
       ethernet_front_left_limelight:
           json['ethernet_front_left_limelight'] ?? false,
-      ethernet_front_right_limelight: 
+      ethernet_front_right_limelight:
+          json['ethernet_front_right_limelight'] ?? false,
+      ethernet_back_left_limelight:
+          json['ethernet_front_right_limelight'] ?? false,
+      ethernet_back_right_limelight:
           json['ethernet_front_right_limelight'] ?? false,
       ethernet_swtich: json['ethernet_swtich'] ?? false,
       ethernet_radio: json['ethernet_radio'] ?? false,

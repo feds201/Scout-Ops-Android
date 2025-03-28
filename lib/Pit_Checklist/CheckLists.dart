@@ -39,6 +39,7 @@ class _Checklist_recordState extends State<Checklist_record> {
   late bool ethernet_front_left_limelight;
   late bool ethernet_front_right_limelight;
   late bool ethernet_back_left_limelight;
+  late bool ethernet_back_right_limelight;
   late bool ethernet_switch;
   late bool ethernet_radio;
   late List<String> ethernet;
@@ -99,7 +100,7 @@ class _Checklist_recordState extends State<Checklist_record> {
   late double returning_battery_voltage;
   late double returning_battery_cca;
   late bool returning_battery_replacd;
-  late bool outgoing_battery_replaced; 
+  late bool outgoing_battery_replaced;
 
   late String alliance_color;
   late String image;
@@ -451,6 +452,38 @@ class _Checklist_recordState extends State<Checklist_record> {
     return SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(children: [
+          // Use FutureBuilder to load previously saved images
+          FutureBuilder<List<File>>(
+            future: _getImagesFromBase64Strings(images),
+            builder: (context, snapshot) {
+              List<File> existingFiles = snapshot.data ?? [];
+
+              return CameraPhotoCapture(
+                title: "Robot Images",
+                description: "Take photos of robot issues",
+                maxPhotos: 5, // Allow up to 5 photos
+                initialImages: existingFiles.isNotEmpty
+                    ? existingFiles
+                    : [], // Ensure it's a valid list
+                onPhotosTaken: (photos) {
+                  // Convert all photos to base64 strings and store them
+                  List<String> base64Images = [];
+                  for (var photo in photos) {
+                    base64Images.add(base64Encode(photo.readAsBytesSync()));
+                  }
+
+                  setState(() {
+                    images = base64Images;
+                    // For backward compatibility, update the single image variable with the latest photo
+                    image = base64Images.isNotEmpty ? base64Images.last : "";
+                  });
+
+                  print('Photos captured: ${photos.length}');
+                },
+              );
+            },
+          ),
+
           buildMultiChoiceBox(
               "Chassis",
               Icon(Icons.mood_rounded, size: 30, color: Colors.blue),
@@ -468,12 +501,14 @@ class _Checklist_recordState extends State<Checklist_record> {
               chassis = value;
             });
           }),
-           buildMultiChoiceBox(
+          buildMultiChoiceBox(
               "Ethernet",
               Icon(Icons.star_outline, size: 30, color: Colors.blue),
               [
                 "FL Limelight",
                 "FR Limelight",
+                "BL Limelight",
+                "BR Limelight",
                 "Ethernet Switch",
                 "Radio",
               ],
@@ -482,7 +517,7 @@ class _Checklist_recordState extends State<Checklist_record> {
               ethernet = value;
             });
           }),
-           buildMultiChoiceBox(
+          buildMultiChoiceBox(
               "Elevator",
               Icon(Icons.star_outline, size: 30, color: Colors.blue),
               [
@@ -522,8 +557,7 @@ class _Checklist_recordState extends State<Checklist_record> {
               climber = value;
             });
           }),
-         
-         
+
           buildMultiChoiceBox(
               "Trapdoor",
               Icon(Icons.star_outline, size: 30, color: Colors.blue),
@@ -553,7 +587,6 @@ class _Checklist_recordState extends State<Checklist_record> {
                 "Wires",
                 "Nuts and Bolts",
                 "Reset"
-                
               ],
               carriage, (value) {
             setState(() {
@@ -579,14 +612,13 @@ class _Checklist_recordState extends State<Checklist_record> {
           buildTextBoxs(
               "Outgoing Battery",
               [
-
                 buildNumberBox("Battery Voltage", outgoing_battery_voltage,
                     Icon(Icons.tag), (value) {
                   setState(() {
                     outgoing_battery_voltage = (double.tryParse(value) ?? 0);
                   });
                 }),
-                                buildNumberBox("Battery Tag", outgoing_number, Icon(Icons.tag),
+                buildNumberBox("Battery Tag", outgoing_number, Icon(Icons.tag),
                     (value) {
                   setState(() {
                     outgoing_number = (double.tryParse(value) ?? 0);
@@ -650,7 +682,9 @@ class _Checklist_recordState extends State<Checklist_record> {
                 title: "Robot Images",
                 description: "Take photos of robot issues",
                 maxPhotos: 5, // Allow up to 5 photos
-                initialImages: existingFiles.isNotEmpty ? existingFiles : [], // Ensure it's a valid list
+                initialImages: existingFiles.isNotEmpty
+                    ? existingFiles
+                    : [], // Ensure it's a valid list
                 onPhotosTaken: (photos) {
                   // Convert all photos to base64 strings and store them
                   List<String> base64Images = [];
@@ -745,8 +779,6 @@ class _Checklist_recordState extends State<Checklist_record> {
   void _recordData() {
     PitChecklistItem record = PitChecklistItem(
       matchkey: matchkey,
-      
-      
       chassis_steer_motors: chassis.contains("Steer motors"),
       chassis_drive_motors: chassis.contains("Drive motors"),
       chassis_gearboxes: chassis.contains("Gearboxes"),
@@ -756,6 +788,8 @@ class _Checklist_recordState extends State<Checklist_record> {
       chassis_limelight_protectors: chassis.contains("LL Protectors"),
       ethernet_front_left_limelight: ethernet.contains("FL Limelight"),
       ethernet_front_right_limelight: ethernet.contains("FR Limelight"),
+      ethernet_back_left_limelight: ethernet.contains("BL Limelight"),
+      ethernet_back_right_limelight: ethernet.contains("BR Limelight"),
       ethernet_swtich: ethernet.contains("Ethernet Switch"),
       ethernet_radio: ethernet.contains("Radio"),
       climber_hooks: climber.contains("Hooks"),
