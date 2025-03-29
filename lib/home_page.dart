@@ -100,10 +100,10 @@ class _HomePageState extends State<HomePage>
                 context: context,
                 text: 'Qualitative Scouting',
                 color: islightmode() ? Color.fromARGB(192, 241, 131, 131) : darkColors.advay_dark_red,
-                borderColor: const Color.fromARGB(255, 255, 0, 0),
+                borderColor: const Color.fromARGB(255, 248, 0, 0),
                 icon: Icons.question_answer_outlined,
-                textColor: islightmode() ? Color.fromARGB(255, 172, 18, 18) : lightColors.advay_lightdark_red,
-                iconColor: islightmode() ? Color.fromARGB(255, 172, 18, 18) : lightColors.advay_lightdark_red,
+                textColor: islightmode() ? Color.fromARGB(255, 172, 18, 18) : const Color.fromARGB(255, 248, 0, 0),
+                iconColor: islightmode() ? Color.fromARGB(255, 172, 18, 18) : const Color.fromARGB(255, 248, 0, 0),
                 onPressed: () {
                   Navigator.push(
                       context,
@@ -117,10 +117,10 @@ class _HomePageState extends State<HomePage>
                 context: context,
                 text: 'Match Scouting',
                 color: islightmode() ? Colors.green.shade100 : darkColors.advay_dark_green,
-                borderColor: Colors.green.shade800,
+                borderColor: islightmode() ? Colors.green.shade800 : const Color.fromARGB(255, 80, 218, 87),
                 icon: Icons.play_arrow_outlined,
-                textColor: Colors.green.shade800,
-                iconColor: Colors.green.shade800,
+                textColor: islightmode() ? Colors.green.shade800 : const Color.fromARGB(255, 80, 218, 87),
+                iconColor: islightmode() ? Colors.green.shade800 : const Color.fromARGB(255, 80, 218, 87),
                 onPressed: () {
                   Navigator.push(
                       context,
@@ -153,8 +153,8 @@ class _HomePageState extends State<HomePage>
                 color: islightmode() ? const Color.fromARGB(255, 230, 187, 251) : darkColors.advay_dark_purple,
                 borderColor: islightmode() ? const Color.fromARGB(255, 59, 24, 84) : const Color.fromARGB(255, 174, 111, 219),
                 icon: Icons.bookmark_add_outlined,
-                textColor: islightmode() ? const Color.fromARGB(255, 78, 26, 96) : lightColors.advay_lightdark_purple,
-                iconColor: const Color.fromARGB(255, 106, 31, 113),
+                textColor: islightmode() ? const Color.fromARGB(255, 78, 26, 96) : const Color.fromARGB(255, 174, 111, 219),
+                iconColor: const Color.fromARGB(255, 174, 111, 219),
                 onPressed: () {
                   Navigator.push(
                       context,

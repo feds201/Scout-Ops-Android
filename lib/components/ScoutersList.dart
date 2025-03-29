@@ -115,7 +115,7 @@ class _ScouterListState extends State<ScouterList>
                   style: TextStyle(color: Colors.black87),
                   decoration: InputDecoration(
                     hintText: "Enter scouter name",
-                    hintStyle: TextStyle(color: const Color.fromARGB(255, 223, 222, 222)),
+                    hintStyle: TextStyle(color: islightmode() ? Colors.black87 : Color.fromARGB(255, 223, 222, 222)),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(15)),
                     filled: true,
@@ -143,7 +143,7 @@ class _ScouterListState extends State<ScouterList>
                         decoration: BoxDecoration(
                           color: color,
                           shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 2),
+                          border: Border.all(color: islightmode() ? Colors.white : Color.fromARGB(108, 63, 63, 63), width: 2),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.1),
@@ -159,7 +159,7 @@ class _ScouterListState extends State<ScouterList>
                 SizedBox(height: 20),
                 Text(
                   'Choose Avatar Icon',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(fontWeight: FontWeight.bold, color: islightmode() ? Colors.black : Colors.white),
                 ),
                 SizedBox(height: 10),
                 Wrap(
@@ -172,7 +172,7 @@ class _ScouterListState extends State<ScouterList>
                       child: Container(
                         padding: EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: Colors.grey[100],
+                          color: islightmode() ? Colors.grey[100] : Color.fromARGB(14, 245, 245, 245),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Icon(icon, color: Colors.blueAccent),

@@ -230,7 +230,7 @@ class SettingsPageState extends State<SettingsPage> {
                             },
                           ),
                         ),
-                        style: GoogleFonts.museoModerno(fontSize: 18),
+                        style: GoogleFonts.museoModerno(fontSize: 18 , color: islightmode() ? Colors.black : Colors.white),
                         onSubmitted: (String value) {
                           Hive.box('settings').put('ApiKey', value);
                           Settings.setApiKey(value);
@@ -254,6 +254,7 @@ class SettingsPageState extends State<SettingsPage> {
                             borderSide: BorderSide(color: islightmode() ? Colors.black : Colors.white),
                           ),
                         ),
+                        style: GoogleFonts.museoModerno(fontSize: 18 , color: islightmode() ? Colors.black : Colors.white)
                       ),
                     ],
                   ),
