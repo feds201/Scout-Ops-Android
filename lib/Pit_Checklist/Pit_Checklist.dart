@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -30,6 +30,10 @@ class PitCheckListPageState extends State<PitCheckListPage>
   bool _isFilterActive = false;
   String _filteredTeam = ""; // Added for single team filtering
 
+  // Add this to your class variables
+  bool _isClearing = false;
+  bool _isExporting = false;
+
   @override
   void initState() {
     super.initState();
@@ -55,16 +59,7 @@ class PitCheckListPageState extends State<PitCheckListPage>
     });
   }
 
-  // Save filtered team to Hive
-  void _saveFilteredTeam(String team) async {
-    var box = Hive.box('settings');
-    await box.put('filteredTeam', team);
-    setState(() {
-      _filteredTeam = team;
-    });
-  }
-
-  // Get filtered matches based on team number
+// Get filtered matches based on team number
   List<dynamic> _getFilteredMatches(List<dynamic> matches) {
     if (_filteredTeam.isEmpty && !_isFilterActive) {
       return matches;
@@ -507,7 +502,7 @@ class PitCheckListPageState extends State<PitCheckListPage>
         return _buildSettingsView(matches, allMatches);
 
       case 5:
-        return const Center(child: Text('Will be done before States'));
+        return buildShare(context);
 
       default:
         return const Center(child: Text('Unknown Match Type'));
@@ -900,65 +895,6 @@ class PitCheckListPageState extends State<PitCheckListPage>
         children: [
           ScouterList(),
 
-          // Team 201 Card with enhanced visual appeal
-          Card(
-            margin: const EdgeInsets.all(16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(18),
-            ),
-            elevation: 8,
-            shadowColor: Colors.redAccent.withOpacity(0.3),
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(18),
-                gradient: LinearGradient(
-                  colors: [
-                    Colors.redAccent.withOpacity(0.7),
-                    Colors.orangeAccent.withOpacity(0.8)
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(Icons.sports_kabaddi, color: Colors.white, size: 26),
-                      const SizedBox(width: 12),
-                      Text(
-                        'Team 201',
-                        style: GoogleFonts.museoModerno(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'FEDS201',
-                    style: GoogleFonts.museoModerno(
-                      fontSize: 26,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white,
-                    ),
-                  ),
-                  Text(
-                    'Fully Engaged Dedicated Students',
-                    style: GoogleFonts.roboto(
-                      fontSize: 18,
-                      color: Colors.white.withOpacity(0.9),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
           // Event Information Card
           Card(
             margin: const EdgeInsets.fromLTRB(16, 8, 16, 16),
@@ -1165,6 +1101,286 @@ class PitCheckListPageState extends State<PitCheckListPage>
                               ),
                             ),
                           ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Replace the duplicated Pit Memory card and data management sections with this single card
+          Card(
+            margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            color: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(18),
+            ),
+            elevation: 4,
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header
+                  Row(
+                    children: [
+                      Icon(Icons.storage,
+                          color: Theme.of(context).colorScheme.primary,
+                          size: 24),
+                      const SizedBox(width: 12),
+                      Text(
+                        'Pit Data Management',
+                        style: GoogleFonts.roboto(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Statistics Card
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.blue.withOpacity(0.1)),
+                    ),
+                    child: Row(
+                      children: [
+                        // Data icon
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.blue.withOpacity(0.1),
+                                blurRadius: 10,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Icon(
+                            Icons.assignment_rounded,
+                            color: Colors.blue.shade600,
+                            size: 28,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+
+                        // Data stats
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Saved Pit Checklists',
+                                style: GoogleFonts.roboto(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.grey.shade800,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.baseline,
+                                textBaseline: TextBaseline.alphabetic,
+                                children: [
+                                  Text(
+                                    '${PitCheckListDatabase.GetStorageSize()}',
+                                    style: GoogleFonts.roboto(
+                                      fontSize: 28,
+                                      fontWeight: FontWeight.bold,
+                                      color: PitCheckListDatabase
+                                                  .GetStorageSize() >
+                                              0
+                                          ? Colors.blue.shade700
+                                          : Colors.grey,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'teams',
+                                    style: GoogleFonts.roboto(
+                                      fontSize: 16,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // Quick status indicator
+                        if (PitCheckListDatabase.GetStorageSize() > 0)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.green.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: Colors.green.withOpacity(0.2),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.check_circle_outline,
+                                  color: Colors.green.shade700,
+                                  size: 14,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'Active',
+                                  style: TextStyle(
+                                    color: Colors.green.shade700,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        else
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: Colors.grey.withOpacity(0.2),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.info_outline,
+                                  color: Colors.grey.shade600,
+                                  size: 14,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'Empty',
+                                  style: TextStyle(
+                                    color: Colors.grey.shade600,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Action Buttons
+                  Row(
+                    children: [
+                      // Export Button
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          icon: _isExporting
+                              ? SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white),
+                                  ),
+                                )
+                              : const Icon(Icons.share_rounded, size: 20),
+                          label: Text(
+                              _isExporting ? 'Exporting...' : 'Export Data'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue.shade600,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            elevation: 1,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            visualDensity: VisualDensity.comfortable,
+                          ),
+                          onPressed: (_isClearing || _isExporting)
+                              ? null
+                              : () async {
+                                  final dataCount =
+                                      PitCheckListDatabase.GetStorageSize();
+                                  if (dataCount == 0) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            'No pit checklist data to export'),
+                                        backgroundColor: Colors.blue.shade700,
+                                      ),
+                                    );
+                                    return;
+                                  }
+
+                                  setState(() {
+                                    _isExporting = true;
+                                  });
+
+                                  setState(() {
+                                    _isExporting = false;
+                                    selectedMatchType = 5;
+                                  });
+
+                                  // Here you'd add your actual export logic
+                                },
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+
+                      // Clear Button
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          icon: _isClearing
+                              ? SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white),
+                                  ),
+                                )
+                              : const Icon(Icons.delete_outline_rounded,
+                                  size: 20),
+                          label:
+                              Text(_isClearing ? 'Clearing...' : 'Clear All'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red.shade600,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            elevation: 1,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            visualDensity: VisualDensity.comfortable,
+                          ),
+                          onPressed: (_isClearing || _isExporting)
+                              ? null
+                              : () => _clearPitChecklistData(context),
                         ),
                       ),
                     ],
@@ -1683,22 +1899,695 @@ class PitCheckListPageState extends State<PitCheckListPage>
     return teamsList;
   }
 
-  // Add team filtering UI component
-
-  Widget _buildTeamChip(String teamNum, bool isSelected, VoidCallback onTap) {
-    return FilterChip(
-      label: Text(
-        teamNum,
-        style: TextStyle(
-          color: isSelected ? Colors.white : Colors.black87,
-          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+  // Method to handle pit checklist data clearing
+  Future<void> _clearPitChecklistData(BuildContext context) async {
+    final dataCount = PitCheckListDatabase.GetStorageSize();
+    if (dataCount == 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.info_outline, color: Colors.white),
+              const SizedBox(width: 10),
+              const Text('No pit checklist data to delete'),
+            ],
+          ),
+          backgroundColor: Colors.blue.shade700,
         ),
-      ),
-      selected: isSelected,
-      selectedColor: Colors.purple.shade700,
-      backgroundColor: Colors.grey.shade200,
-      checkmarkColor: Colors.white,
-      onSelected: (_) => onTap(),
+      );
+      return;
+    }
+
+    bool confirm = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: Colors.red.withOpacity(0.1),
+                child: Icon(
+                  Icons.delete_forever_rounded,
+                  color: Colors.red,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Confirm Deletion',
+                  style: GoogleFonts.roboto(
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey.shade800,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'You are about to delete pit checklist data for $dataCount teams.',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'This action cannot be undone and all pit scouting data will be permanently removed from this device.',
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.amber.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.amber.withOpacity(0.2)),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.warning_amber_rounded,
+                      color: Colors.amber.shade800,
+                      size: 24,
+                    ),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Text(
+                        'Make sure you have shared or backed up any important data first!',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: Text(
+                'Cancel',
+                style: TextStyle(
+                  color: Colors.grey.shade700,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              onPressed: () => Navigator.of(context).pop(false),
+            ),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.delete_outline, size: 18),
+              label: const Text('Delete All Data'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
+              ),
+              onPressed: () => Navigator.of(context).pop(true),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirm) {
+      setState(() {
+        _isClearing = true;
+      });
+
+      try {
+        // Add small delay for visual feedback
+        await Future.delayed(const Duration(milliseconds: 800));
+
+        // Clear both Hive and the PitCheckListDatabase
+        PitCheckListDatabase.ClearData();
+
+        setState(() {
+          _isClearing = false;
+        });
+
+        if (!mounted) return;
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.check_circle, color: Colors.white),
+                const SizedBox(width: 10),
+                const Text(
+                    'All pit checklist data has been deleted successfully'),
+              ],
+            ),
+            backgroundColor: Colors.green.shade700,
+          ),
+        );
+      } catch (e) {
+        setState(() {
+          _isClearing = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.error_outline, color: Colors.white),
+                const SizedBox(width: 10),
+                Text('Error: ${e.toString()}'),
+              ],
+            ),
+            backgroundColor: Colors.red.shade700,
+          ),
+        );
+      }
+    }
+  }
+
+  Widget buildShare(BuildContext context) {
+    bool _isSharing = false;
+    String _shareStatus = "";
+    Map<String, bool> _checkResults = {
+      'Data': false,
+      'WiFi': false,
+      'Server': false,
+    };
+
+    // Load status checks
+    _checkSharing() async {
+      // Check if we have data to share
+      final hasData = PitCheckListDatabase.GetStorageSize() > 0;
+
+      // Check WiFi connection
+      bool hasWifi = false;
+      try {
+        final response = await http
+            .get(Uri.parse('https://google.com'))
+            .timeout(const Duration(seconds: 3));
+        hasWifi = response.statusCode == 200;
+      } catch (e) {
+        hasWifi = false;
+      }
+
+      // Check server availability - can modify this with your actual server check
+      bool serverAvailable = true;
+
+      return {
+        'Data': hasData,
+        'WiFi': hasWifi,
+        'Server': serverAvailable,
+      };
+    }
+
+    return StatefulBuilder(
+      builder: (context, setState) {
+        // Function to share the data
+        Future<void> _shareData() async {
+          if (_isSharing) return;
+
+          setState(() {
+            _isSharing = true;
+            _shareStatus = "Preparing to share data...";
+          });
+
+          try {
+            final dataCount = PitCheckListDatabase.GetStorageSize();
+            final jsonData = PitCheckListDatabase.ExportAsJson();
+
+            // Simulate server communication
+            for (int i = 0; i < 3; i++) {
+              setState(() {
+                _shareStatus = "Sharing data... ${i + 1}/3";
+              });
+              await Future.delayed(const Duration(milliseconds: 800));
+            }
+
+            // Show success dialog
+            if (!context.mounted) return;
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  title: Row(
+                    children: [
+                      Icon(Icons.check_circle, color: Colors.green, size: 28),
+                      const SizedBox(width: 10),
+                      const Text('Sharing Complete'),
+                    ],
+                  ),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Successfully shared data for $dataCount teams.'),
+                      const SizedBox(height: 12),
+                      const Text('Thank you for sharing!'),
+                    ],
+                  ),
+                  actions: [
+                    TextButton(
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.green,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text('OK'),
+                    ),
+                  ],
+                );
+              },
+            );
+          } catch (e) {
+            // Show error dialog
+            if (!context.mounted) return;
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  title: Row(
+                    children: [
+                      Icon(Icons.error_outline, color: Colors.red, size: 28),
+                      const SizedBox(width: 10),
+                      const Text('Error'),
+                    ],
+                  ),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Failed to share data:'),
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          e.toString(),
+                          style: TextStyle(
+                            fontFamily: 'monospace',
+                            fontSize: 12,
+                            color: Colors.red.shade800,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  actions: [
+                    TextButton(
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.red,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text('OK'),
+                    ),
+                  ],
+                );
+              },
+            );
+          } finally {
+            setState(() {
+              _isSharing = false;
+              _shareStatus = "";
+            });
+          }
+        }
+
+        return FutureBuilder<Map<String, bool>>(
+          future: _checkSharing(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (snapshot.hasData) {
+              _checkResults = snapshot.data!;
+            }
+
+            final allChecksPass = _checkResults.values.every((v) => v);
+            final dataCount = PitCheckListDatabase.GetStorageSize();
+
+            return SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: Column(
+                children: [
+                  // Header Card
+                  Card(
+                    margin: const EdgeInsets.all(16),
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.blue.shade400,
+                            Colors.indigo.shade600
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.cloud_upload,
+                                  color: Colors.white, size: 28),
+                              const SizedBox(width: 12),
+                              Text(
+                                'Share Pit Checklists',
+                                style: GoogleFonts.museoModerno(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            'Share your pit checklist data with the FEDS scouting server',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.white70,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // Status Checks
+                  Card(
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Pre-flight Checks',
+                            style: GoogleFonts.roboto(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey.shade800,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          _buildStatusCheck(
+                            'Checklist Data Available',
+                            _checkResults['Data'] ?? false,
+                            Icons.assignment_outlined,
+                          ),
+                          const SizedBox(height: 12),
+                          _buildStatusCheck(
+                            'WiFi Connection',
+                            _checkResults['WiFi'] ?? false,
+                            Icons.wifi,
+                          ),
+                          const SizedBox(height: 12),
+                          _buildStatusCheck(
+                            'FEDS Server Available',
+                            _checkResults['Server'] ?? false,
+                            Icons.cloud_done,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // Teams to Share
+                  Card(
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Teams to Share',
+                            style: GoogleFonts.roboto(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey.shade800,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          if (dataCount == 0)
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.orange.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                    color: Colors.orange.withOpacity(0.3)),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.warning_amber_rounded,
+                                      color: Colors.orange),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      'No pit checklist data to share',
+                                      style: TextStyle(
+                                        color: Colors.orange.shade800,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          else
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.blue.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                    color: Colors.blue.withOpacity(0.3)),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.info_outline, color: Colors.blue),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      '$dataCount teams will be shared',
+                                      style: TextStyle(
+                                        color: Colors.blue.shade800,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.green.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(20),
+                                      border: Border.all(
+                                        color: Colors.green.withOpacity(0.3),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      'Ready',
+                                      style: TextStyle(
+                                        color: Colors.green.shade700,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // Share Button
+                  Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: ElevatedButton.icon(
+                      icon: _isSharing
+                          ? SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            )
+                          : const Icon(Icons.cloud_upload, size: 24),
+                      label: Text(
+                        _isSharing ? 'Sharing...' : 'Share with FEDS Server',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            allChecksPass ? Colors.green : Colors.grey,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 16, horizontal: 20),
+                        minimumSize: const Size(double.infinity, 60),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        elevation: 4,
+                      ),
+                      onPressed:
+                          allChecksPass && !_isSharing ? _shareData : null,
+                    ),
+                  ),
+
+                  // Status message
+                  if (_isSharing && _shareStatus.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 20),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: Colors.blue.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                          border:
+                              Border.all(color: Colors.blue.withOpacity(0.3)),
+                        ),
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.blue),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                _shareStatus,
+                                style: TextStyle(
+                                  color: Colors.blue.shade800,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                  const SizedBox(height: 20),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+// Helper method for status check items
+  Widget _buildStatusCheck(String title, bool isValid, IconData icon) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: isValid
+                ? Colors.green.withOpacity(0.1)
+                : Colors.red.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(
+            icon,
+            color: isValid ? Colors.green : Colors.red,
+            size: 20,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            title,
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey.shade800,
+            ),
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: isValid
+                ? Colors.green.withOpacity(0.1)
+                : Colors.red.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: isValid
+                  ? Colors.green.withOpacity(0.3)
+                  : Colors.red.withOpacity(0.3),
+            ),
+          ),
+          child: Text(
+            isValid ? 'OK' : 'Failed',
+            style: TextStyle(
+              color: isValid ? Colors.green.shade700 : Colors.red.shade700,
+              fontWeight: FontWeight.w600,
+              fontSize: 12,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

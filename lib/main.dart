@@ -34,8 +34,37 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool _isDarkMode = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _isDarkMode = Hive.box('settings').get('isDarkMode', defaultValue: false);
+    // Listen for theme changes
+    Hive.box('settings')
+        .listenable(keys: ['isDarkMode']).addListener(_onThemeChanged);
+  }
+
+  @override
+  void dispose() {
+    Hive.box('settings')
+        .listenable(keys: ['isDarkMode']).removeListener(_onThemeChanged);
+    super.dispose();
+  }
+
+  void _onThemeChanged() {
+    setState(() {
+      _isDarkMode = Hive.box('settings').get('isDarkMode', defaultValue: false);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,10 +72,19 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Scout Ops',
       theme: ThemeData(
+        brightness: Brightness.light,
         colorScheme: ColorScheme.fromSeed(
             seedColor: const Color.fromARGB(255, 255, 255, 255)),
         useMaterial3: material3,
       ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        colorScheme: ColorScheme.fromSeed(
+            brightness: Brightness.dark,
+            seedColor: const Color.fromARGB(255, 30, 30, 30)),
+        useMaterial3: material3,
+      ),
+      themeMode: _isDarkMode ? ThemeMode.dark : ThemeMode.light,
       initialRoute: '/',
       routes: {
         '/home': (context) => const HomePage(),
@@ -61,8 +99,15 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// Fix the misleadingly named function
+bool isDarkMode() {
+  return Hive.box('settings').get('isDarkMode', defaultValue: false);
+}
+
+// Keep the original function for backward compatibility
+// but make it use the correct function
 bool islightmode() {
-  return false;
+  return isDarkMode();
 }
 
 Color invertColor(Color color) {

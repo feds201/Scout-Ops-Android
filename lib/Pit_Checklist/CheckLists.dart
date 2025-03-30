@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:core';
+import 'dart:developer' as developer;
 import 'dart:math';
 import 'dart:io';
 
@@ -103,9 +104,7 @@ class _Checklist_recordState extends State<Checklist_record> {
   late bool outgoing_battery_replaced;
 
   late String alliance_color;
-  late String image;
-  List<String> images =
-      []; // New list to store multiple images as base64 strings
+
   late TextEditingController notes;
 
   late bool isPlayoffMatch;
@@ -113,13 +112,18 @@ class _Checklist_recordState extends State<Checklist_record> {
   late int manualAllianceNumber;
   late String manualAlliancePosition;
 
+  late String image1;
+  late String image2;
+  late String image3;
+  late String image4;
+  late String image5;
+
   @override
   void initState() {
     super.initState();
     _confettiController =
         ConfettiController(duration: const Duration(seconds: 2));
-    image = "";
-    images = []; // Initialize empty list for multiple images
+
     notes = TextEditingController();
     // Initialize with empty values
     matchkey = widget.list_item.matchkey;
@@ -226,6 +230,13 @@ class _Checklist_recordState extends State<Checklist_record> {
     outgoing_battery_cca = 0;
     outgoing_number = 0;
     returning_battery_replacd = false;
+    outgoing_battery_replaced = false;
+
+    image1 = "";
+    image2 = "";
+    image3 = "";
+    image4 = "";
+    image5 = "";
 
     // Load database and try to get existing data for this team
     PitCheckListDatabase.LoadAll();
@@ -249,7 +260,7 @@ class _Checklist_recordState extends State<Checklist_record> {
               existingRecord.ethernet_front_left_limelight;
           ethernet_front_right_limelight =
               existingRecord.ethernet_front_right_limelight;
-          ethernet_switch = existingRecord.ethernet_swtich;
+          ethernet_switch = existingRecord.ethernet_switch;
           ethernet_radio = existingRecord.ethernet_radio;
 
           climber_number = existingRecord.climber_number;
@@ -305,15 +316,12 @@ class _Checklist_recordState extends State<Checklist_record> {
           returning_battery_replacd = existingRecord.outgoing_battery_replaced;
 
           alliance_color = existingRecord.alliance_color;
-          image = existingRecord.broken_part_image;
-          // Handle loading multiple images if they exist
-          if (existingRecord.broken_part_images != null &&
-              existingRecord.broken_part_images!.isNotEmpty) {
-            images = existingRecord.broken_part_images!;
-          } else if (image.isNotEmpty) {
-            // For backward compatibility, add the single image to the images list
-            images = [image];
-          }
+          image1 = existingRecord.img1;
+          image2 = existingRecord.img2;
+          image3 = existingRecord.img3;
+          image4 = existingRecord.img4;
+          image5 = existingRecord.img5;
+
           notes.text = existingRecord.note;
 
           // Populate lists from boolean values
@@ -452,38 +460,28 @@ class _Checklist_recordState extends State<Checklist_record> {
     return SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(children: [
-          // Use FutureBuilder to load previously saved images
-          FutureBuilder<List<File>>(
-            future: _getImagesFromBase64Strings(images),
-            builder: (context, snapshot) {
-              List<File> existingFiles = snapshot.data ?? [];
+          CameraPhotoCapture(
+              title: "Robot Photos",
+              description: "Take photos of the robot",
+              maxPhotos: 5,
+              initialImages: [image1, image2, image3, image4, image5]
+                  .where((img) => img.isNotEmpty)
+                  .toList(),
+              onPhotosTaken: (photos) {
+                // Convert all photos to base64 strings
+                List<String> base64Images = [];
+                for (var photo in photos) {
+                  base64Images.add(base64Encode(photo.readAsBytesSync()));
+                }
 
-              return CameraPhotoCapture(
-                title: "Robot Images",
-                description: "Take photos of robot issues",
-                maxPhotos: 5, // Allow up to 5 photos
-                initialImages: existingFiles.isNotEmpty
-                    ? existingFiles
-                    : [], // Ensure it's a valid list
-                onPhotosTaken: (photos) {
-                  // Convert all photos to base64 strings and store them
-                  List<String> base64Images = [];
-                  for (var photo in photos) {
-                    base64Images.add(base64Encode(photo.readAsBytesSync()));
-                  }
-
-                  setState(() {
-                    images = base64Images;
-                    // For backward compatibility, update the single image variable with the latest photo
-                    image = base64Images.isNotEmpty ? base64Images.last : "";
-                  });
-
-                  print('Photos captured: ${photos.length}');
-                },
-              );
-            },
-          ),
-
+                setState(() {
+                  image1 = base64Images[0];
+                  image2 = base64Images[1];
+                  image3 = base64Images[2];
+                  image4 = base64Images[3];
+                  image5 = base64Images[4];
+                });
+              }),
           buildMultiChoiceBox(
               "Chassis",
               Icon(Icons.mood_rounded, size: 30, color: Colors.blue),
@@ -557,7 +555,6 @@ class _Checklist_recordState extends State<Checklist_record> {
               climber = value;
             });
           }),
-
           buildMultiChoiceBox(
               "Trapdoor",
               Icon(Icons.star_outline, size: 30, color: Colors.blue),
@@ -671,39 +668,6 @@ class _Checklist_recordState extends State<Checklist_record> {
               ],
               Icon(Icons.add_ic_call_outlined)),
           buildTextBox("Notes", "", Icon(Icons.note), notes),
-
-          // Use FutureBuilder to load previously saved images
-          FutureBuilder<List<File>>(
-            future: _getImagesFromBase64Strings(images),
-            builder: (context, snapshot) {
-              List<File> existingFiles = snapshot.data ?? [];
-
-              return CameraPhotoCapture(
-                title: "Robot Images",
-                description: "Take photos of robot issues",
-                maxPhotos: 5, // Allow up to 5 photos
-                initialImages: existingFiles.isNotEmpty
-                    ? existingFiles
-                    : [], // Ensure it's a valid list
-                onPhotosTaken: (photos) {
-                  // Convert all photos to base64 strings and store them
-                  List<String> base64Images = [];
-                  for (var photo in photos) {
-                    base64Images.add(base64Encode(photo.readAsBytesSync()));
-                  }
-
-                  setState(() {
-                    images = base64Images;
-                    // For backward compatibility, update the single image variable with the latest photo
-                    image = base64Images.isNotEmpty ? base64Images.last : "";
-                  });
-
-                  print('Photos captured: ${photos.length}');
-                },
-              );
-            },
-          ),
-
           const SizedBox(height: 20),
           _buildFunButton(),
         ]));
@@ -734,7 +698,7 @@ class _Checklist_recordState extends State<Checklist_record> {
                     _recordData();
                     _confettiController.play(); // 🎉 Play confetti
                     _pressCount = 0; // Reset count after saving
-                    PopBoard(context);
+                    // PopBoard(context);
                   }
                 });
               },
@@ -777,6 +741,13 @@ class _Checklist_recordState extends State<Checklist_record> {
   }
 
   void _recordData() {
+    print(ethernet.contains("FL Limelight"));
+    print(ethernet.contains("FR Limelight"));
+    print(ethernet.contains("BL Limelight"));
+    print(ethernet.contains("BR Limelight"));
+    print(ethernet.contains("Ethernet Switch"));
+    print(ethernet.contains("Radio"));
+
     PitChecklistItem record = PitChecklistItem(
       matchkey: matchkey,
       chassis_steer_motors: chassis.contains("Steer motors"),
@@ -790,7 +761,7 @@ class _Checklist_recordState extends State<Checklist_record> {
       ethernet_front_right_limelight: ethernet.contains("FR Limelight"),
       ethernet_back_left_limelight: ethernet.contains("BL Limelight"),
       ethernet_back_right_limelight: ethernet.contains("BR Limelight"),
-      ethernet_swtich: ethernet.contains("Ethernet Switch"),
+      ethernet_switch: ethernet.contains("Ethernet Switch"),
       ethernet_radio: ethernet.contains("Radio"),
       climber_hooks: climber.contains("Hooks"),
       climber_bumper: climber.contains("Climber Bumper"),
@@ -839,21 +810,25 @@ class _Checklist_recordState extends State<Checklist_record> {
       outgoing_battery_cca: outgoing_battery_cca,
       outgoing_number: outgoing_number,
       outgoing_battery_replaced: outgoing_battery_replaced,
-      broken_part_image: image,
-      broken_part_images: images, // Add the new list of images
       alliance_color: alliance_color,
       note: notes.text,
+      img1: image1,
+      img2: image2,
+      img3: image3,
+      img4: image4,
+      img5: image5,
     );
 
-    print('Recording data: $record');
-    print("Hiv ${record.toJson()}");
-    print(widget.list_item.matchkey.toString());
-    print("Data recorded for match key: ${record.matchkey}");
+    // print('Recording data: $record');
+    // print("Hiv ${record.toJson()}");
+    // print(widget.list_item.matchkey.toString());
+    // print("Data recorded for match key: ${record.matchkey}");
+    developer.log(record.toJson().toString());
 
     PitCheckListDatabase.PutData(widget.list_item.matchkey, record);
     PitCheckListDatabase.SaveAll();
 
-    PitCheckListDatabase.PrintAll();
+    // PitCheckListDatabase.PrintAll();
   }
 
   void PopBoard(BuildContext context) {

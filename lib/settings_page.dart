@@ -40,6 +40,7 @@ class SettingsPageState extends State<SettingsPage> {
     super.initState();
     _checkInitialPermissions();
     Settings.setApiKey(ApiKey);
+    isDarkMode = Hive.box('settings').get('isDarkMode', defaultValue: false);
   }
 
   Future<void> _checkInitialPermissions() async {
@@ -158,6 +159,17 @@ class SettingsPageState extends State<SettingsPage> {
       drawer: const NavBar(),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+        actions: [
+          IconButton(
+            icon: Icon(isDarkMode ? Icons.dark_mode : Icons.light_mode),
+            onPressed: () {
+              setState(() {
+                isDarkMode = !isDarkMode;
+                Hive.box('settings').put('isDarkMode', isDarkMode);
+              });
+            },
+          ),
+        ],
         title: ShaderMask(
             shaderCallback: (bounds) => const LinearGradient(
                   colors: [Colors.red, Colors.blue],
@@ -198,16 +210,28 @@ class SettingsPageState extends State<SettingsPage> {
                               .get('ApiKey', defaultValue: ''),
                         decoration: InputDecoration(
                           labelText: 'BlueAlliance API Key',
-                          labelStyle: GoogleFonts.museoModerno(fontSize: 15, color: islightmode() ? Colors.black : Colors.white),
+                          labelStyle: GoogleFonts.museoModerno(
+                              fontSize: 15,
+                              color:
+                                  islightmode() ? Colors.black : Colors.white),
                           hintText: 'Enter your API Key',
-                          hintStyle: GoogleFonts.museoModerno(fontSize: 15, color: islightmode() ? Colors.black : Colors.white),
+                          hintStyle: GoogleFonts.museoModerno(
+                              fontSize: 15,
+                              color:
+                                  islightmode() ? Colors.black : Colors.white),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: islightmode() ? Colors.black : Colors.white),
+                            borderSide: BorderSide(
+                                color: islightmode()
+                                    ? Colors.black
+                                    : Colors.white),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: islightmode() ? Colors.black : Colors.white),
+                            borderSide: BorderSide(
+                                color: islightmode()
+                                    ? Colors.black
+                                    : Colors.white),
                           ),
                           suffixIcon: IconButton(
                             icon: const Icon(Icons.qr_code_scanner),
@@ -230,7 +254,9 @@ class SettingsPageState extends State<SettingsPage> {
                             },
                           ),
                         ),
-                        style: GoogleFonts.museoModerno(fontSize: 18 , color: islightmode() ? Colors.black : Colors.white),
+                        style: GoogleFonts.museoModerno(
+                            fontSize: 18,
+                            color: islightmode() ? Colors.black : Colors.white),
                         onSubmitted: (String value) {
                           Hive.box('settings').put('ApiKey', value);
                           Settings.setApiKey(value);
@@ -238,24 +264,36 @@ class SettingsPageState extends State<SettingsPage> {
                       ),
                       SizedBox(height: 10),
                       TextField(
-                        controller: eventKeyController,
-                        onChanged: (String value) {
-                          Hive.box('userData').put('eventKey', value);
-                        },
-                        decoration: InputDecoration(
-                          labelText: 'Match Event Key (e.g. 2024isde4)',
-                          labelStyle: GoogleFonts.museoModerno(fontSize: 15, color: islightmode() ? Colors.black : Colors.white),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: islightmode() ? Colors.black : Colors.white),
+                          controller: eventKeyController,
+                          onChanged: (String value) {
+                            Hive.box('userData').put('eventKey', value);
+                          },
+                          decoration: InputDecoration(
+                            labelText: 'Match Event Key (e.g. 2024isde4)',
+                            labelStyle: GoogleFonts.museoModerno(
+                                fontSize: 15,
+                                color: islightmode()
+                                    ? Colors.black
+                                    : Colors.white),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                  color: islightmode()
+                                      ? Colors.black
+                                      : Colors.white),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                  color: islightmode()
+                                      ? Colors.black
+                                      : Colors.white),
+                            ),
                           ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: islightmode() ? Colors.black : Colors.white),
-                          ),
-                        ),
-                        style: GoogleFonts.museoModerno(fontSize: 18 , color: islightmode() ? Colors.black : Colors.white)
-                      ),
+                          style: GoogleFonts.museoModerno(
+                              fontSize: 18,
+                              color:
+                                  islightmode() ? Colors.black : Colors.white)),
                     ],
                   ),
                 )
@@ -592,6 +630,9 @@ class SettingsPageState extends State<SettingsPage> {
                 ],
               ),
             ), // Load Match, Eject Match, Clear Data
+            SizedBox(
+              height: 30,
+            ),
           ],
         ),
       ),

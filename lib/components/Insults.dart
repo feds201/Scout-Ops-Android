@@ -91,7 +91,7 @@ String _getRandomInsult() {
   List<String> insults = [
     // memes:
     //Timothy
-    "Timothy, oh Timothy,Tripped on a rock and lost his tea!(Now he's just mothy, sipping air instead of coffee.) ",
+    "Timothy, oh Timothy, Tripped on a rock and lost his tea!(Now he's just mothy, sipping air instead of coffee.) ",
     "Timothy, the gym is free But he’d rather nap under a tree. (Workout? Nah. Dreaming of snacks instead.)",
     "Timothy, the symphony, Played his trumpet in disharmony. (They said stop, but he played non-stop.) ",
     "Timothy, full of energy, Tripped and spilled his cup of tea. (Now he’s just Tim-oh-pee, sad and tea-free.) ",
@@ -209,7 +209,6 @@ String _getRandomInsult() {
     "Ritesh says something bad, then immediately takes it back—guess he’s still learning how to program his mouth to stop talking",
     "He sleeps through school, works at night, and lives on coffee—Ritesh is proving that ‘living the dream’ is just an endless loop of caffeine and code.",
     "Ritesh trades sleep for work at night—he’s out here living the ‘sleep is optional’ life, but coffee is mandatory. ",
-    "Rituzz, oh Rituzz, he thinks he's Rizztesh but he's Ritech",
     "Ritesh, your indian wife is not real, stop putting it on the tablet",
     "Ritesh has no good angles when taking photos",
     "Ritesh will wear a tank-top in any weather to show off the non-existent muscular body.",
@@ -218,6 +217,7 @@ String _getRandomInsult() {
     "Fun fact: Ritesh has an AI anime girlfriend",
     "Ritesh is the king of procrastination.",
     "Ritesh is bad Programming lead.",
+    "Ritesh would make a magnificent V-tuber",
 
     //andrew salmopnson
     "'Andrew groped my butt!' - Freshman 2025",
@@ -240,9 +240,8 @@ String _getRandomInsult() {
     "Avanti, the teams Aunty Ji",
 
     // Advay
-    //
-    // Fake Thugs
-    // BAD DJ
+    "faken thug",
+    "Bad DJ",
 
     // Brody
     "Algebra 2 , Homework Mucher!",
@@ -251,9 +250,10 @@ String _getRandomInsult() {
     // Charles
     "Charles thinks he’s a genius, but even his shadow leaves him in the dark.",
     "Charles’s idea of multitasking is staring at two screens and still getting nothing done.",
+    "Birds look at Charles's beard and want to live in there."
 
-    // David
-    "David, ",
+        // David
+        "David, ",
     "David’s cooking is like his jokes—always a little undercooked and hard to digest.",
     "But let’s be honest, it's a talent to be that oblivious. He’s like a cultural blender set on “puree” – just mixing everything up without understanding any of the ingredients! And poor girl he pulled in 16 hours? She probably thought it was an escape room, and by the end, she was just trying to find the exit! ",
     "David, my dude from South Korea. I mean, with your track record, your love life is like a K-drama that got canceled after one season!",
@@ -263,14 +263,26 @@ String _getRandomInsult() {
     "Kevin would cave in any time he has the chance to devour his Spicy Habibi Sauce"
         "Even though he is a true Romanian, his parents call him Habibi"
         "Sam and Kevin sitting in a tree, his misses him so much, but he isn't on the team. Prolly went to get the Habibi drip.",
+    "Kevin is a 45 year old in a 18 year olds body."
 
-    // Julia
-    "Leasbiannnnnnnnnnnnnnnnnnnnnnnn!",
+        // Julia
+        "Leasbiannnnnnnnnnnnnnnnnnnnnnnn!",
     "julia thuggin",
 
     //abraham
-    "So bad a german, es ist traurig...",
-    "Bean boy",
+    "he is so bad a german, es ist traurig...",
+
+    //alonso
+    "Bean boy 2.0"
+        "Alonso doesnt show up to meeting as soon as it gets serious.",
+    "Alonso's feed contains more women than spider man, and that's saying something"
+
+        //otto
+        "If I had a penny for every time Otto has an energy drink in hand, I could sponsor the team.",
+    "Otto is only takes one thing seriously, 3D printing.",
+    "Otto’s energy levels are like a rollercoaster—up and down, but mostly just a wild ride.",
+    "Otto is a has the mindset of a 12 year old.",
+    "Otto is the only person I know who can trip over a wireless connection.",
   ];
   return insults[DateTime.now().second % insults.length];
 }

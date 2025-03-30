@@ -34,8 +34,10 @@ class _RecordState extends State<Record> {
   late List<String> ScoreObjectController;
   late bool? hello;
   late String selectedChoice;
-  late String ImageBlob;
-  List<String> imageBlobs = []; // List to store multiple image blobs
+  late String ImageBlob1;
+  late String ImageBlob2;
+  late String ImageBlob3;
+  late String ImageBlob; // Add this variable to store combined images
 
   @override
   void initState() {
@@ -52,8 +54,10 @@ class _RecordState extends State<Record> {
     ScoreObjectController = [];
     hello = null;
     selectedChoice = '';
-    ImageBlob = "";
-    imageBlobs = [];
+    ImageBlob1 = "";
+    ImageBlob2 = "";
+    ImageBlob3 = "";
+    ImageBlob = ""; // Initialize the combined blob
 
     // Load database and try to get existing data for this team
     PitDataBase.LoadAll();
@@ -68,11 +72,16 @@ class _RecordState extends State<Record> {
           IntakeController = existingRecord.intake;
           ClimbTypeController = existingRecord.climbType;
           ScoreObjectController = existingRecord.scoreObject;
-          ImageBlob = existingRecord.imageblob;
-          // If we have existing image, add it to the list
-          if (ImageBlob.isNotEmpty) {
-            imageBlobs = [ImageBlob];
-          }
+          ImageBlob1 = existingRecord.botImage1;
+          ImageBlob2 = existingRecord.botImage2;
+          ImageBlob3 = existingRecord.botImage3;
+
+          // Combine the existing images into ImageBlob
+          // Filter out empty images and join with comma
+          List<String> images = [ImageBlob1, ImageBlob2, ImageBlob3]
+              .where((img) => img.isNotEmpty)
+              .toList();
+          ImageBlob = images.join(',');
         });
         print("Loaded existing data for team ${widget.team.teamNumber}");
       } else {
@@ -84,34 +93,17 @@ class _RecordState extends State<Record> {
   }
 
   // Helper method to convert base64 strings to File objects
-  Future<List<File>> _getImagesFromBase64Strings(String base64Image) async {
+  Future<List<File>> _getImagesFromBase64Strings(String base64Images) async {
     List<File> imageFiles = [];
-    if (base64Image.isEmpty) return imageFiles;
+    if (base64Images.isEmpty) return imageFiles;
 
-    try {
-      final tempDir = await Directory.systemTemp.createTemp('images');
-      final bytes = base64Decode(base64Image);
-      final file = File('${tempDir.path}/image.jpg');
-      await file.writeAsBytes(bytes);
-      imageFiles.add(file);
-    } catch (e) {
-      print('Error converting base64 to file: $e');
-    }
+    // Split the base64 string by comma to get individual images
+    List<String> images = base64Images.split(',');
 
-    return imageFiles;
-  }
-
-  // Helper method to convert a list of base64 strings
-  Future<List<File>> _getMultipleImagesFromBase64(
-      List<String> base64Images) async {
-    List<File> imageFiles = [];
-    final tempDir = await Directory.systemTemp.createTemp('images');
-
-    for (int i = 0; i < base64Images.length; i++) {
-      if (base64Images[i].isEmpty) continue;
-
+    for (int i = 0; i < images.length; i++) {
       try {
-        final bytes = base64Decode(base64Images[i]);
+        final tempDir = await Directory.systemTemp.createTemp('images');
+        final bytes = base64Decode(images[i]);
         final file = File('${tempDir.path}/image_$i.jpg');
         await file.writeAsBytes(bytes);
         imageFiles.add(file);
@@ -216,33 +208,43 @@ class _RecordState extends State<Record> {
               Icon(Icons.question_answer),
 
               // Camera component with previously captured images
-              FutureBuilder<List<File>>(
-                future: _getImagesFromBase64Strings(ImageBlob),
-                builder: (context, snapshot) {
-                  List<File> existingFiles = snapshot.data ?? [];
+              CameraPhotoCapture(
+                title: "Robot Photos",
+                description: "Take photos of the robot",
+                maxPhotos: 3,
+                initialImages: [ImageBlob1, ImageBlob2, ImageBlob3]
+                    .where((img) => img.isNotEmpty)
+                    .toList(),
+                onPhotosTaken: (photos) {
+                  // Convert all photos to base64 strings
+                  List<String> base64Images = [];
+                  for (var photo in photos) {
+                    base64Images.add(base64Encode(photo.readAsBytesSync()));
+                  }
 
-                  return CameraPhotoCapture(
-                    title: "Robot Photos",
-                    description: "Take photos of the robot",
-                    maxPhotos: 3,
-                    initialImages: existingFiles,
-                    onPhotosTaken: (photos) {
-                      // Convert all photos to base64 strings
-                      List<String> base64Images = [];
-                      for (var photo in photos) {
-                        base64Images.add(base64Encode(photo.readAsBytesSync()));
-                      }
+                  setState(() {
+                    // Store the combined base64 strings
+                    ImageBlob = base64Images.join(',');
 
-                      setState(() {
-                        imageBlobs = base64Images;
-                        // For backward compatibility with single image
-                        ImageBlob =
-                            base64Images.isNotEmpty ? base64Images.last : "";
-                      });
+                    // Also update individual image blobs if needed
+                    if (base64Images.isNotEmpty && base64Images.length >= 1) {
+                      ImageBlob1 = base64Images[0];
+                    } else {
+                      ImageBlob1 = "";
+                    }
+                    if (base64Images.isNotEmpty && base64Images.length >= 2) {
+                      ImageBlob2 = base64Images[1];
+                    } else {
+                      ImageBlob2 = "";
+                    }
+                    if (base64Images.isNotEmpty && base64Images.length >= 3) {
+                      ImageBlob3 = base64Images[2];
+                    } else {
+                      ImageBlob3 = "";
+                    }
+                  });
 
-                      print('Photos captured: ${photos.length}');
-                    },
-                  );
+                  print('Photos captured: ${photos.length}');
                 },
               ),
               const SizedBox(height: 20),
@@ -335,7 +337,9 @@ class _RecordState extends State<Record> {
         intake: IntakeController,
         climbType: ClimbTypeController,
         scoreObject: ScoreObjectController.cast<String>().toList(),
-        imageblob: ImageBlob);
+        botImage1: ImageBlob1,
+        botImage2: ImageBlob2,
+        botImage3: ImageBlob3);
 
     print('Recording data: $record');
     print("Hiv ${record.toJson()}");

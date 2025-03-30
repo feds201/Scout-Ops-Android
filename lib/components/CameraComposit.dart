@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:path_provider/path_provider.dart';
 
 class CameraPhotoCapture extends StatefulWidget {
   // Updated callback to handle multiple photos
@@ -9,7 +11,7 @@ class CameraPhotoCapture extends StatefulWidget {
   final String title;
   final String description;
   final int maxPhotos;
-  final List<File> initialImages; // Parameter for initial images
+  final List<String> initialImages; // Changed to accept base64 string images
 
   const CameraPhotoCapture({
     Key? key,
@@ -17,7 +19,7 @@ class CameraPhotoCapture extends StatefulWidget {
     this.title = "Take Photo",
     this.description = "Capture a photo of the robot",
     this.maxPhotos = 10, // Default maximum number of photos
-    this.initialImages = const [], // Default to empty list
+    this.initialImages = const [], // Now expecting base64 strings
   }) : super(key: key);
 
   @override
@@ -26,18 +28,56 @@ class CameraPhotoCapture extends StatefulWidget {
 
 class _CameraPhotoCaptureState extends State<CameraPhotoCapture>
     with WidgetsBindingObserver {
-  late List<File> _images; // Now using a list to store multiple images
+  late List<File> _images; // Still using Files internally
   final ImagePicker _picker = ImagePicker();
   bool _processingPhoto = false;
+  bool _loadingInitialImages = true;
 
   @override
   void initState() {
     super.initState();
-    // Initialize with provided images
-    _images = List<File>.from(widget.initialImages);
+    // Initialize empty list
+    _images = [];
+
+    // Convert base64 strings to files
+    _loadInitialImages();
 
     // Add observer to detect when app resumes
     WidgetsBinding.instance.addObserver(this);
+  }
+
+  // New method to convert base64 strings to File objects
+  Future<void> _loadInitialImages() async {
+    if (widget.initialImages.isEmpty) {
+      setState(() {
+        _loadingInitialImages = false;
+      });
+      return;
+    }
+
+    try {
+      List<File> convertedFiles = [];
+      final tempDir = await getTemporaryDirectory();
+
+      for (int i = 0; i < widget.initialImages.length; i++) {
+        if (widget.initialImages[i].isNotEmpty) {
+          final bytes = base64Decode(widget.initialImages[i]);
+          final file = File('${tempDir.path}/initial_image_$i.jpg');
+          await file.writeAsBytes(bytes);
+          convertedFiles.add(file);
+        }
+      }
+
+      setState(() {
+        _images = convertedFiles;
+        _loadingInitialImages = false;
+      });
+    } catch (e) {
+      print('Error loading initial images: $e');
+      setState(() {
+        _loadingInitialImages = false;
+      });
+    }
   }
 
   @override
@@ -125,6 +165,58 @@ class _CameraPhotoCaptureState extends State<CameraPhotoCapture>
 
   @override
   Widget build(BuildContext context) {
+    // Show loading indicator while converting images
+    if (_loadingInitialImages) {
+      return Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.2),
+              spreadRadius: 2,
+              blurRadius: 5,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        margin: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.camera_alt, color: Colors.blue),
+                const SizedBox(width: 8),
+                Text(
+                  widget.title.toUpperCase(),
+                  style: GoogleFonts.museoModerno(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Center(
+              child: CircularProgressIndicator(),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              "Loading images...",
+              textAlign: TextAlign.center,
+              style: GoogleFonts.museoModerno(
+                fontSize: 14,
+                color: Colors.grey.shade600,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -300,13 +392,12 @@ class _CameraPhotoCaptureState extends State<CameraPhotoCapture>
 }
 
 // Optional function to easily use the widget with the same interface as before
-// Now returns a list of Files instead of a single File
 Widget buildCameraCapture(
   Function(List<File>) onPhotosTaken, {
   String title = "Take Photo",
   String description = "Capture a photo of the robot",
   int maxPhotos = 10,
-  List<File> initialImages = const [],
+  List<String> initialImages = const [], // Changed to accept strings
 }) {
   return CameraPhotoCapture(
     onPhotosTaken: onPhotosTaken,
@@ -322,7 +413,7 @@ Widget buildSingleCameraCapture(
   Function(File) onPhotoTaken, {
   String title = "Take Photo",
   String description = "Capture a photo of the robot",
-  File? initialImage,
+  String? initialImage, // Changed to accept a string
 }) {
   return CameraPhotoCapture(
     onPhotosTaken: (photos) {

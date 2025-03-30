@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/painting.dart';
 import 'package:hive/hive.dart';
@@ -107,20 +108,23 @@ class PitRecord {
   final List<String> scoreType;
   final String intake;
   final List<String> climbType;
-  final String imageblob;
+  final String botImage1;
+  final String botImage2;
+  final String botImage3;
 
-  PitRecord({
-    required this.teamNumber,
-    required this.scouterName,
-    required this.eventKey,
-    required this.driveTrainType,
-    required this.autonType,
-    required this.scoreObject,
-    required this.scoreType,
-    required this.intake,
-    required this.climbType,
-    required this.imageblob,
-  });
+  PitRecord(
+      {required this.teamNumber,
+      required this.scouterName,
+      required this.eventKey,
+      required this.driveTrainType,
+      required this.autonType,
+      required this.scoreObject,
+      required this.scoreType,
+      required this.intake,
+      required this.climbType,
+      required this.botImage1,
+      required this.botImage2,
+      required this.botImage3});
 
   Map<String, dynamic> toJson() {
     return {
@@ -133,7 +137,9 @@ class PitRecord {
       "scoreType": scoreType,
       "intake": intake,
       "climbType": climbType,
-      "imageblob": imageblob
+      "botImage1": botImage1,
+      "botImage2": botImage2,
+      "botImage3": botImage3
     };
   }
 
@@ -169,7 +175,9 @@ class PitRecord {
       climbType:
           json['climbType'] is List ? List<String>.from(json['climbType']) : [],
 
-      imageblob: json['imageblob'] ?? '',
+      botImage1: json['botImage1'] ?? '',
+      botImage2: json['botImage2'] ?? '',
+      botImage3: json['botImage3'] ?? '',
     );
   }
 }
@@ -955,17 +963,18 @@ class LocalDataBase {
 
   static PitRecord mapToPitRecord(Map<dynamic, dynamic> data) {
     return PitRecord(
-      teamNumber: data['teamNumber'] ?? 0,
-      eventKey: data['eventKey'] ?? "",
-      scouterName: data['scouterName'] ?? "",
-      driveTrainType: data['driveTrainType'] ?? "",
-      autonType: data['auton'] ?? "",
-      intake: data['intake'] ?? "",
-      scoreObject: List<String>.from(data['scoreObject'] ?? []),
-      climbType: List<String>.from(data['climbType'] ?? []),
-      scoreType: List<String>.from(data['scoreType'] ?? []),
-      imageblob: data['imageblob'] ?? "",
-    );
+        teamNumber: data['teamNumber'] ?? 0,
+        eventKey: data['eventKey'] ?? "",
+        scouterName: data['scouterName'] ?? "",
+        driveTrainType: data['driveTrainType'] ?? "",
+        autonType: data['auton'] ?? "",
+        intake: data['intake'] ?? "",
+        scoreObject: List<String>.from(data['scoreObject'] ?? []),
+        climbType: List<String>.from(data['climbType'] ?? []),
+        scoreType: List<String>.from(data['scoreType'] ?? []),
+        botImage1: data['botImage1'] ?? "",
+        botImage2: data['botImage2'] ?? "",
+        botImage3: data['botImage3'] ?? "");
   }
 }
 
@@ -1013,7 +1022,7 @@ class PitChecklistItem {
   bool ethernet_front_right_limelight = false;
   bool ethernet_back_left_limelight = false;
   bool ethernet_back_right_limelight = false;
-  bool ethernet_swtich = false;
+  bool ethernet_switch = false; // Changed from ethernet_swtich
   bool ethernet_radio = false;
 
   bool climber_bumper = false;
@@ -1068,11 +1077,13 @@ class PitChecklistItem {
   double outgoing_battery_cca = 0.0;
   double outgoing_number = 0.0;
   bool outgoing_battery_replaced = false;
-
-  String broken_part_image = "";
-  List<String>? broken_part_images; // New field for multiple images
   String alliance_color = "Blue";
   Map<String, dynamic>? alliance_selection_data;
+  String img1 = "";
+  String img2 = "";
+  String img3 = "";
+  String img4 = "";
+  String img5 = "";
 
   PitChecklistItem({
     required this.matchkey,
@@ -1087,7 +1098,7 @@ class PitChecklistItem {
     required this.ethernet_front_right_limelight,
     required this.ethernet_back_left_limelight,
     required this.ethernet_back_right_limelight,
-    required this.ethernet_swtich,
+    required this.ethernet_switch, // Changed from ethernet_swtich
     required this.ethernet_radio,
     required this.climber_string,
     required this.climber_number,
@@ -1136,8 +1147,11 @@ class PitChecklistItem {
     required this.outgoing_battery_cca,
     required this.outgoing_number,
     required this.outgoing_battery_replaced,
-    required this.broken_part_image,
-    this.broken_part_images,
+    required this.img1,
+    required this.img2,
+    required this.img3,
+    required this.img4,
+    required this.img5,
     required this.alliance_color,
     required this.note,
     this.alliance_selection_data,
@@ -1150,7 +1164,7 @@ class PitChecklistItem {
   String to_Csv() {
     return '$matchkey,'
         '$chassis_drive_motors,$chassis_steer_motors,$chassis_gearboxes,$chassis_tread_conditions,$chassis_wires,$chassis_bumpers,$chassis_limelight_protectors,'
-        '$ethernet_front_left_limelight,$ethernet_front_right_limelight,$ethernet_swtich,$ethernet_radio,'
+        '$ethernet_front_left_limelight,$ethernet_front_right_limelight,$ethernet_switch,$ethernet_radio,' // Changed from ethernet_swtich
         '$climber_string,$climber_springs,$climber_gearbox,$climber_motors,$climber_wires,$climber_nuts_and_bolts,$climber_bumper,$climber_reset,$climber_number,$climber_clips,'
         '$elevator_rod_of_doom,$elevator_stage_0,$elevator_stage_1,$elevator_stage_2,$elevator_chain,$elevator_gearbox,$elevator_motors,$elevator_wires,$elevator_nuts_and_bolts,'
         '$trapdoor_panels,$trapdoor_supports,$trapdoor_hinges,$trapdoor_tensioners,$trapdoor_nuts_and_bolts,$trapdoor_reset,$trapdoor_wires,'
@@ -1158,7 +1172,7 @@ class PitChecklistItem {
         '$gooseneck_panels,$gooseneck_wheels,$gooseneck_belts,$gooseneck_nuts_and_bolts,'
         '$returning_battery_voltage,$returning_battery_cca,$returning_number,'
         '$outgoing_battery_voltage,$outgoing_battery_cca,$outgoing_number,$outgoing_battery_replaced,'
-        '$broken_part_image,$alliance_color';
+        '$alliance_color';
   }
 
   Map<String, dynamic> toJson() {
@@ -1175,7 +1189,7 @@ class PitChecklistItem {
       'ethernet_front_right_limelight': ethernet_front_right_limelight,
       'ethernet_back_left_limelight': ethernet_back_left_limelight,
       'ethernet_back_right_limelight': ethernet_back_right_limelight,
-      'ethernet_swtich': ethernet_swtich,
+      'ethernet_switch': ethernet_switch, // Changed from ethernet_swtich
       'ethernet_radio': ethernet_radio,
       'climber_string': climber_string,
       'climber_clips': climber_clips,
@@ -1220,94 +1234,98 @@ class PitChecklistItem {
       'outgoing_battery_voltage': outgoing_battery_voltage,
       'outgoing_battery_cca': outgoing_battery_cca,
       'outgoing_number': outgoing_number,
-      'outgoing_battery_replacd': outgoing_battery_replaced,
-      'broken_part_image': broken_part_image,
-      'broken_part_images': broken_part_images,
+      'outgoing_battery_replaced': outgoing_battery_replaced,
       'alliance_color': alliance_color,
       'note': note,
       'alliance_selection_data': alliance_selection_data,
+      // 'img1': img1,
+      // 'img2': img2,
+      // 'img3': img3,
+      // 'img4': img4,
+      // 'img5': img5,
     };
   }
 
-  factory PitChecklistItem.fromJson(Map<String, dynamic> json) {
-    return PitChecklistItem(
-      note: json['note'] ?? "",
-      matchkey: json['matchkey'] ?? " ",
-      chassis_drive_motors: json['chassis_drive_motors'] ?? false,
-      chassis_steer_motors: json['chassis_steer_motors'] ?? false,
-      chassis_gearboxes: json['chassis_gearboxes'] ?? false,
-      chassis_tread_conditions: json['chassis_tread_conditions'] ?? false,
-      chassis_wires: json['chassis_wires'] ?? false,
-      chassis_bumpers: json['chassis_bumpers'] ?? false,
-      chassis_limelight_protectors:
-          json['chassis_limelight_protectors'] ?? false,
-      ethernet_front_left_limelight:
-          json['ethernet_front_left_limelight'] ?? false,
-      ethernet_front_right_limelight:
-          json['ethernet_front_right_limelight'] ?? false,
-      ethernet_back_left_limelight:
-          json['ethernet_front_right_limelight'] ?? false,
-      ethernet_back_right_limelight:
-          json['ethernet_front_right_limelight'] ?? false,
-      ethernet_swtich: json['ethernet_swtich'] ?? false,
-      ethernet_radio: json['ethernet_radio'] ?? false,
-      climber_hooks: json['climber_hooks'] ?? false,
-      climber_wires: json['wires'] ?? false,
-      climber_clips: json['climber_clips'] ?? false,
-      climber_number: json['climber_number'] ?? false,
-      climber_bumper: json['climber_bumper'] ?? false,
-      climber_string: json['climber_string'] ?? false,
-      climber_springs: json['climber_springs'] ?? false,
-      climber_gearbox: json['climber_gearbox'] ?? false,
-      climber_motors: json['climber_motors'] ?? false,
-      climber_nuts_and_bolts: json['climber_nuts_and_bolts'] ?? false,
-      climber_reset: json['climber_reset'] ?? false,
-      elevator_rod_of_doom: json['elevator_rod_of_doom'] ?? false,
-      elevator_belts: json['elevator_belts'] ?? false,
-      elevator_stage_0: json['elevator_stage_0'] ?? false,
-      elevator_stage_1: json['elevator_stage_1'] ?? false,
-      elevator_stage_2: json['elevator_stage_2'] ?? false,
-      elevator_chain: json['elevator_chain'] ?? false,
-      elevator_gearbox: json['elevator_gearbox'] ?? false,
-      elevator_motors: json['elevator_motors'] ?? false,
-      elevator_wires: json['elevator_wires'] ?? false,
-      elevator_nuts_and_bolts: json['elevator_nuts_and_bolts'] ?? false,
-      trapdoor_panels: json['trapdoor_panels'] ?? false,
-      trapdoor_wires: json['trapdoor_wires'] ?? false,
-      trapdoor_supports: json['trapdoor_supports'] ?? false,
-      trapdoor_hinges: json['trapdoor_hinges'] ?? false,
-      trapdoor_tensioners: json['trapdoor_tensioners'] ?? false,
-      trapdoor_nuts_and_bolts: json['trapdoor_nuts_and_bolts'] ?? false,
-      trapdoor_reset: json['trapdoor_reset'] ?? false,
-      carriage_gearbox: json['carriage_gearbox'] ?? false,
-      carriage_beltbox: json['carriage_beltbox'] ?? false,
-      carriage_motors: json['carriage_motors'] ?? false,
-      carriage_wires: json['carriage_wires'] ?? false,
-      carriage_nuts_and_bolts: json['carriage_nuts_and_bolts'] ?? false,
-      carriage_coral_slide: json['carriage_coral_slide'] ?? false,
-      carriage_carriage: json['carriage_carriage'] ?? false,
-      gooseneck_panels: json['gooseneck_panels'] ?? false,
-      gooseneck_gears: json['gooseneck_gears'] ?? false,
-      gooseneck_wheels: json['gooseneck_wheels'] ?? false,
-      gooseneck_belts: json['gooseneck_belts'] ?? false,
-      gooseneck_nuts_and_bolts: json['gooseneck_nuts_and_bolts'] ?? false,
-      returning_battery_voltage:
-          (json['returning_battery_voltage'] ?? 0.0).toDouble(),
-      returning_battery_cca: (json['returning_battery_cca'] ?? 0.0).toDouble(),
-      returning_number: (json['returning_number'] ?? 0.0).toDouble(),
-      outgoing_battery_voltage:
-          (json['outgoing_battery_voltage'] ?? 0.0).toDouble(),
-      outgoing_battery_cca: (json['outgoing_battery_cca'] ?? 0.0).toDouble(),
-      outgoing_number: (json['outgoing_number'] ?? 0.0).toDouble(),
-      outgoing_battery_replaced: json['outgoing_battery_replacd'] ?? false,
-      broken_part_image: json['broken_part_image'] ?? "",
-      broken_part_images: json['broken_part_images'] != null
-          ? List<String>.from(json['broken_part_images'])
-          : null,
-      alliance_color: json['aliance_color'] ?? "",
-      alliance_selection_data: json['alliance_selection_data'],
-    );
-  }
+  factory PitChecklistItem.fromJson(Map<String, dynamic> json) =>
+      PitChecklistItem(
+        note: json['note'] ?? "",
+        matchkey: json['matchkey'] ?? " ",
+        chassis_drive_motors: json['chassis_drive_motors'] ?? false,
+        chassis_steer_motors: json['chassis_steer_motors'] ?? false,
+        chassis_gearboxes: json['chassis_gearboxes'] ?? false,
+        chassis_tread_conditions: json['chassis_tread_conditions'] ?? false,
+        chassis_wires: json['chassis_wires'] ?? false,
+        chassis_bumpers: json['chassis_bumpers'] ?? false,
+        chassis_limelight_protectors:
+            json['chassis_limelight_protectors'] ?? false,
+        ethernet_front_left_limelight:
+            json['ethernet_front_left_limelight'] ?? false,
+        ethernet_front_right_limelight:
+            json['ethernet_front_right_limelight'] ?? false,
+        ethernet_back_left_limelight:
+            json['ethernet_back_left_limelight'] ?? false,
+        ethernet_back_right_limelight:
+            json['ethernet_back_right_limelight'] ?? false,
+        ethernet_radio: json['ethernet_radio'] ?? false,
+        climber_hooks: json['climber_hooks'] ?? false,
+        climber_wires: json['climber_wires'] ?? false,
+        climber_clips: json['climber_clips'] ?? false,
+        climber_number: json['climber_number'] ?? false,
+        climber_bumper: json['climber_bumper'] ?? false,
+        climber_string: json['climber_string'] ?? false,
+        climber_springs: json['climber_springs'] ?? false,
+        climber_gearbox: json['climber_gearbox'] ?? false,
+        climber_motors: json['climber_motors'] ?? false,
+        climber_nuts_and_bolts: json['climber_nuts_and_bolts'] ?? false,
+        climber_reset: json['climber_reset'] ?? false,
+        elevator_rod_of_doom: json['elevator_rod_of_doom'] ?? false,
+        elevator_belts: json['elevator_belts'] ?? false,
+        elevator_stage_0: json['elevator_stage_0'] ?? false,
+        elevator_stage_1: json['elevator_stage_1'] ?? false,
+        elevator_stage_2: json['elevator_stage_2'] ?? false,
+        elevator_chain: json['elevator_chain'] ?? false,
+        elevator_gearbox: json['elevator_gearbox'] ?? false,
+        elevator_motors: json['elevator_motors'] ?? false,
+        elevator_wires: json['elevator_wires'] ?? false,
+        elevator_nuts_and_bolts: json['elevator_nuts_and_bolts'] ?? false,
+        trapdoor_panels: json['trapdoor_panels'] ?? false,
+        trapdoor_wires: json['trapdoor_wires'] ?? false,
+        trapdoor_supports: json['trapdoor_supports'] ?? false,
+        trapdoor_hinges: json['trapdoor_hinges'] ?? false,
+        trapdoor_tensioners: json['trapdoor_tensioners'] ?? false,
+        trapdoor_nuts_and_bolts: json['trapdoor_nuts_and_bolts'] ?? false,
+        trapdoor_reset: json['trapdoor_reset'] ?? false,
+        carriage_gearbox: json['carriage_gearbox'] ?? false,
+        carriage_beltbox: json['carriage_beltbox'] ?? false,
+        carriage_motors: json['carriage_motors'] ?? false,
+        carriage_wires: json['carriage_wires'] ?? false,
+        carriage_nuts_and_bolts: json['carriage_nuts_and_bolts'] ?? false,
+        carriage_coral_slide: json['carriage_coral_slide'] ?? false,
+        carriage_carriage: json['carriage_carriage'] ?? false,
+        gooseneck_panels: json['gooseneck_panels'] ?? false,
+        gooseneck_gears: json['gooseneck_gears'] ?? false,
+        gooseneck_wheels: json['gooseneck_wheels'] ?? false,
+        gooseneck_belts: json['gooseneck_belts'] ?? false,
+        gooseneck_nuts_and_bolts: json['gooseneck_nuts_and_bolts'] ?? false,
+        returning_battery_voltage:
+            (json['returning_battery_voltage'] ?? 0.0).toDouble(),
+        returning_battery_cca:
+            (json['returning_battery_cca'] ?? 0.0).toDouble(),
+        returning_number: (json['returning_number'] ?? 0.0).toDouble(),
+        outgoing_battery_voltage:
+            (json['outgoing_battery_voltage'] ?? 0.0).toDouble(),
+        outgoing_battery_cca: (json['outgoing_battery_cca'] ?? 0.0).toDouble(),
+        outgoing_number: (json['outgoing_number'] ?? 0.0).toDouble(),
+        outgoing_battery_replaced: json['outgoing_battery_replaced'] ?? false,
+        img1: json['img1'] ?? "",
+        img2: json['img2'] ?? "",
+        img3: json['img3'] ?? "",
+        img4: json['img4'] ?? "",
+        img5: json['img5'] ?? "",
+        alliance_color: json['alliance_color'] ?? "",
+        alliance_selection_data: json['alliance_selection_data'],
+        ethernet_switch: json['ethernet_switch'] ?? false, // Corrected spelling
+      );
 }
 
 class PitCheckListDatabase {
@@ -1395,5 +1413,55 @@ class PitCheckListDatabase {
   static void ImportFromJson(String jsonString) {
     Map<String, dynamic> data = json.decode(jsonString);
     Import(data);
+  }
+
+  static String ExportAsJson() {
+    // Convert the internal storage to JSON string
+    Map<String, dynamic> exportData = {};
+
+    _storage.forEach((key, value) {
+      exportData[key] = value.toJson();
+    });
+
+    return jsonEncode(exportData);
+  }
+
+  static int GetStorageSize() {
+    return _storage.length;
+  }
+
+  static List<String> GetKeys() {
+    return _storage.keys.toList();
+  }
+
+  static Future<void> BackupToFile(String fileName) async {
+    try {
+      final String jsonData = ExportAsJson();
+      // Implementation would depend on file access method (would need to import dart:io)
+      // Example placeholder:
+      final file = File(fileName);
+      await file.writeAsString(jsonData);
+      log('Backup completed to: $fileName');
+    } catch (e) {
+      log('Error backing up data: $e');
+      throw Exception('Failed to backup data: $e');
+    }
+  }
+
+  static Future<bool> RestoreFromFile(String fileName) async {
+    try {
+      // Implementation would depend on file access method
+      // Example placeholder:
+      final file = File(fileName);
+      if (await file.exists()) {
+        final String jsonData = await file.readAsString();
+        ImportFromJson(jsonData);
+        return true;
+      }
+      return false;
+    } catch (e) {
+      log('Error restoring data: $e');
+      return false;
+    }
   }
 }
