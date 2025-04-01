@@ -5,6 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:scouting_app/Qualitative/QualitativePage.dart';
 import 'package:scouting_app/home_page.dart';
+import 'package:scouting_app/main.dart';
+import '../services/Colors.dart';
 import '../services/DataBase.dart';
 
 class Qualitative extends StatefulWidget {
@@ -29,6 +31,14 @@ class QualitativeState extends State<Qualitative> {
     if (data == null) {
       return Scaffold(
         appBar: AppBar(
+          leading: Builder(builder: (context) {
+            return IconButton(
+                icon: const Icon(Icons.menu),
+                color: !islightmode()
+                    ? const Color.fromARGB(193, 255, 255, 255)
+                    : const Color.fromARGB(105, 36, 33, 33),
+                onPressed: () => Scaffold.of(context).openDrawer());
+          }),
           backgroundColor: Colors.transparent,
           title: ShaderMask(
             shaderCallback: (bounds) => const LinearGradient(
@@ -52,9 +62,12 @@ class QualitativeState extends State<Qualitative> {
     }
     return Scaffold(
       appBar: AppBar(
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.home),
+        leading: Builder(builder: (context) {
+          return IconButton(
+            icon: const Icon(Icons.menu),
+            color: !islightmode()
+                ? const Color.fromARGB(193, 255, 255, 255)
+                : const Color.fromARGB(105, 36, 33, 33),
             onPressed: () async {
               await Navigator.pushAndRemoveUntil(
                 context,
@@ -67,8 +80,8 @@ class QualitativeState extends State<Qualitative> {
 
               print('Navigated back to MatchPage and removed previous pages.');
             },
-          ),
-        ],
+          );
+        }),
         backgroundColor: Colors.transparent,
         title: ShaderMask(
             shaderCallback: (bounds) => const LinearGradient(
@@ -99,26 +112,56 @@ class QualitativeState extends State<Qualitative> {
     return Row(
       children: [
         NavigationRail(
-          backgroundColor: Colors.white,
+          indicatorShape: SnakeShapeBorder(),
+          indicatorColor: islightmode()
+              ? const Color.fromARGB(140, 255, 0, 0)
+              : Colors.blue,
+          backgroundColor: !islightmode() ? Colors.black87 : Colors.white,
           selectedIndex: currentSelectedMatchType,
           onDestinationSelected: (int index) {
             onMatchTypeSelected(index);
           },
           labelType: NavigationRailLabelType.all,
-          destinations: const <NavigationRailDestination>[
+          destinations: <NavigationRailDestination>[
             NavigationRailDestination(
-              indicatorColor: Colors.white,
-              icon: Icon(Icons.sports_soccer),
-              label: Text('Quals'),
-            ),
+                indicatorColor:
+                    islightmode() ? darkColors.goodblack : Colors.white,
+                icon: Icon(
+                  Icons.sports_soccer,
+                  color: islightmode() ? darkColors.goodblack : Colors.white,
+                ),
+                label: Text(
+                  'Quals',
+                  style: TextStyle(
+                      color:
+                          islightmode() ? darkColors.goodblack : Colors.white),
+                )),
             NavigationRailDestination(
-              icon: Icon(Icons.sports_basketball),
-              label: Text('Playoffs'),
-            ),
+                indicatorColor:
+                    islightmode() ? darkColors.goodblack : Colors.white,
+                icon: Icon(
+                  Icons.sports_basketball,
+                  color: islightmode() ? darkColors.goodblack : Colors.white,
+                ),
+                label: Text(
+                  'Playoffs',
+                  style: TextStyle(
+                      color:
+                          islightmode() ? darkColors.goodblack : Colors.white),
+                )),
             NavigationRailDestination(
-              icon: Icon(Icons.sports_rugby),
-              label: Text('Finals'),
-            ),
+                indicatorColor:
+                    islightmode() ? darkColors.goodblack : Colors.white,
+                icon: Icon(
+                  Icons.sports_rugby,
+                  color: islightmode() ? darkColors.goodblack : Colors.white,
+                ),
+                label: Text(
+                  'Finals',
+                  style: TextStyle(
+                      color:
+                          islightmode() ? darkColors.goodblack : Colors.white),
+                )),
           ],
         ),
         const VerticalDivider(thickness: 1, width: 1),
@@ -383,5 +426,41 @@ class QualitativeState extends State<Qualitative> {
       default:
         return const Center(child: Text('Unknown Match Type'));
     }
+  }
+}
+
+class SnakeShapeBorder extends ShapeBorder {
+  @override
+  EdgeInsetsGeometry get dimensions => EdgeInsets.zero;
+
+  @override
+  Path getOuterPath(Rect rect, {TextDirection? textDirection}) {
+    Path path = Path();
+    path.moveTo(rect.left, rect.top + rect.height * 0.2);
+    path.quadraticBezierTo(rect.width * 0.2, rect.top, rect.width * 0.5,
+        rect.top + rect.height * 0.3);
+    path.quadraticBezierTo(rect.width * 0.8, rect.top + rect.height * 0.6,
+        rect.right, rect.top + rect.height * 0.5);
+    path.quadraticBezierTo(rect.width * 0.8, rect.bottom, rect.width * 0.5,
+        rect.bottom - rect.height * 0.3);
+    path.quadraticBezierTo(rect.width * 0.2, rect.bottom - rect.height * 0.6,
+        rect.left, rect.bottom - rect.height * 0.2);
+    path.close();
+    return path;
+  }
+
+  @override
+  ShapeBorder scale(double t) => this;
+
+  @override
+  void paint(Canvas canvas, Rect rect, {TextDirection? textDirection}) {
+    final Paint paint = Paint()..color = Colors.green.withOpacity(0.5);
+    canvas.drawPath(getOuterPath(rect), paint);
+  }
+
+  @override
+  Path getInnerPath(Rect rect, {TextDirection? textDirection}) {
+    // TODO: implement getInnerPath
+    throw UnimplementedError();
   }
 }

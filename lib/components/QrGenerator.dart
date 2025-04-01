@@ -130,82 +130,54 @@ class QrCoder extends State<Qrgenerator> {
     bool serverStatus =
         await pluginStateManager.getPluginState("intergrateWithPyintelScoutz");
     if (serverStatus) {
-      if (deviceName != null) {
-        String url = 'http://$ipAddress/send_data';
-        try {
-          print('Attempting to send data...');
-          final response = await http.post(
-            Uri.parse(url),
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: jsonEncode({'device_name': deviceName, 'data': qrData}),
+      String url = 'http://$ipAddress/send_data';
+      try {
+        print('Attempting to send data...');
+        final response = await http.post(
+          Uri.parse(url),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode({'device_name': deviceName, 'data': qrData}),
+        );
+
+        print('Response status: ${response.statusCode}');
+        if (response.statusCode == 200) {
+          final responseBody = jsonDecode(response.body);
+          print('Response body: $responseBody');
+
+          // Confirm function completion
+          print('Data sent successfully.');
+
+          // Example: Confirm whether data clearing and navigation are happening
+
+          print(LocalDataBase.getData('Settings.apiKey'));
+
+          print("Data Cleared");
+
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const MatchPage(),
+                fullscreenDialog: true),
           );
 
-          print('Response status: ${response.statusCode}');
-          if (response.statusCode == 200) {
-            final responseBody = jsonDecode(response.body);
-            print('Response body: $responseBody');
-
-            // Confirm function completion
-            print('Data sent successfully.');
-
-            // Example: Confirm whether data clearing and navigation are happening
-
-            print(LocalDataBase.getData('Settings.apiKey'));
-
-            print("Data Cleared");
-
-            await Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const MatchPage(),
-                  fullscreenDialog: true),
-            );
-
-            // Confirm navigation completion
-            print('Navigation to HomePage completed.');
-          } else {
-            // Handle non-200 responses
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: const Text('Error'),
-                  content:
-                      Text('Server returned an error: ${response.statusCode}'),
-                  actions: <Widget>[
-                    TextButton(
-                      child: const Text('OK'),
-                      onPressed: () async {
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const MatchPage(),
-                              fullscreenDialog: true),
-                        );
-                      },
-                    ),
-                  ],
-                );
-              },
-            );
-          }
-        } catch (e) {
-          print('Error: $e');
+          // Confirm navigation completion
+          print('Navigation to HomePage completed.');
+        } else {
+          // Handle non-200 responses
           showDialog(
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
                 title: const Text('Error'),
-                content: const Text('Failed to communicate with the server.'),
+                content:
+                    Text('Server returned an error: ${response.statusCode}'),
                 actions: <Widget>[
                   TextButton(
                     child: const Text('OK'),
-                    onPressed: () {
-                      print(LocalDataBase.getData('Settings.apiKey'));
-                      print("Data Cleared");
-                      Navigator.push(
+                    onPressed: () async {
+                      await Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => const MatchPage(),
@@ -218,20 +190,21 @@ class QrCoder extends State<Qrgenerator> {
             },
           );
         }
-      } else {
-        // IP address or device name not found in Hive
-        print('IP address or device name not found in Hive.');
+      } catch (e) {
+        print('Error: $e');
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
               title: const Text('Error'),
-              content: const Text('IP address or device name not configured.'),
+              content: const Text('Failed to communicate with the server.'),
               actions: <Widget>[
                 TextButton(
                   child: const Text('OK'),
-                  onPressed: () async {
-                    await Navigator.push(
+                  onPressed: () {
+                    print(LocalDataBase.getData('Settings.apiKey'));
+                    print("Data Cleared");
+                    Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => const MatchPage(),
@@ -244,7 +217,7 @@ class QrCoder extends State<Qrgenerator> {
           },
         );
       }
-    } else {
+        } else {
       print('Server is not running.');
       print(LocalDataBase.getData('Settings.apiKey'));
       print("Data Cleared");

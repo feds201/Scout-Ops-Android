@@ -112,10 +112,14 @@ class _ScouterListState extends State<ScouterList>
               children: [
                 TextField(
                   onChanged: (value) => newName = value,
-                  style: TextStyle(color: Colors.black87),
+                  style: TextStyle(
+                      color: islightmode() ? Colors.black87 : Colors.white),
                   decoration: InputDecoration(
                     hintText: "Enter scouter name",
-                    hintStyle: TextStyle(color: islightmode() ? Colors.black87 : Color.fromARGB(255, 223, 222, 222)),
+                    hintStyle: TextStyle(
+                        color: islightmode()
+                            ? Colors.black87
+                            : Color.fromARGB(255, 223, 222, 222)),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(15)),
                     filled: true,
@@ -126,8 +130,9 @@ class _ScouterListState extends State<ScouterList>
                 SizedBox(height: 20),
                 Text(
                   'Choose Avatar Color',
-                  style: TextStyle(fontWeight: FontWeight.bold, color: islightmode() ? Colors.black : Colors.white),
-                  
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: islightmode() ? Colors.black : Colors.white),
                 ),
                 SizedBox(height: 10),
                 Wrap(
@@ -143,7 +148,11 @@ class _ScouterListState extends State<ScouterList>
                         decoration: BoxDecoration(
                           color: color,
                           shape: BoxShape.circle,
-                          border: Border.all(color: islightmode() ? Colors.white : Color.fromARGB(108, 63, 63, 63), width: 2),
+                          border: Border.all(
+                              color: islightmode()
+                                  ? Colors.white
+                                  : Color.fromARGB(108, 63, 63, 63),
+                              width: 2),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.1),
@@ -159,7 +168,9 @@ class _ScouterListState extends State<ScouterList>
                 SizedBox(height: 20),
                 Text(
                   'Choose Avatar Icon',
-                  style: TextStyle(fontWeight: FontWeight.bold, color: islightmode() ? Colors.black : Colors.white),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: islightmode() ? Colors.black : Colors.white),
                 ),
                 SizedBox(height: 10),
                 Wrap(
@@ -172,7 +183,9 @@ class _ScouterListState extends State<ScouterList>
                       child: Container(
                         padding: EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: islightmode() ? Colors.grey[100] : Color.fromARGB(14, 245, 245, 245),
+                          color: islightmode()
+                              ? Colors.grey[100]
+                              : Color.fromARGB(14, 245, 245, 245),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Icon(icon, color: Colors.blueAccent),
@@ -353,7 +366,12 @@ class _ScouterListState extends State<ScouterList>
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               gradient: LinearGradient(
-                colors: islightmode() ? [Colors.white, Colors.blue.shade50] : [darkColors.goodblack, const Color.fromARGB(255, 38, 113, 167)],
+                colors: islightmode()
+                    ? [Colors.white, Colors.blue.shade50]
+                    : [
+                        darkColors.goodblack,
+                        const Color.fromARGB(255, 38, 113, 167)
+                      ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -375,7 +393,9 @@ class _ScouterListState extends State<ScouterList>
                           style: GoogleFonts.museoModerno(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
-                            color: islightmode() ? Colors.black87 : const Color.fromARGB(255, 255, 255, 255),
+                            color: islightmode()
+                                ? Colors.black87
+                                : const Color.fromARGB(255, 255, 255, 255),
                           ),
                         ),
                       ],
@@ -446,7 +466,9 @@ class _ScouterListState extends State<ScouterList>
                               'Add your first scouter!',
                               textStyle: GoogleFonts.museoModerno(
                                 fontSize: 18,
-                                color: islightmode() ? Colors.blueGrey : const Color.fromARGB(255, 167, 169, 197),
+                                color: islightmode()
+                                    ? Colors.blueGrey
+                                    : const Color.fromARGB(255, 167, 169, 197),
                               ),
                               speed: Duration(milliseconds: 100),
                             ),
