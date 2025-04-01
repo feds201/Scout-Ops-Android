@@ -1062,6 +1062,7 @@ class PitChecklistItem {
   bool carriage_wires = false;
   bool carriage_nuts_and_bolts = false;
   bool carriage_coral_slide = false;
+  bool carriage_reset = false;
   bool carriage_carriage = false;
   bool carriage_reset = false;
 
@@ -1122,7 +1123,7 @@ class PitChecklistItem {
     required this.elevator_wires,
     required this.elevator_nuts_and_bolts,
     required this.elevator_belts,
-    required this.elevator_string,    
+    required this.elevator_string,
     required this.trapdoor_panels,
     required this.trapdoor_supports,
     required this.trapdoor_hinges,
@@ -1226,7 +1227,7 @@ class PitChecklistItem {
       'carriage_beltbox': carriage_beltbox,
       'carriage_motors': carriage_motors,
       'carriage_wires': carriage_wires,
-      
+
       'carriage_nuts_and_bolts': carriage_nuts_and_bolts,
       'carriage_coral_slide': carriage_coral_slide,
       'carriage_reset': carriage_reset,
