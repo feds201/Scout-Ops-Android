@@ -1,5 +1,3 @@
-import 'dart:nativewrappers/_internal/vm/lib/typed_data_patch.dart';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:scouting_app/Pit_Checklist/Pit_Checklist.dart';
@@ -101,11 +99,17 @@ class _HomePageState extends State<HomePage>
               buildButton(
                 context: context,
                 text: 'Qualitative Scouting',
-                color: islightmode() ? Color.fromARGB(192, 241, 131, 131) : darkColors.advay_dark_red,
+                color: islightmode()
+                    ? Color.fromARGB(192, 241, 131, 131)
+                    : darkColors.advay_dark_red,
                 borderColor: const Color.fromARGB(255, 248, 0, 0),
                 icon: Icons.question_answer_outlined,
-                textColor: islightmode() ? Color.fromARGB(255, 172, 18, 18) : const Color.fromARGB(255, 248, 0, 0),
-                iconColor: islightmode() ? Color.fromARGB(255, 172, 18, 18) : const Color.fromARGB(255, 248, 0, 0),
+                textColor: islightmode()
+                    ? Color.fromARGB(255, 172, 18, 18)
+                    : const Color.fromARGB(255, 248, 0, 0),
+                iconColor: islightmode()
+                    ? Color.fromARGB(255, 172, 18, 18)
+                    : const Color.fromARGB(255, 248, 0, 0),
                 onPressed: () {
                   Navigator.push(
                       context,
@@ -118,11 +122,19 @@ class _HomePageState extends State<HomePage>
               buildButton(
                 context: context,
                 text: 'Match Scouting',
-                color: islightmode() ? Colors.green.shade100 : darkColors.advay_dark_green,
-                borderColor: islightmode() ? Colors.green.shade800 : const Color.fromARGB(255, 80, 218, 87),
+                color: islightmode()
+                    ? Colors.green.shade100
+                    : darkColors.advay_dark_green,
+                borderColor: islightmode()
+                    ? Colors.green.shade800
+                    : const Color.fromARGB(255, 80, 218, 87),
                 icon: Icons.play_arrow_outlined,
-                textColor: islightmode() ? Colors.green.shade800 : const Color.fromARGB(255, 80, 218, 87),
-                iconColor: islightmode() ? Colors.green.shade800 : const Color.fromARGB(255, 80, 218, 87),
+                textColor: islightmode()
+                    ? Colors.green.shade800
+                    : const Color.fromARGB(255, 80, 218, 87),
+                iconColor: islightmode()
+                    ? Colors.green.shade800
+                    : const Color.fromARGB(255, 80, 218, 87),
                 onPressed: () {
                   Navigator.push(
                       context,
@@ -135,7 +147,9 @@ class _HomePageState extends State<HomePage>
               buildButton(
                 context: context,
                 text: 'Record Pit',
-                color: islightmode() ? Colors.blue.shade100 : darkColors.advay_dark_blue,
+                color: islightmode()
+                    ? Colors.blue.shade100
+                    : darkColors.advay_dark_blue,
                 borderColor: Colors.blueAccent,
                 icon: Icons.bookmark_add_outlined,
                 textColor: Colors.blueAccent,
@@ -152,10 +166,16 @@ class _HomePageState extends State<HomePage>
               buildButton(
                 context: context,
                 text: 'Pit Checklist',
-                color: islightmode() ? const Color.fromARGB(255, 230, 187, 251) : darkColors.advay_dark_purple,
-                borderColor: islightmode() ? const Color.fromARGB(255, 59, 24, 84) : const Color.fromARGB(255, 174, 111, 219),
+                color: islightmode()
+                    ? const Color.fromARGB(255, 230, 187, 251)
+                    : darkColors.advay_dark_purple,
+                borderColor: islightmode()
+                    ? const Color.fromARGB(255, 59, 24, 84)
+                    : const Color.fromARGB(255, 174, 111, 219),
                 icon: Icons.bookmark_add_outlined,
-                textColor: islightmode() ? const Color.fromARGB(255, 78, 26, 96) : const Color.fromARGB(255, 174, 111, 219),
+                textColor: islightmode()
+                    ? const Color.fromARGB(255, 78, 26, 96)
+                    : const Color.fromARGB(255, 174, 111, 219),
                 iconColor: const Color.fromARGB(255, 174, 111, 219),
                 onPressed: () {
                   Navigator.push(
@@ -371,21 +391,6 @@ Widget _buildCustomAppBar(BuildContext context) {
     backgroundColor: Colors.transparent, // Transparent to show the animation
     elevation: 0, // Remove shadow for a cleaner look
     actions: [
-      IconButton(
-        icon: ShaderMask(
-          shaderCallback: (bounds) => const LinearGradient(
-            colors: [Colors.red, Colors.blue],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ).createShader(bounds),
-          child: const Icon(Icons.settings, size: 30, color: Colors.white),
-        ), 
-        onPressed: () {
-          toggle();
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => const HomePage()));
-        },
-      ),
       IconButton(
         icon: ShaderMask(
           shaderCallback: (bounds) => const LinearGradient(

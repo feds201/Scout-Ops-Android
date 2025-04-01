@@ -29,7 +29,6 @@ class SettingsPageState extends State<SettingsPage> {
   bool isBluetoothGranted = false;
   bool isNearbyDevicesGranted = false;
   bool isCameraGranted = false;
-  bool isDarkMode = true;
   bool isLoading = false;
   bool isjson = true;
   TextEditingController eventKeyController = TextEditingController();
@@ -40,7 +39,6 @@ class SettingsPageState extends State<SettingsPage> {
     super.initState();
     _checkInitialPermissions();
     Settings.setApiKey(ApiKey);
-    isDarkMode = Hive.box('settings').get('isDarkMode', defaultValue: false);
   }
 
   Future<void> _checkInitialPermissions() async {
@@ -158,17 +156,22 @@ class SettingsPageState extends State<SettingsPage> {
     return Scaffold(
       drawer: const NavBar(),
       appBar: AppBar(
+        leading: Builder(builder: (context) {
+          return IconButton(
+              icon: const Icon(Icons.menu),
+              color: !islightmode()
+                  ? const Color.fromARGB(193, 255, 255, 255)
+                  : const Color.fromARGB(105, 36, 33, 33),
+              onPressed: () => Scaffold.of(context).openDrawer());
+        }),
         backgroundColor: Colors.transparent,
         actions: [
           IconButton(
-            icon: Icon(isDarkMode ? Icons.dark_mode : Icons.light_mode),
-            onPressed: () {
-              setState(() {
-                isDarkMode = !isDarkMode;
-                Hive.box('settings').put('isDarkMode', isDarkMode);
-              });
-            },
-          ),
+              icon: Icon(isDarkMode ? Icons.dark_mode : Icons.light_mode),
+              onPressed: () {
+                toggle();
+                Navigator.of(context).pop();
+              }),
         ],
         title: ShaderMask(
             shaderCallback: (bounds) => const LinearGradient(
