@@ -1063,6 +1063,7 @@ class PitChecklistItem {
   bool carriage_nuts_and_bolts = false;
   bool carriage_coral_slide = false;
   bool carriage_carriage = false;
+  bool carriage_reset = false;
 
   bool gooseneck_panels = false;
   bool gooseneck_wheels = false;

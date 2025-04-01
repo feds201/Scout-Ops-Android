@@ -1,3 +1,5 @@
+import 'dart:nativewrappers/_internal/vm/lib/typed_data_patch.dart';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:scouting_app/Pit_Checklist/Pit_Checklist.dart';
@@ -369,6 +371,21 @@ Widget _buildCustomAppBar(BuildContext context) {
     backgroundColor: Colors.transparent, // Transparent to show the animation
     elevation: 0, // Remove shadow for a cleaner look
     actions: [
+      IconButton(
+        icon: ShaderMask(
+          shaderCallback: (bounds) => const LinearGradient(
+            colors: [Colors.red, Colors.blue],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ).createShader(bounds),
+          child: const Icon(Icons.settings, size: 30, color: Colors.white),
+        ), 
+        onPressed: () {
+          toggle();
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => const HomePage()));
+        },
+      ),
       IconButton(
         icon: ShaderMask(
           shaderCallback: (bounds) => const LinearGradient(

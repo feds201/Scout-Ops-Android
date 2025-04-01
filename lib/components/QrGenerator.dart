@@ -6,6 +6,7 @@ import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:scouting_app/components/slider.dart';
+import 'package:scouting_app/main.dart';
 
 import '../Match_Pages/match_page.dart';
 import '../Plugins/plugin_state_manager.dart';
@@ -25,11 +26,14 @@ class QrCoder extends State<Qrgenerator> {
   Widget build(BuildContext context) {
     // bool isJson = Hive.box('settings').get('isJson');
     // log('Building QR Code with isJson: $isJson');
+    
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: islightmode() ? Colors.white : Colors.black,
         title: Text('QR Code',
             style: GoogleFonts.museoModerno(
-              fontSize: 25,
+              fontSize: 25, 
+              color: islightmode() ? Colors.black : Colors.white,
             )),
         centerTitle: true,
         automaticallyImplyLeading: false,
@@ -39,27 +43,29 @@ class QrCoder extends State<Qrgenerator> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             QrImageView(
+              backgroundColor: Colors.white,
               data: json.encode(widget.matchRecord.toCsv()),
               // data: json.encode(widget.matchRecord.toJson()),
               version: QrVersions.auto,
               size: MediaQuery.of(context).size.width - 40,
               semanticsLabel: 'QR code',
               // eyeStyle: const QrEyeStyle(
-              //   eyeShape: QrEyeShape.circle,
-              //   color: Colors.red,
+              //   eyeShape: QrEyeShape.square,
+              //   color: Colors.white,
               // ),
               gapless: false,
               // dataModuleStyle: const QrDataModuleStyle(
-              //   dataModuleShape: QrDataModuleShape.circle,
-              //   color: Colors.blue,
+              //   dataModuleShape: QrDataModuleShape.square,
+              //   color: Colors.white,
               // ),
             ),
             const SizedBox(
-              height: 20.0,
+              height: 30.0,
             ),
-            const Text(
+           Text(
               'Scan the QR code to submit the data',
-              style: TextStyle(fontSize: 20.0),
+              style: TextStyle(fontSize: 20.0, color: islightmode() ? Colors.black : Colors.white),
+              
             ),
             const Spacer(),
             Padding(
@@ -71,7 +77,7 @@ class QrCoder extends State<Qrgenerator> {
                   borderRadius: BorderRadius.circular(100),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.2),
+                      color: islightmode() ? const Color.fromARGB(255, 248, 248, 248) : const Color.fromARGB(255, 255, 255, 255).withOpacity(0.2),
                       spreadRadius: 2,
                       blurRadius: 5,
                       offset: const Offset(0, 3),

@@ -12,7 +12,7 @@ import 'settings_page.dart';
 
 const Color themeColor = Color.fromARGB(255, 255, 255, 0);
 const bool material3 = true;
-
+bool isDarkMode = false;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -100,14 +100,18 @@ class _MyAppState extends State<MyApp> {
 }
 
 // Fix the misleadingly named function
-bool isDarkMode() {
-  return Hive.box('settings').get('isDarkMode', defaultValue: false);
+
+bool islightmode() {
+return isDarkMode;
+  
 }
 
-// Keep the original function for backward compatibility
-// but make it use the correct function
-bool islightmode() {
-  return true;
+void setmode(bool mode) {
+  isDarkMode = mode;
+}
+
+void toggle(){
+  isDarkMode = !isDarkMode;
 }
 
 Color invertColor(Color color) {
