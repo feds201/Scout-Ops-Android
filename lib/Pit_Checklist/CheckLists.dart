@@ -5,6 +5,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:scouting_app/components/CameraComposit.dart';
+import 'package:scouting_app/main.dart';
 import 'package:scouting_app/services/DataBase.dart';
 import 'package:scouting_app/components/TextBox.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -38,7 +39,6 @@ class _Checklist_recordState extends State<Checklist_record> {
 
   late bool ethernet_front_left_limelight;
   late bool ethernet_front_right_limelight;
-  late bool ethernet_back_left_limelight;
   late bool ethernet_back_right_limelight;
   late bool ethernet_switch;
   late bool ethernet_radio;
@@ -184,7 +184,6 @@ class _Checklist_recordState extends State<Checklist_record> {
 
     ethernet_front_left_limelight = false;
     ethernet_front_right_limelight = false;
-    ethernet_back_left_limelight = false;
     ethernet_back_right_limelight = false;
     ethernet_switch = false;
     ethernet_radio = false;
@@ -274,8 +273,8 @@ class _Checklist_recordState extends State<Checklist_record> {
               existingRecord.ethernet_front_left_limelight;
           ethernet_front_right_limelight =
               existingRecord.ethernet_front_right_limelight;
-          ethernet_back_left_limelight =
-              existingRecord.ethernet_front_right_limelight;
+
+          existingRecord.ethernet_front_right_limelight;
           ethernet_back_right_limelight =
               existingRecord.ethernet_front_right_limelight;
 
@@ -363,7 +362,6 @@ class _Checklist_recordState extends State<Checklist_record> {
           ethernet = [];
           if (ethernet_front_left_limelight) ethernet.add("FL Limelight");
           if (ethernet_front_right_limelight) ethernet.add("FR Limelight");
-          if (ethernet_back_left_limelight) ethernet.add("BL Limelight");
           if (ethernet_back_right_limelight) ethernet.add("BR Limelight");
           if (ethernet_switch) ethernet.add("Ethernet Switch");
           if (ethernet_radio) ethernet.add("Radio");
@@ -443,7 +441,14 @@ class _Checklist_recordState extends State<Checklist_record> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions: const [],
+        leading: Builder(builder: (context) {
+          return IconButton(
+              icon: const Icon(Icons.menu),
+              color: !islightmode() ? Colors.transparent : Colors.transparent,
+              onPressed: () => {});
+        }),
+        backgroundColor: islightmode() ? Colors.white : Colors.black,
+        centerTitle: true,
         title: ShaderMask(
             shaderCallback: (bounds) => const LinearGradient(
                   colors: [Colors.red, Colors.blue],
@@ -458,7 +463,6 @@ class _Checklist_recordState extends State<Checklist_record> {
                 color: Colors.white,
               ),
             )),
-        centerTitle: true,
       ),
       body: _buildQuestions(),
     );
@@ -490,6 +494,7 @@ class _Checklist_recordState extends State<Checklist_record> {
                   image5 = base64Images[4];
                 });
               }),
+          buildTextBox("Notes", "", Icon(Icons.note), notes),
           buildMultiChoiceBox(
               "Chassis",
               Icon(Icons.mood_rounded, size: 30, color: Colors.blue),
@@ -513,7 +518,6 @@ class _Checklist_recordState extends State<Checklist_record> {
               [
                 "FL Limelight",
                 "FR Limelight",
-                "BL Limelight",
                 "BR Limelight",
                 "Ethernet Switch",
                 "Radio",
@@ -764,9 +768,9 @@ class _Checklist_recordState extends State<Checklist_record> {
       chassis_wires: chassis.contains("Wires"),
       chassis_bumpers: chassis.contains("Bumpers"),
       chassis_limelight_protectors: chassis.contains("LL Protectors"),
+      chassis_camera: chassis.contains("Camera"),
       ethernet_front_left_limelight: ethernet.contains("FL Limelight"),
       ethernet_front_right_limelight: ethernet.contains("FR Limelight"),
-      ethernet_back_left_limelight: ethernet.contains("BL Limelight"),
       ethernet_back_right_limelight: ethernet.contains("BR Limelight"),
       ethernet_switch: ethernet.contains("Ethernet Switch"),
       ethernet_radio: ethernet.contains("Radio"),

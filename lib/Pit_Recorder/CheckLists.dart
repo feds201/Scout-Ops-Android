@@ -4,6 +4,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:scouting_app/components/CameraComposit.dart';
+import 'package:scouting_app/main.dart';
+import 'package:scouting_app/services/Colors.dart';
 import 'package:scouting_app/services/DataBase.dart';
 import 'package:scouting_app/components/TextBox.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -95,6 +97,7 @@ class _RecordState extends State<Record> {
     return Scaffold(
       appBar: AppBar(
         actions: const [],
+        backgroundColor: islightmode() ? lightColors.white : darkColors.goodblack,
         title: ShaderMask(
             shaderCallback: (bounds) => const LinearGradient(
                   colors: [Colors.red, Colors.blue],

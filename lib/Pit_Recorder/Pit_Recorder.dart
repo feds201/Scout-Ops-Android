@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:scouting_app/Pit_Recorder/Send_Pitdata.dart';
+import 'package:scouting_app/main.dart';
+import 'package:scouting_app/services/Colors.dart';
 import 'package:scouting_app/services/DataBase.dart';
 
 import 'CheckLists.dart';
@@ -127,6 +129,7 @@ class PitRecorderState extends State<PitRecorder> {
                 );
               }),
         ],
+        backgroundColor: islightmode() ? lightColors.white : darkColors.goodblack, 
         title: ShaderMask(
             shaderCallback: (bounds) => const LinearGradient(
                   colors: [Colors.red, Colors.blue],

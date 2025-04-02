@@ -1016,11 +1016,11 @@ class PitChecklistItem {
   bool chassis_tread_conditions = false;
   bool chassis_wires = false;
   bool chassis_bumpers = false;
+  bool chassis_camera = false; 
   bool chassis_limelight_protectors = false;
 
   bool ethernet_front_left_limelight = false;
   bool ethernet_front_right_limelight = false;
-  bool ethernet_back_left_limelight = false;
   bool ethernet_back_right_limelight = false;
   bool ethernet_switch = false; // Changed from ethernet_swtich
   bool ethernet_radio = false;
@@ -1093,12 +1093,12 @@ class PitChecklistItem {
     required this.chassis_steer_motors,
     required this.chassis_gearboxes,
     required this.chassis_tread_conditions,
+    required this.chassis_camera, 
     required this.chassis_wires,
     required this.chassis_bumpers,
     required this.chassis_limelight_protectors,
     required this.ethernet_front_left_limelight,
     required this.ethernet_front_right_limelight,
-    required this.ethernet_back_left_limelight,
     required this.ethernet_back_right_limelight,
     required this.ethernet_switch, // Changed from ethernet_swtich
     required this.ethernet_radio,
@@ -1167,7 +1167,7 @@ class PitChecklistItem {
 
   String to_Csv() {
     return '$matchkey,'
-        '$chassis_drive_motors,$chassis_steer_motors,$chassis_gearboxes,$chassis_tread_conditions,$chassis_wires,$chassis_bumpers,$chassis_limelight_protectors,'
+        '$chassis_drive_motors, $chassis_camera, $chassis_steer_motors,$chassis_gearboxes,$chassis_tread_conditions,$chassis_wires,$chassis_bumpers,$chassis_limelight_protectors,'
         '$ethernet_front_left_limelight,$ethernet_front_right_limelight,$ethernet_switch,$ethernet_radio,' // Changed from ethernet_swtich
         '$climber_string,$climber_springs,$climber_gearbox,$climber_motors,$climber_wires,$climber_nuts_and_bolts,$climber_bumper,$climber_reset,$climber_bumper,$climber_clips,'
         '$elevator_rod_of_doom,$elevator_belts,$elevator_stage_0,$elevator_stage_1,$elevator_stage_2,$elevator_chain,$elevator_gearbox, $elevator_string,$elevator_motors,$elevator_wires,$elevator_nuts_and_bolts,'
@@ -1187,11 +1187,11 @@ class PitChecklistItem {
       'chassis_gearboxes': chassis_gearboxes,
       'chassis_tread_conditions': chassis_tread_conditions,
       'chassis_wires': chassis_wires,
+      'chassis_camera': chassis_camera, 
       'chassis_bumpers': chassis_bumpers,
       'chassis_limelight_protectors': chassis_limelight_protectors,
       'ethernet_front_left_limelight': ethernet_front_left_limelight,
       'ethernet_front_right_limelight': ethernet_front_right_limelight,
-      'ethernet_back_left_limelight': ethernet_back_left_limelight,
       'ethernet_back_right_limelight': ethernet_back_right_limelight,
       'ethernet_switch': ethernet_switch, // Changed from ethernet_swtich
       'ethernet_radio': ethernet_radio,
@@ -1265,6 +1265,7 @@ class PitChecklistItem {
         chassis_gearboxes: json['chassis_gearboxes'] ?? false,
         chassis_tread_conditions: json['chassis_tread_conditions'] ?? false,
         chassis_wires: json['chassis_wires'] ?? false,
+        chassis_camera: json['chassi_camera'] ?? false, 
         chassis_bumpers: json['chassis_bumpers'] ?? false,
         chassis_limelight_protectors:
             json['chassis_limelight_protectors'] ?? false,
@@ -1272,8 +1273,6 @@ class PitChecklistItem {
             json['ethernet_front_left_limelight'] ?? false,
         ethernet_front_right_limelight:
             json['ethernet_front_right_limelight'] ?? false,
-        ethernet_back_left_limelight:
-            json['ethernet_back_left_limelight'] ?? false,
         ethernet_back_right_limelight:
             json['ethernet_back_right_limelight'] ?? false,
         ethernet_radio: json['ethernet_radio'] ?? false,

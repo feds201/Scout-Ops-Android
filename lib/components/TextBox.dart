@@ -474,7 +474,7 @@ Widget buildMultiChoiceBox(
     padding: const EdgeInsets.all(8.0),
     child: Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: islightmode() ? lightColors.white : darkColors.goodblack,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -508,6 +508,7 @@ Widget buildMultiChoiceBox(
                     style: GoogleFonts.museoModerno(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
+                      color: islightmode() ? Colors.black : lightColors.white,
                     )),
               ],
             ),
@@ -536,7 +537,7 @@ Widget buildMultiChoiceBox(
                         ),
                       ),
                       selectedColor: const Color.fromARGB(147, 0, 122, 248),
-                      backgroundColor: Colors.grey.shade200,
+                      backgroundColor: islightmode() ? lightColors.white : lightColors.light_grey,
                       selected: selectedValues.contains(choice),
                       side: const BorderSide(color: Colors.black),
                       onSelected: (bool selected) {

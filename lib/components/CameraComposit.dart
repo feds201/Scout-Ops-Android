@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:scouting_app/main.dart';
+import 'package:scouting_app/services/Colors.dart';
 
 class CameraPhotoCapture extends StatefulWidget {
   // Updated callback to handle multiple photos
@@ -169,7 +171,7 @@ class _CameraPhotoCaptureState extends State<CameraPhotoCapture>
     if (_loadingInitialImages) {
       return Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: islightmode() ? lightColors.white : lightColors.light_grey,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
@@ -194,7 +196,7 @@ class _CameraPhotoCaptureState extends State<CameraPhotoCapture>
                   style: GoogleFonts.museoModerno(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: Colors.grey,
+                    color: islightmode() ? Colors.grey[600] : lightColors.white,
                   ),
                 ),
               ],
@@ -209,7 +211,7 @@ class _CameraPhotoCaptureState extends State<CameraPhotoCapture>
               textAlign: TextAlign.center,
               style: GoogleFonts.museoModerno(
                 fontSize: 14,
-                color: Colors.grey.shade600,
+                color: islightmode() ? Colors.grey.shade600 : lightColors.white,
               ),
             ),
           ],
@@ -219,7 +221,7 @@ class _CameraPhotoCaptureState extends State<CameraPhotoCapture>
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: islightmode() ? lightColors.white : darkColors.goodblack,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -253,7 +255,7 @@ class _CameraPhotoCaptureState extends State<CameraPhotoCapture>
                   "${_images.length}/${widget.maxPhotos} photos",
                   style: GoogleFonts.museoModerno(
                     fontSize: 12,
-                    color: Colors.grey.shade600,
+                    color: islightmode() ? Colors.grey[600] : lightColors.white,
                   ),
                 ),
             ],
@@ -264,6 +266,7 @@ class _CameraPhotoCaptureState extends State<CameraPhotoCapture>
             style: GoogleFonts.museoModerno(
               fontSize: 20,
               fontWeight: FontWeight.bold,
+              color: islightmode() ? Colors.grey[600] : lightColors.white,
             ),
           ),
           const SizedBox(height: 16),
@@ -324,7 +327,8 @@ class _CameraPhotoCaptureState extends State<CameraPhotoCapture>
               width: double.infinity,
               height: 120,
               decoration: BoxDecoration(
-                color: Colors.grey[200],
+                color:
+                    islightmode() ? lightColors.white : lightColors.light_grey,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Colors.grey.shade300),
               ),
@@ -341,7 +345,9 @@ class _CameraPhotoCaptureState extends State<CameraPhotoCapture>
                     Text(
                       "No photos yet",
                       style: TextStyle(
-                        color: Colors.grey[600],
+                        color: islightmode()
+                            ? Colors.grey[600]
+                            : lightColors.white,
                         fontSize: 14,
                       ),
                     ),
@@ -370,6 +376,7 @@ class _CameraPhotoCaptureState extends State<CameraPhotoCapture>
                 _images.isEmpty ? "Take Photo" : "Take Another Photo",
                 style: GoogleFonts.museoModerno(
                   fontWeight: FontWeight.bold,
+                  color: islightmode() ? Colors.grey[600] : lightColors.white,
                 ),
               ),
               style: ElevatedButton.styleFrom(
