@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:scouting_app/main.dart';
-import 'package:scouting_app/services/Colors.dart';
 
 class MatchInfo extends StatelessWidget {
   final String assignedTeam;
