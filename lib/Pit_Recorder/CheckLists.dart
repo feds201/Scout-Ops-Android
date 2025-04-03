@@ -29,7 +29,7 @@ class _RecordState extends State<Record> {
   late String DrivetrainController;
   late String AutonController;
   late List<String> ScoreTypeController;
-  late String IntakeController;
+  late List<String> IntakeController;
   late List<String> ClimbTypeController;
   late List<String> ScoreObjectController;
   late bool? hello;
@@ -49,7 +49,7 @@ class _RecordState extends State<Record> {
     DrivetrainController = "";
     AutonController = "";
     ScoreTypeController = [];
-    IntakeController = "";
+    IntakeController = [];
     ClimbTypeController = [];
     ScoreObjectController = [];
     hello = null;
@@ -92,12 +92,13 @@ class _RecordState extends State<Record> {
     } finally {}
   }
 
- @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         actions: const [],
-        backgroundColor: islightmode() ? lightColors.white : darkColors.goodblack,
+        backgroundColor:
+            islightmode() ? lightColors.white : darkColors.goodblack,
         title: ShaderMask(
             shaderCallback: (bounds) => const LinearGradient(
                   colors: [Colors.red, Colors.blue],
@@ -157,13 +158,13 @@ class _RecordState extends State<Record> {
               buildMultiChoiceBox(
                   "Where can they score?",
                   Icon(Icons.star_outline, size: 30, color: Colors.blue),
-                  ["L1", "L2", "L3", "L4", "Barge"],
+                  ["L1", "L2", "L3", "L4", "Barge", "Processor"],
                   ScoreTypeController, (value) {
                 setState(() {
                   ScoreTypeController = value;
                 });
               }),
-              buildChoiceBox(
+              buildMultiChoiceBox(
                   "How do they INTAKE Coral",
                   Icon(Icons.shopping_cart_checkout_outlined,
                       size: 30, color: Colors.green),

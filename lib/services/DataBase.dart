@@ -106,7 +106,7 @@ class PitRecord {
   final String autonType;
   final List<String> scoreObject;
   final List<String> scoreType;
-  final String intake;
+  final List<String> intake;
   final List<String> climbType;
   final String botImage1;
   final String botImage2;
@@ -161,6 +161,23 @@ class PitRecord {
       return [];
     }
 
+    // Parse intake which might also be a string representation of a list
+    List<String> parseIntake() {
+      var intakeData = json['intake'];
+      if (intakeData == null) return [];
+      if (intakeData is List) return List<String>.from(intakeData);
+      if (intakeData is String) {
+        // Parse string representation of list
+        if (intakeData.startsWith('[') && intakeData.endsWith(']')) {
+          String listContent = intakeData.substring(1, intakeData.length - 1);
+          return listContent.isEmpty
+              ? []
+              : listContent.split(', ').map((s) => s.trim()).toList();
+        }
+      }
+      return [];
+    }
+
     return PitRecord(
       teamNumber: json['teamNumber'] ?? 0,
       scouterName: json['scouterName'] ?? '',
@@ -170,8 +187,8 @@ class PitRecord {
       autonType: json['auton'] ?? '',
       scoreType:
           json['scoreType'] is List ? List<String>.from(json['scoreType']) : [],
-      scoreObject: parseScoreObject(),
-      intake: json['intake'] ?? '',
+      scoreObject: List<String>.from(parseScoreObject()),
+      intake: List<String>.from(parseIntake()),
       climbType:
           json['climbType'] is List ? List<String>.from(json['climbType']) : [],
 
