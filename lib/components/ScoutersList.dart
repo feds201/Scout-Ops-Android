@@ -83,7 +83,7 @@ class _ScouterListState extends State<ScouterList>
   void _addScouter() {
     String newName = '';
     Color selectedColor = _avatarColors[Random().nextInt(_avatarColors.length)];
-    IconData selectedIcon = _avatarIcons[Random().nextInt(_avatarIcons.length)];
+    int selectedIconIndex = Random().nextInt(_avatarIcons.length); // Store index instead of IconData
 
     showDialog(
       context: context,
@@ -176,9 +176,10 @@ class _ScouterListState extends State<ScouterList>
                 Wrap(
                   spacing: 12,
                   children: _avatarIcons.map((icon) {
+                    int iconIndex = _avatarIcons.indexOf(icon);
                     return GestureDetector(
                       onTap: () {
-                        selectedIcon = icon;
+                        selectedIconIndex = iconIndex;  // Update index
                       },
                       child: Container(
                         padding: EdgeInsets.all(8),
@@ -220,7 +221,7 @@ class _ScouterListState extends State<ScouterList>
                     Map<String, dynamic> scouter = {
                       'name': newName.trim(),
                       'color': selectedColor.value,
-                      'icon': selectedIcon.codePoint,
+                      'iconIndex': selectedIconIndex,  // Store index instead of codePoint
                     };
 
                     // Create a completely new list with converted data
@@ -235,9 +236,8 @@ class _ScouterListState extends State<ScouterList>
                           'color': _avatarColors[
                                   newList.length % _avatarColors.length]
                               .value,
-                          'icon':
-                              _avatarIcons[newList.length % _avatarIcons.length]
-                                  .codePoint,
+                          'iconIndex':
+                              newList.length % _avatarIcons.length,  // Use index
                         });
                       } else if (item is Map<String, dynamic>) {
                         // Keep existing map
@@ -493,16 +493,12 @@ class _ScouterListState extends State<ScouterList>
                           if (scouter is String) {
                             name = scouter;
                             color = _avatarColors[index % _avatarColors.length];
-                            iconData =
-                                _avatarIcons[index % _avatarIcons.length];
+                            iconData = _avatarIcons[index % _avatarIcons.length];
                           } else if (scouter is Map) {
                             name = scouter['name'] ?? 'Unknown';
-                            color =
-                                Color(scouter['color'] ?? Colors.blue.value);
-                            iconData = IconData(
-                              scouter['icon'] ?? Icons.person.codePoint,
-                              fontFamily: 'MaterialIcons',
-                            );
+                            color = Color(scouter['color'] ?? Colors.blue.value);
+                            int iconIndex = scouter['iconIndex'] ?? 0;  // Retrieve index
+                            iconData = _avatarIcons[iconIndex % _avatarIcons.length];  // Use constant list
                           } else {
                             // Fallback for unexpected data type
                             name = "Scouter ${index + 1}";

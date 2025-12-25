@@ -38,6 +38,21 @@ class MatchPageState extends State<MatchPage>
       duration: const Duration(milliseconds: 400),
       vsync: this,
     );
+    // Load default data on init
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadDefaultDataIfNeeded();
+    });
+  }
+
+  Future<void> _loadDefaultDataIfNeeded() async {
+    try {
+      String jsonString = await DefaultAssetBundle.of(context).loadString('assets/response.json');
+      var defaultData = jsonDecode(jsonString);
+      Hive.box('matchData').put('matches', defaultData);
+      setState(() {}); // Trigger rebuild to show the loaded data
+    } catch (e) {
+      print('Error loading default match data: $e');
+    }
   }
 
   @override
@@ -51,6 +66,10 @@ class MatchPageState extends State<MatchPage>
   Widget build(BuildContext context) {
     var data = Hive.box('matchData').get('matches');
     if (data == null) {
+      // Load default data from assets
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _loadDefaultDataIfNeeded();
+      });
       return Scaffold(
         appBar: _buildAppBar(),
         body: _buildNoDataView(),
@@ -119,7 +138,7 @@ class MatchPageState extends State<MatchPage>
           ),
           const SizedBox(height: 24),
           Text(
-            'No Match Data Available',
+            'Loading Default Match Data...',
             style: GoogleFonts.museoModerno(
               fontSize: 22,
               fontWeight: FontWeight.w500,
@@ -130,7 +149,7 @@ class MatchPageState extends State<MatchPage>
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 40),
             child: Text(
-              'Please load match data from the TBA',
+              'Default match data is being loaded from assets',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
@@ -576,20 +595,39 @@ class MatchPageState extends State<MatchPage>
   }
 
   void _handleMatchSelection(dynamic match) async {
-    String _scouterName = Hive.box('settings').get('deviceName');
-    String _allianceColor = Hive.box('userData').get('alliance'); 
-    String _station = Hive.box('userData').get('position');
+    String _scouterName = Hive.box('settings').get('deviceName', defaultValue: 'Scout');
+    String _allianceColor = (Hive.box('userData').get('alliance', defaultValue: 'Red') ?? 'Red').toString().trim();
+    String _station = (Hive.box('userData').get('position', defaultValue: '1') ?? '1').toString().trim();
+
+    // Ensure non-empty values
+    if (_allianceColor.isEmpty) _allianceColor = 'Red';
+    if (_station.isEmpty) _station = '1';
 
     // Safely get the team number based on alliance and position
     String teamNNumber;
     try {
-      teamNNumber = match['alliances'][_allianceColor.toLowerCase()]
-          ['team_keys'][int.parse(_station) - 1];
+      if (match == null || match['alliances'] == null) {
+        throw Exception('Match data is invalid or missing alliances');
+      }
+      var allianceData = match['alliances'][_allianceColor.toLowerCase()];
+      if (allianceData == null) {
+        throw Exception('Alliance data is invalid for $_allianceColor');
+      }
+      var teamKeys = allianceData['team_keys'] as List<dynamic>?;
+      if (teamKeys == null || teamKeys.isEmpty) {
+        // Use default team numbers if missing
+        teamKeys = ['frc0000', 'frc0001', 'frc0002'];
+      }
+      int positionIndex = int.parse(_station) - 1;
+      if (positionIndex < 0 || positionIndex >= teamKeys.length) {
+        positionIndex = 0; // Default to first position
+      }
+      teamNNumber = teamKeys[positionIndex].toString();
     } catch (e) {
       // Handle any errors in accessing team keys
       print('Error accessing team keys: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: Unable to determine team number')),
+        SnackBar(content: Text('Error: Unable to determine team number - $e')),
       );
       return;
     }
@@ -602,7 +640,7 @@ class MatchPageState extends State<MatchPage>
           BotLocation(Offset(100, 100), Size(200, 200), 0)),
       TeleOpPoints(0, 0, 0, 0, 0, 0, 0, false),
       EndPoints(false, false, false, ""),
-      teamNumber: teamNNumber.split('frc')[1],
+      teamNumber: teamNNumber.replaceAll('frc', ''),
       scouterName: _scouterName,
       matchKey: match['key'].toString(),
       allianceColor: _allianceColor,
