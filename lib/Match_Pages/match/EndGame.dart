@@ -81,24 +81,19 @@ class EndGameState extends State<EndGame> {
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-              buildCheckBox("Deep Climb", deep_climb, (bool value) {
+              buildCheckBox("FEED", deep_climb, (bool value) {
                 setState(() {
                   deep_climb = value;
                 });
               }),
-              buildCheckBox("Shallow Climb", shallow_climb, (bool value) {
+              buildCheckBox("DEFENSE", shallow_climb, (bool value) {
                 setState(() {
                   shallow_climb = value;
                 });
               }),
             ]),
           ),
-          buildCheckBoxFull("Parked", park, (bool value) {
-            // changed 'parked' to 'park'
-            setState(() {
-              park = value; // changed 'parked' to 'park'
-            });
-          }),
+
           const SizedBox(height: 6),
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
