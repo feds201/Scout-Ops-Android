@@ -1,19 +1,291 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+Widget buildClimbendgame() {
+  return Container(
+    width: 332,
+    height: 329,
+    child: Stack(
+      children: [
+        Positioned(
+          left: 6.18,
+          top: -52.94,
+          child: SizedBox(
+            width: 284.32,
+            height: 29.31,
+            child: Text(
+              'Climb',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 17,
+                fontFamily: 'MuseoModerno',
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          left: 46.71,
+          top: 8.14,
+          child: Container(
+            width: 233.11,
+            height: 30.25,
+            decoration: ShapeDecoration(
+              color: const Color(0xFF616161),
+              shape: RoundedRectangleBorder(
+                side: BorderSide(
+                  width: 2,
+                  strokeAlign: BorderSide.strokeAlignCenter,
+                  color: const Color(0xFFFF0000),
+                ),
+              ),
+              shadows: [
+                BoxShadow(
+                  color: Color(0x3F000000),
+                  blurRadius: 1,
+                  offset: Offset(0, 1),
+                  spreadRadius: 1,
+                )
+              ],
+            ),
+          ),
+        ),
+        Positioned(
+          left: 50.33,
+          top: 124.43,
+          child: Container(
+            width: 229.57,
+            height: 32.14,
+            decoration: ShapeDecoration(
+              color: const Color(0xFF616161),
+              shape: RoundedRectangleBorder(
+                side: BorderSide(
+                  width: 2,
+                  strokeAlign: BorderSide.strokeAlignCenter,
+                  color: const Color(0xFFFF0000),
+                ),
+              ),
+              shadows: [
+                BoxShadow(
+                  color: Color(0x3F000000),
+                  blurRadius: 1,
+                  offset: Offset(0, 1),
+                  spreadRadius: 1,
+                )
+              ],
+            ),
+          ),
+        ),
+        Positioned(
+          left: 50.33,
+          top: 250.53,
+          child: Container(
+            width: 229.57,
+            height: 30.25,
+            decoration: ShapeDecoration(
+              color: const Color(0xFF616161),
+              shape: RoundedRectangleBorder(
+                side: BorderSide(
+                  width: 2,
+                  strokeAlign: BorderSide.strokeAlignOutside,
+                  color: const Color(0xFFFF0000),
+                ),
+              ),
+              shadows: [
+                BoxShadow(
+                  color: Color(0x3F000000),
+                  blurRadius: 1,
+                  offset: Offset(0, 1),
+                  spreadRadius: 1,
+                )
+              ],
+            ),
+          ),
+        ),
+        Positioned(
+          left: 130,
+          top: 7,
+          child: SizedBox(
+            width: 72,
+            height: 29,
+            child: Text(
+              'LEVEL 3',
+              style: TextStyle(
+                color: const Color(0xFFFF0000),
+                fontSize: 15,
+                fontFamily: 'MuseoModerno',
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          left: 133,
+          top: 126,
+          child: SizedBox(
+            width: 69,
+            height: 29,
+            child: Text(
+              'LEVEL 2',
+              style: TextStyle(
+                color: const Color(0xFFFFBB00),
+                fontSize: 15,
+                fontFamily: 'MuseoModerno',
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          left: 135,
+          top: 251,
+          child: SizedBox(
+            width: 64,
+            height: 30,
+            child: Text(
+              'LEVEL 1',
+              style: TextStyle(
+                color: const Color(0xFF00FF08),
+                fontSize: 15,
+                fontFamily: 'MuseoModerno',
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          left: 265.02,
+          top: 6.70,
+          child: Container(
+            width: 66.98,
+            height: 33.96,
+            decoration: ShapeDecoration(
+              color: const Color(0xFFC06900),
+              shape: RoundedRectangleBorder(
+                side: BorderSide(
+                  width: 2,
+                  strokeAlign: BorderSide.strokeAlignCenter,
+                  color: const Color(0xFFFB0000),
+                ),
+                borderRadius: BorderRadius.circular(17),
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          left: -5.76,
+          top: 6.70,
+          child: Container(
+            width: 66.98,
+            height: 33.96,
+            decoration: ShapeDecoration(
+              color: const Color(0xFFC06900),
+              shape: RoundedRectangleBorder(
+                side: BorderSide(
+                  width: 2,
+                  strokeAlign: BorderSide.strokeAlignCenter,
+                  color: const Color(0xFFFB0000),
+                ),
+                borderRadius: BorderRadius.circular(17),
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          left: 265.02,
+          top: 123.18,
+          child: Container(
+            width: 66.98,
+            height: 33.96,
+            decoration: ShapeDecoration(
+              color: const Color(0xFFC06900),
+              shape: RoundedRectangleBorder(
+                side: BorderSide(
+                  width: 2,
+                  strokeAlign: BorderSide.strokeAlignCenter,
+                  color: const Color(0xFFFB0000),
+                ),
+                borderRadius: BorderRadius.circular(17),
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          left: -5.76,
+          top: 123.18,
+          child: Container(
+            width: 66.98,
+            height: 33.96,
+            decoration: ShapeDecoration(
+              color: const Color(0xFFC06900),
+              shape: RoundedRectangleBorder(
+                side: BorderSide(
+                  width: 2,
+                  strokeAlign: BorderSide.strokeAlignCenter,
+                  color: const Color(0xFFFB0000),
+                ),
+                borderRadius: BorderRadius.circular(17),
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          left: 265,
+          top: 249,
+          child: Container(
+            width: 66.98,
+            height: 33.96,
+            decoration: ShapeDecoration(
+              color: const Color(0xFFC06900),
+              shape: RoundedRectangleBorder(
+                side: BorderSide(
+                  width: 2,
+                  strokeAlign: BorderSide.strokeAlignCenter,
+                  color: const Color(0xFFFB0000),
+                ),
+                borderRadius: BorderRadius.circular(17),
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          left: -5.76,
+          top: 249.49,
+          child: Container(
+            width: 66.98,
+            height: 33.96,
+            decoration: ShapeDecoration(
+              color: const Color(0xFFC06900),
+              shape: RoundedRectangleBorder(
+                side: BorderSide(
+                  width: 2,
+                  strokeAlign: BorderSide.strokeAlignCenter,
+                  color: const Color(0xFFFB0000),
+                ),
+                borderRadius: BorderRadius.circular(17),
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+
 class Climb extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         Container(
-          width: 376,
-          height: 348,
+          width: 400,
+          height: 500,
           child: Stack(
             children: [
               Positioned(
-                left: -14,
-                top: -52,
+                left: 10,
+                top: -5,
                 child: SizedBox(
                   width: 322,
                   height: 31,
