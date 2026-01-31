@@ -28,9 +28,9 @@ class AutonState extends State<Auton> {
   // late BotLocation startingBotLocations;
   late String winAfterAuton;
   late double shootingTime;
-
+  double finalTime = 0;
   late AutonPoints autonPoints;
-
+  late int amount = 0;
   late String assignedTeam;
   late int assignedStation;
   late String matchKey;
@@ -59,9 +59,10 @@ class AutonState extends State<Auton> {
     autoClimb = widget.matchRecord.autonPoints.climb;
     winAfterAuton = widget.matchRecord.autonPoints.winAfterAuton;
     shootingTime = widget.matchRecord.autonPoints.total_shooting_time;
+    amount = widget.matchRecord.autonPoints.amountOfShooting;
     left_startingLocation = false;
 
-    autonPoints = AutonPoints(depot, outPost, zone, shootingTime, autoClimb,
+    autonPoints = AutonPoints(depot, outPost, zone, shootingTime, amount, autoClimb,
         winAfterAuton, left_startingLocation);
   }
 
@@ -73,6 +74,7 @@ class AutonState extends State<Auton> {
       outPost,
       zone,
       shootingTime,
+      amount,
       autoClimb,
       winAfterAuton,
       left_startingLocation,
@@ -86,6 +88,7 @@ class AutonState extends State<Auton> {
     widget.matchRecord.autonPoints.fuel_pickup_from_Outpost = outPost;
     widget.matchRecord.autonPoints.fuel_pickup_from_Neutral_Zone = zone;
     widget.matchRecord.autonPoints.total_shooting_time = shootingTime;
+    widget.matchRecord.autonPoints.amountOfShooting = amount;
     widget.matchRecord.autonPoints.winAfterAuton = winAfterAuton;
     widget.matchRecord.autonPoints.climb = autoClimb;
     // widget.matchRecord.autonPoints.starting_location = startingBotLocations;
@@ -134,13 +137,21 @@ class AutonState extends State<Auton> {
             UpdateData();
           }),
           Image.asset('assets/2026/BlueAlliance_StartPosition.png'),
-          buildTklKeyboard(context, (double time) {
-            setState(() {
-              shootingTime = time;
-            });
-            UpdateData();
-            print(time);
-          }, shootingTime),
+          TklKeyboard(
+            currentTime: finalTime,
+            onChange: (double time) {
+              setState(() {
+                finalTime = time;
+              });
+
+
+            },
+            doChange: (){
+              shootingTime += finalTime;
+              amount++;
+              UpdateData();
+          },
+          ),
           buildCounterShelf([
             CounterSettings((number) {
               print(number);

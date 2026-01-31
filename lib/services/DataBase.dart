@@ -673,6 +673,7 @@ class AutonPoints {
   bool fuel_pickup_from_Neutral_Zone = false;
   bool left_starting_position = false;
   double total_shooting_time = 0;
+  int amountOfShooting = 0;
   bool climb = false;
   String winAfterAuton = "";
   // BotLocation starting_location;
@@ -682,6 +683,7 @@ class AutonPoints {
     this.fuel_pickup_from_Outpost,
     this.fuel_pickup_from_Neutral_Zone,
     this.total_shooting_time,
+    this.amountOfShooting,
     this.climb,
     this.winAfterAuton,
     // this.starting_location,
@@ -702,7 +704,7 @@ class AutonPoints {
   }
 
   String toCsv() {
-    return '${fuel_pickup_from_Depot},${fuel_pickup_from_Outpost},${fuel_pickup_from_Neutral_Zone},${total_shooting_time},${climb},${winAfterAuton}}';
+    return '${fuel_pickup_from_Depot},${fuel_pickup_from_Outpost},${fuel_pickup_from_Neutral_Zone},${total_shooting_time},${amountOfShooting},${climb},${winAfterAuton}}';
   }
 
   static AutonPoints fromJson(Map<String, dynamic> json) {
@@ -711,6 +713,7 @@ class AutonPoints {
       json['FuelPickUpFromOutpost'] ?? false,
       json['FuelPickUpFromNeutralZone'] ?? false,
       json['TotalShootingTime'] ?? 0,
+      json["Amount of Shooting"] ?? 0,
       json['Climb'] ?? false,
       json['WinAfterAuton'] ?? "",
       // BotLocation.fromJson(
@@ -960,6 +963,7 @@ class LocalDataBase {
       data['FuelPickUpFromOutpost'] ?? false,
       data['FuelPickUpFromNeutralZone'] ?? false,
       data['TotalShootingTime'] ?? 0,
+      data['aMOUNT OF SHOOTING'] ?? 0,
       data['Climb'] ?? false,
       data['WinAfterAuton'] ?? "",
       data['RobotLocation'] ?? Offset.zero,

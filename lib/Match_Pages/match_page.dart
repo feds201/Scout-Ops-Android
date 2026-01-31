@@ -644,7 +644,7 @@ class MatchPageState extends State<MatchPage>
     int batteryPercentage = await _getBatteryPercentage();
 
     MatchRecord matchRecord = MatchRecord(
-      AutonPoints(false, false, false, 0.0, false, "", false),
+      AutonPoints(false, false, false, 0.0,0, false, "", false),
       TeleOpPoints(0, 0, 0, 0, 0, 0, 0, false),
       EndPoints(false, false, false, ""),
       teamNumber: teamNNumber.replaceAll('frc', ''),
