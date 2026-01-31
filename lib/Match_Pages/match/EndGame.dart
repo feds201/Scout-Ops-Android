@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:scouting_app/components/CheckBox.dart';
 import 'package:scouting_app/components/QrGenerator.dart';
-import 'package:scouting_app/components/gameSpecifics/ClimbV2.dart';
+import 'package:scouting_app/components/gameSpecifics/Climb.dart';
 import 'package:scouting_app/main.dart';
 import '../../components/slider.dart';
 import '../../services/DataBase.dart';
 import 'package:scouting_app/components/CounterShelf.dart';
-import 'package:scouting_app/components/gameSpecifics/ClimbendgameV1.dart';
 
 
 class EndGame extends StatefulWidget {
@@ -106,11 +105,10 @@ class EndGameState extends State<EndGame> {
           });}, color: Colors.amber, ),
           const SizedBox(height: 6),
 
-          buildClimbendgame(),
+
           buildClimbImage(),
-          // const SizedBox(height: 8),  // spacing before Climb
-          // Climb(),                     // <-- remove `const` here
-          // const SizedBox(height: 8),  // spacing after Climb
+
+
 
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
