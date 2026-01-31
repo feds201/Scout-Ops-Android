@@ -2,7 +2,6 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:scouting_app/main.dart';
 
-
 Widget buildCheckBox(String title, bool value, Function(bool) onChanged,
     {bool IconOveride = false}) {
   return LayoutBuilder(
