@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:scouting_app/components/CheckBox.dart';
 import 'package:scouting_app/components/QrGenerator.dart';
-// import 'package:scouting_app/components/gameSpecifics/Climb.dart';
+import 'package:scouting_app/components/gameSpecifics/climb.dart';
 import 'package:scouting_app/main.dart';
 import '../../components/slider.dart';
 import '../../services/DataBase.dart';
@@ -19,6 +19,7 @@ class EndGameState extends State<EndGame> {
   late bool deep_climb;
   late bool shallow_climb;
   late bool park;
+  int? selectedLevel;
 
   late EndPoints endPoints;
 
@@ -44,6 +45,13 @@ class EndGameState extends State<EndGame> {
     deep_climb = widget.matchRecord.endPoints.Deep_Climb;
     shallow_climb = widget.matchRecord.endPoints.Shallow_Climb;
     park = widget.matchRecord.endPoints.Park;
+    if (deep_climb) {
+      selectedLevel = 3;
+    } else if (shallow_climb) {
+      selectedLevel = 2;
+    } else {
+      selectedLevel = null;
+    }
     commentController.text = widget.matchRecord.endPoints.Comments;
     neutralTrips = 0;
 
@@ -52,6 +60,8 @@ class EndGameState extends State<EndGame> {
   }
 
   void UpdateData() {
+    deep_climb = selectedLevel == 3;
+    shallow_climb = selectedLevel == 2;
     endPoints =
         EndPoints(deep_climb, shallow_climb, park, commentController.text);
     widget.matchRecord.endPoints.Deep_Climb = deep_climb;
@@ -108,7 +118,16 @@ class EndGameState extends State<EndGame> {
             },
             color: Colors.amber,
           ),
-          // buildClimbImage(),
+          
+          buildClimbImage(selectedLevel, park, (int? newLevel) {
+            setState(() {
+              selectedLevel = newLevel;
+            });
+            park = newLevel == null;
+          },
+          ),
+          
+          
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
