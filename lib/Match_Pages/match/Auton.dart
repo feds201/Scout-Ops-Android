@@ -10,6 +10,7 @@ import 'package:scouting_app/components/gameSpecifics/winAfterAuton.dart';
 import '../../components/TeamInfo.dart';
 import '../../components/gameSpecifics/timer.dart';
 import '../../services/DataBase.dart';
+// import '../../components/gameSpecifics/PhaseSelection.dart';
 
 class Auton extends StatefulWidget {
   final MatchRecord matchRecord;
@@ -129,13 +130,30 @@ class AutonState extends State<Auton> {
             },
           ),
           ScouterList(),
+
+          Image.asset('assets/2026/BlueAlliance_StartPosition.png'),
           buildCheckBoxFull("Leave", left_startingLocation, (bool value) {
             setState(() {
               left_startingLocation = value;
             });
             UpdateData();
           }),
-          Image.asset('assets/2026/BlueAlliance_StartPosition.png'),
+          Row(
+            children: [
+              buildCheckBox("Depot", depot, (bool value) {
+                setState(() {
+                  depot = value;
+                });
+                UpdateData();
+              }),
+              buildCheckBox("Outpost", outPost, (bool value) {
+                setState(() {
+                  outPost = value;
+                });
+                UpdateData();
+              }),
+            ],
+          ),
           TklKeyboard(
             currentTime: shootingTime,
             onChange: (double time) {
@@ -168,22 +186,7 @@ class AutonState extends State<Auton> {
                 counterText: 'Total Shooting Cycles',
                 color: Colors.black12)
           ]),
-          Row(
-            children: [
-              buildCheckBox("Depot", depot, (bool value) {
-                setState(() {
-                  depot = value;
-                });
-                UpdateData();
-              }),
-              buildCheckBox("Outpost", outPost, (bool value) {
-                setState(() {
-                  outPost = value;
-                });
-                UpdateData();
-              }),
-            ],
-          ),
+
           buildCheckBoxFull("Grabbed Balls From Neutral Zone", zone,
               (bool value) {
             setState(() {
@@ -191,18 +194,24 @@ class AutonState extends State<Auton> {
             });
             UpdateData();
           }),
-          buildHelloWorld(context, (String winner) {
-            setState(() {
-              winAfterAuton = winner;
-            });
-            UpdateData();
-          }),
+
           buildCheckBoxFull("Climb", autoClimb, (bool value) {
             setState(() {
               autoClimb = value;
             });
             UpdateData();
           }),
+
+          buildWinner(context, (String winner) {
+            setState(() {
+              winAfterAuton = winner;
+            });
+            UpdateData();
+          }),
+
+          // buildPhaseSele(context, (int shift) {
+          //
+          // })
         ],
       ),
     );

@@ -3,6 +3,7 @@ import 'package:scouting_app/components/CheckBox.dart';
 import 'package:scouting_app/components/CommentBox.dart';
 import 'package:scouting_app/components/CounterShelf.dart';
 import 'package:scouting_app/main.dart';
+import '../../components/gameSpecifics/PhaseSelection.dart';
 
 import '../../services/DataBase.dart';
 
@@ -96,8 +97,12 @@ class _TeleOperatedState extends State<TeleOperated> {
   Widget build(BuildContext context) {
     // print(LocalDataBase.getData('Settings.apiKey'));
     return SingleChildScrollView(
+
       child: Column(
         children: [
+          buildPhaseSele(context, (int shift) {
+
+          }),
           buildComments(
             "Coral Scoring",
             [
