@@ -50,7 +50,7 @@ Widget buildPhaseSele(BuildContext context, Function(int shift) onclick) {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(17)),
                   ),
                   child: Center(
-                    child: Text('1', style: TextStyle(color: Colors.black.withOpacity(0.47), fontSize: 58)),
+                    child: Text('A1', style: TextStyle(color: Colors.black.withOpacity(0.47), fontSize: 58)),
                   ),
                 ),
               ),
@@ -71,7 +71,7 @@ Widget buildPhaseSele(BuildContext context, Function(int shift) onclick) {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(17)),
                   ),
                   child: Center(
-                    child: Text('2', style: TextStyle(color: Colors.black.withOpacity(0.47), fontSize: 58)),
+                    child: Text('I1', style: TextStyle(color: Colors.black.withOpacity(0.47), fontSize: 58)),
                   ),
                 ),
               ),
@@ -92,7 +92,7 @@ Widget buildPhaseSele(BuildContext context, Function(int shift) onclick) {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(17)),
                   ),
                   child: Center(
-                    child: Text('1', style: TextStyle(color: Colors.black.withOpacity(0.47), fontSize: 58)),
+                    child: Text('A2', style: TextStyle(color: Colors.black.withOpacity(0.47), fontSize: 58)),
                   ),
                 ),
               ),
@@ -113,7 +113,7 @@ Widget buildPhaseSele(BuildContext context, Function(int shift) onclick) {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(17)),
                   ),
                   child: Center(
-                    child: Text('2', style: TextStyle(color: Colors.black.withOpacity(0.47), fontSize: 58)),
+                    child: Text('I2', style: TextStyle(color: Colors.black.withOpacity(0.47), fontSize: 58)),
                   ),
                 ),
               ),

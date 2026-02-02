@@ -10,7 +10,7 @@ import 'package:scouting_app/components/gameSpecifics/winAfterAuton.dart';
 import '../../components/TeamInfo.dart';
 import '../../components/gameSpecifics/timer.dart';
 import '../../services/DataBase.dart';
-// import '../../components/gameSpecifics/PhaseSelection.dart';
+import '../../components/gameSpecifics/heatmap.dart';
 
 class Auton extends StatefulWidget {
   final MatchRecord matchRecord;
@@ -36,6 +36,8 @@ class AutonState extends State<Auton> {
   late String matchKey;
   late String allianceColor;
   late int matchNumber;
+  late Alliance mapcolor;
+  final GlobalKey<FieldHeatmapWidgetState> _heatmapKey = GlobalKey();
 
   @override
   void initState() {
@@ -49,6 +51,11 @@ class AutonState extends State<Auton> {
     assignedStation = widget.matchRecord.station;
     matchKey = widget.matchRecord.matchKey;
     allianceColor = widget.matchRecord.allianceColor;
+    if (allianceColor == "Blue"){
+      mapcolor = Alliance.blue;
+    } else if (allianceColor == "Red"){
+      mapcolor = Alliance.red;
+    }
     matchNumber = widget.matchRecord.matchNumber;
     // startingBotLocations = BotLocation(Offset(200, 200), Size(2000, 2000), 45);
     left_startingLocation =
@@ -130,8 +137,23 @@ class AutonState extends State<Auton> {
             },
           ),
           ScouterList(),
+          Container(
+            child: FieldHeatmapWidget(
+              key: _heatmapKey,
+              blueAllianceImagePath: 'assets/2026/BlueAlliance_StartPosition.png',
+              redAllianceImagePath: 'assets/2026/RedAlliance_StartPosition.png',
+              alliance: mapcolor,
+              onPointsChanged: (count) {
+                // Optional: Get notified when points are added
+                print('Points: $count');
+              },
+              onClear: () {
+                // Optional: Get notified when cleared
+                // print('Heatmap cleared');
+              },
+            ),
+          ),
 
-          Image.asset('assets/2026/BlueAlliance_StartPosition.png'),
           buildCheckBoxFull("Leave", left_startingLocation, (bool value) {
             setState(() {
               left_startingLocation = value;
@@ -209,9 +231,7 @@ class AutonState extends State<Auton> {
             UpdateData();
           }),
 
-          // buildPhaseSele(context, (int shift) {
-          //
-          // })
+
         ],
       ),
     );
