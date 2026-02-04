@@ -12,7 +12,7 @@ Widget buildClimbImage(int? selectedLevel, bool park, ValueChanged<int?> onLevel
       padding: const EdgeInsets.all(15.0),
       child: Container(
           height: 425,
-          width:  double.infinity,
+          width:  550,
           decoration: BoxDecoration(
               color: const Color(0xFF222222),
               borderRadius: BorderRadius.circular(25)

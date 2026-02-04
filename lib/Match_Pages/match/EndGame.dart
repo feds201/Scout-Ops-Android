@@ -119,7 +119,6 @@ class EndGameState extends State<EndGame> {
             },
             color: Colors.amber,
           ),
-
           buildClimbImage(selectedLevel, park, (int? newLevel) {
             setState(() {
               selectedLevel = newLevel;
