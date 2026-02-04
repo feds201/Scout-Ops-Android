@@ -56,7 +56,7 @@ class NavBar extends StatelessWidget {
                       color: islightmode()
                           ? const Color.fromARGB(255, 255, 255, 255)
                           : invertColor(
-                              const Color.fromARGB(255, 255, 255, 255)),
+                          const Color.fromARGB(255, 255, 255, 255)),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -147,7 +147,7 @@ class NavBar extends StatelessWidget {
       {required IconData icon, required String title, required Widget page}) {
     return ListTile(
       contentPadding:
-          const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       leading: ShaderMask(
         shaderCallback: (bounds) => const LinearGradient(
           colors: [Colors.red, Colors.blue],

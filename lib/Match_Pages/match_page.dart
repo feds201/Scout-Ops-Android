@@ -12,6 +12,7 @@ import 'package:scouting_app/components/ScoutersList.dart';
 import 'package:scouting_app/home_page.dart';
 import 'package:scouting_app/main.dart';
 
+import '../components/nav.dart';
 import '../services/Colors.dart';
 import '../services/DataBase.dart';
 import 'match.dart';
@@ -57,36 +58,45 @@ class MatchPageState extends State<MatchPage>
   }
 
   @override
-  void dispose() {
-    _animationController.dispose();
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     var data = Hive.box('matchData').get('matches');
+
+    // Horizontal NavBar will replace AppBar
+    final navBar = const NavBar();
+
+    Widget mainContent;
     if (data == null) {
       // Load default data from assets
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _loadDefaultDataIfNeeded();
       });
-      return Scaffold(
-        appBar: _buildAppBar(),
-        body: _buildNoDataView(),
+      mainContent = _buildNoDataView();
+    } else {
+      mainContent = matchSelection(
+        context,
+        selectedMatchType,
+            (int index) {
+          setState(() {
+            selectedMatchType = index;
+            _animationController.reset();
+            _animationController.forward();
+          });
+        },
+        jsonEncode(data),
       );
     }
+
     return Scaffold(
-      appBar: _buildAppBar(),
-      body: matchSelection(context, selectedMatchType, (int index) {
-        setState(() {
-          selectedMatchType = index;
-          _animationController.reset();
-          _animationController.forward();
-        });
-      }, jsonEncode(data)),
+      // Remove appBar
+      body: Column(
+        children: [
+          navBar,               // Horizontal NavBar at top
+          Expanded(child: mainContent),  // Rest of your page content
+        ],
+      ),
     );
   }
+
 
   AppBar _buildAppBar() {
     return AppBar(
