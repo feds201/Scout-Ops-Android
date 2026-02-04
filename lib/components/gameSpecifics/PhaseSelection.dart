@@ -19,17 +19,17 @@ Widget buildPhaseSele(BuildContext context, Function(int shift) onclick) {
               left: 15,
               top: 66,
               child: TextButton(
-                onPressed: () => onclick(0), // Passing 0 for T
+                onPressed: () => onclick(0),  // Passing 0 for T
                 style: TextButton.styleFrom(padding: EdgeInsets.zero),
                 child: Container(
                   width: 103,
                   height: 191,
                   decoration: ShapeDecoration(
-                    color: const Color(0xFFE5623A),
+                    color: const Color(0xFFE5623A).withOpacity(0.5),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(17)),
                   ),
                   child: Center(
-                    child: Text('T', style: TextStyle(color: Colors.black.withOpacity(0.47), fontSize: 97)),
+                    child: Text('Transition', style: TextStyle(color: Colors.black, fontSize: 26), textAlign: TextAlign.center),
                   ),
                 ),
               ),
@@ -46,11 +46,11 @@ Widget buildPhaseSele(BuildContext context, Function(int shift) onclick) {
                   width: 125,
                   height: 88,
                   decoration: ShapeDecoration(
-                    color: const Color(0xFF4F7835),
+                    color: const Color(0xFF4F7835).withOpacity(0.5),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(17)),
                   ),
                   child: Center(
-                    child: Text('A1', style: TextStyle(color: Colors.black.withOpacity(0.47), fontSize: 58)),
+                    child: Text('Active 1', style: TextStyle(color: Colors.black, fontSize: 38)),
                   ),
                 ),
               ),
@@ -67,11 +67,11 @@ Widget buildPhaseSele(BuildContext context, Function(int shift) onclick) {
                   width: 125,
                   height: 88,
                   decoration: ShapeDecoration(
-                    color: const Color(0xFF4F7835),
+                    color: const Color(0xFF4F7835).withOpacity(0.5),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(17)),
                   ),
                   child: Center(
-                    child: Text('I1', style: TextStyle(color: Colors.black.withOpacity(0.47), fontSize: 58)),
+                    child: Text('Active 2', style: TextStyle(color: Colors.black, fontSize: 38)),
                   ),
                 ),
               ),
@@ -88,11 +88,11 @@ Widget buildPhaseSele(BuildContext context, Function(int shift) onclick) {
                   width: 125,
                   height: 88,
                   decoration: ShapeDecoration(
-                    color: const Color(0xFFE7B462),
+                    color: const Color(0xFFE7B462).withOpacity(0.5),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(17)),
                   ),
                   child: Center(
-                    child: Text('A2', style: TextStyle(color: Colors.black.withOpacity(0.47), fontSize: 58)),
+                    child: Text('Inactive 1', style: TextStyle(color: Colors.black, fontSize: 32)),
                   ),
                 ),
               ),
@@ -109,11 +109,11 @@ Widget buildPhaseSele(BuildContext context, Function(int shift) onclick) {
                   width: 125,
                   height: 88,
                   decoration: ShapeDecoration(
-                    color: const Color(0xFFE7B462),
+                    color: const Color(0xFFE7B462).withOpacity(0.5),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(17)),
                   ),
                   child: Center(
-                    child: Text('I2', style: TextStyle(color: Colors.black.withOpacity(0.47), fontSize: 58)),
+                    child: Text('Inactive 2', style: TextStyle(color: Colors.black, fontSize: 32)),
                   ),
                 ),
               ),

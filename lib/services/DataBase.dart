@@ -766,6 +766,9 @@ class TeleOpPoints {
   int AlgaeScoringBarge = 0;
   int AlgaeScoringProcessor = 0;
   int AlgaePickUp = 0;
+  double TotalShootingTime1 = 0;
+  int TotalAmount1 = 0;
+  int TripAmount1 = 0;
   bool Defense = true;
 
   TeleOpPoints(
@@ -776,6 +779,9 @@ class TeleOpPoints {
     this.AlgaeScoringBarge,
     this.AlgaeScoringProcessor,
     this.AlgaePickUp,
+    this.TotalShootingTime1,
+    this.TotalAmount1,
+    this.TripAmount1,
     this.Defense,
   );
 
@@ -788,12 +794,15 @@ class TeleOpPoints {
       "AlgaeScoringBarge": AlgaeScoringBarge,
       "AlgaeScoringProcessor": AlgaeScoringProcessor,
       "AlgaePickUp": AlgaePickUp,
+      "TotalShootingTime": TotalShootingTime1,
+      "TotalAmount1": TotalAmount1,
+      "TripAmount1": TripAmount1,
       "Defense": Defense,
     };
   }
 
   String toCsv() {
-    return '${CoralScoringLevel1},${CoralScoringLevel2},${CoralScoringLevel3},${CoralScoringLevel4},${AlgaeScoringBarge},${AlgaeScoringProcessor},${AlgaePickUp},${Defense}';
+    return '${CoralScoringLevel1},${CoralScoringLevel2},${CoralScoringLevel3},${CoralScoringLevel4},${AlgaeScoringBarge},${AlgaeScoringProcessor},${AlgaePickUp},${TotalShootingTime1},${TotalAmount1}, ${TripAmount1}, ${Defense}';
   }
 
   static TeleOpPoints fromJson(Map<String, dynamic> json) {
@@ -805,13 +814,16 @@ class TeleOpPoints {
       json['AlgaeScoringBarge'] ?? 0,
       json['AlgaeScoringProcessor'] ?? 0,
       json['AlgaePickUp'] ?? 0,
+      json['TotalShootingTime1'] ?? 0,
+      json['TotalAmount1'] ?? 0,
+      json['TripAmount1'] ?? 0,
       json['Defense'] ?? 0,
     );
   }
 
   @override
   String toString() {
-    return 'TeleOpPoints{CoralScoringLevel1: $CoralScoringLevel1, CoralScoringLevel2: $CoralScoringLevel2, CoralScoringLevel3: $CoralScoringLevel3, CoralScoringLevel4: $CoralScoringLevel4, AlgaeScoringBarge: $AlgaeScoringBarge, AlgaeScoringProcessor: $AlgaeScoringProcessor, Defense: $Defense}';
+    return 'TeleOpPoints{CoralScoringLevel1: $CoralScoringLevel1, CoralScoringLevel2: $CoralScoringLevel2, CoralScoringLevel3: $CoralScoringLevel3, CoralScoringLevel4: $CoralScoringLevel4, AlgaeScoringBarge: $AlgaeScoringBarge, AlgaeScoringProcessor: $AlgaeScoringProcessor, TotalShootingTime1: $TotalShootingTime1, TotalAmount1 $TotalAmount1, TripAmount1 $TripAmount1, Defense: $Defense}';
   }
 
   setCoralScoringL1(int value) {
@@ -836,6 +848,18 @@ class TeleOpPoints {
 
   setAlgaeScoringBarge(int value) {
     AlgaeScoringBarge = value;
+  }
+
+  setTotalShootingTime1(double value){
+    TotalShootingTime1 = value;
+  }
+
+  setTotalAmount1(int value){
+    TotalAmount1 = value;
+  }
+
+  setTripAmount1(int value){
+    TripAmount1 = value;
   }
 
   setDefense(bool value) {
@@ -980,6 +1004,9 @@ class LocalDataBase {
       data['AlgaeScoringProcessor'] ?? 0,
       data['AlgaeScoringBarge'] ?? 0,
       data['AlgaePickUp'] ?? 0,
+      data['TotalShootingTime1'] ?? 0,
+      data['TotalAmount1'] ?? 0,
+      data['TripAmount1'] ?? 0,
       data['Defended'] ?? false,
     );
   }

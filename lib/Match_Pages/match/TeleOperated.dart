@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:scouting_app/components/CheckBox.dart';
 import 'package:scouting_app/components/CommentBox.dart';
 import 'package:scouting_app/components/CounterShelf.dart';
+import 'package:scouting_app/components/gameSpecifics/timer.dart';
 import 'package:scouting_app/main.dart';
 import '../../components/gameSpecifics/PhaseSelection.dart';
 
@@ -23,6 +24,9 @@ class _TeleOperatedState extends State<TeleOperated> {
   late int algaePickUp;
   late int algaeScoringProcessor;
   late int algaeScoringBarge;
+  late double shootingTime1;
+  late int amount1 = 0;
+  late int tripAmount1 = 0;
   late bool defense;
 
   late TeleOpPoints teleOpPoints;
@@ -39,6 +43,9 @@ class _TeleOperatedState extends State<TeleOperated> {
     algaeScoringProcessor =
         widget.matchRecord.teleOpPoints.AlgaeScoringProcessor;
     algaeScoringBarge = widget.matchRecord.teleOpPoints.AlgaeScoringBarge;
+    shootingTime1 = widget.matchRecord.teleOpPoints.TotalShootingTime1;
+    amount1 = widget.matchRecord.teleOpPoints.TotalAmount1;
+    tripAmount1 = widget.matchRecord.teleOpPoints.TripAmount1;
     defense = widget.matchRecord.teleOpPoints.Defense;
     algaePickUp = widget.matchRecord.teleOpPoints.AlgaePickUp;
 
@@ -50,6 +57,9 @@ class _TeleOperatedState extends State<TeleOperated> {
       algaeScoringBarge,
       algaeScoringProcessor,
       algaePickUp,
+      shootingTime1,
+      amount1,
+      tripAmount1,
       defense,
     );
     // log('TeleOp initialized: $teleOpPoints');
@@ -64,6 +74,9 @@ class _TeleOperatedState extends State<TeleOperated> {
       algaeScoringBarge,
       algaeScoringProcessor,
       algaePickUp,
+      shootingTime1,
+      amount1,
+      tripAmount1,
       defense,
     );
     widget.matchRecord.teleOpPoints.CoralScoringLevel1 = coralScoreL1;
@@ -75,6 +88,9 @@ class _TeleOperatedState extends State<TeleOperated> {
     widget.matchRecord.teleOpPoints.AlgaeScoringBarge = algaeScoringBarge;
     widget.matchRecord.teleOpPoints.AlgaePickUp = algaePickUp;
     widget.matchRecord.teleOpPoints.Defense = defense;
+    widget.matchRecord.teleOpPoints.TotalShootingTime1 = shootingTime1;
+    widget.matchRecord.teleOpPoints.TotalAmount1 = amount1;
+    widget.matchRecord.teleOpPoints.TripAmount1 = tripAmount1;
 
     saveState();
   }
@@ -103,155 +119,56 @@ class _TeleOperatedState extends State<TeleOperated> {
           buildPhaseSele(context, (int shift) {
 
           }),
-          buildComments(
-            "Coral Scoring",
-            [
-              CounterSettings(
-                (int value) {
-                  setState(() {
-                    coralScoreL4++;
-                  });
-                },
-                (int value) {
-                  setState(() {
-                    coralScoreL4--;
-                  });
-                },
-                icon: Icons.cyclone,
-                number: coralScoreL4,
-                counterText: "Level 4",
-                color: Colors.red,
-              ),
-              CounterSettings(
-                (int value) {
-                  setState(() {
-                    coralScoreL3++;
-                  });
-                },
-                (int value) {
-                  setState(() {
-                    coralScoreL3--;
-                  });
-                },
-                icon: Icons.cyclone,
-                number: coralScoreL3,
-                counterText: "Level 3",
-                color: Colors.orange,
-              ),
-              CounterSettings(
-                (int value) {
-                  setState(() {
-                    coralScoreL2++;
-                  });
-                },
-                (int value) {
-                  setState(() {
-                    coralScoreL2--;
-                  });
-                },
-                icon: Icons.cyclone,
-                number: coralScoreL2,
-                counterText: "Level 2",
-                color: Colors.yellow,
-              ),
-              CounterSettings(
-                (int value) {
-                  setState(() {
-                    coralScoreL1++;
-                  });
-                },
-                (int value) {
-                  setState(() {
-                    coralScoreL1--;
-                  });
-                },
-                icon: Icons.cyclone,
-                number: coralScoreL1,
-                counterText: "Level 1",
-                color: Colors.green,
-              ),
-            ],
-            Icon(
-              Icons.emoji_nature_outlined,
-              color: !islightmode()
-                  ? const Color.fromARGB(255, 255, 255, 255)
-                  : const Color.fromARGB(255, 34, 34, 34),
-            ),
+          TklKeyboard(
+            currentTime: shootingTime1,
+            onChange: (double time) {
+              setState(() {
+                shootingTime1 = time;
+              });
+            },
+            doChange: () {
+              amount1++;
+              UpdateData();
+            },
+            doChangenakedversion: () {
+              UpdateData();
+            },
           ),
-          buildComments(
-            "Algae Scoring",
-            [
-              CounterSettings(
-                (int value) {
-                  setState(() {
-                    algaeScoringProcessor++;
-                  });
-                },
-                (int value) {
-                  setState(() {
-                    algaeScoringProcessor--;
-                  });
-                },
-                icon: Icons.wash,
-                number: algaeScoringProcessor,
-                counterText: "Processor",
-                color: Colors.green,
-              ),
-              CounterSettings(
-                (int value) {
-                  setState(() {
-                    algaeScoringBarge++;
-                  });
-                },
-                (int value) {
-                  setState(() {
-                    algaeScoringBarge--;
-                  });
-                },
-                icon: Icons.rice_bowl_outlined,
-                number: algaeScoringBarge,
-                counterText: "Barge",
-                color: Colors.green,
-              ),
-            ],
-            Icon(
-              Icons.add_comment,
-              color: !islightmode()
-                  ? const Color.fromARGB(255, 255, 255, 255)
-                  : const Color.fromARGB(255, 34, 34, 34),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              // Add crossAxisAlignment to align items properly
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // Wrap first child with Expanded to make it responsive
-                Expanded(
-                  flex: 3,
-                  child:
-                      buildCounter("Algae Retrieval", algaePickUp, (int value) {
-                    setState(() {
-                      algaePickUp = value;
-                    });
-                  }, color: Colors.green),
-                ),
-                const SizedBox(width: 8), // Add spacing between widgets
-                // Wrap second child with Expanded
-                Expanded(
-                  flex: 2,
-                  child: buildCheckBox("Defense", defense, (bool value) {
-                    setState(() {
-                      defense = value;
-                    });
-                  }),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+          buildCounterShelf([
+            CounterSettings((number) {
+              setState(() {
+                amount1++;
+                UpdateData();
+              });
+            }, (number) {
+              setState(() {
+                amount1--;
+                UpdateData();
+              });
+            },
+                icon: Icons.import_contacts,
+                number: amount1,
+                counterText: 'Total Shooting Cycles',
+                color: Colors.black12)
+          ]),
+          buildCounterShelf([
+            CounterSettings((number) {
+              setState(() {
+                tripAmount1++;
+                UpdateData();
+              });
+            }, (number) {
+              setState(() {
+                tripAmount1--;
+                UpdateData();
+              });
+            },
+                icon: Icons.import_contacts,
+                number: tripAmount1,
+                counterText: 'Total Trips to Neutral Zone',
+                color: Colors.black12)
+          ]),
+
+    ]));
   }
 }
