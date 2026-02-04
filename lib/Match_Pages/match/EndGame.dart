@@ -119,15 +119,13 @@ class EndGameState extends State<EndGame> {
             },
             color: Colors.amber,
           ),
-
-          // buildClimb(),
-          // buildClimb(selectedLevel, park, (int? newLevel) {
-          //   setState(() {
-          //     selectedLevel = newLevel;
-          //   });
-          //   park = newLevel == null;
-          // },
-          // ),
+          buildClimbImage(selectedLevel, park, (int? newLevel) {
+            setState(() {
+              selectedLevel = newLevel;
+            });
+            park = newLevel == null;
+          },
+          ),
 
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
