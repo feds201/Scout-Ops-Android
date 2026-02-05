@@ -137,17 +137,14 @@ class AutonState extends State<Auton> {
             },
           ),
           ScouterList(),
-          Container(
-            child: SinglePointSelector(
-              key: _tapSelectorKey,
-              blueAllianceImagePath:
-                  'assets/2026/BlueAlliance_StartPosition.png',
-              redAllianceImagePath: 'assets/2026/RedAlliance_StartPosition.png',
-              alliance: mapcolor,
-              onPointSelected: (imageSize, point) {
-                log('Tap at x=${point.dx}, y=${point.dy} on image width=${imageSize.width}, height=${imageSize.height}');
-              },
-            ),
+          SinglePointSelector(
+            key: _tapSelectorKey,
+            blueAllianceImagePath: 'assets/2026/BlueAlliance_StartPosition.png',
+            redAllianceImagePath: 'assets/2026/RedAlliance_StartPosition.png',
+            alliance: mapcolor,
+            onPointSelected: (imageSize, point) {
+              log('Tap at x=${point.dx}, y=${point.dy} on image width=${imageSize.width}, height=${imageSize.height}');
+            },
           ),
           buildCheckBoxFull("Leave", left_startingLocation, (bool value) {
             setState(() {

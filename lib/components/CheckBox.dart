@@ -36,23 +36,42 @@ Widget buildCheckBox(String title, bool value, Function(bool) onChanged,
                       width: double.infinity,
                       height: 100,
                       decoration: BoxDecoration(
-                        color: Colors.transparent,
+                        color: islightmode()
+                            ? const Color.fromARGB(255, 255, 255, 255)
+                            : const Color.fromARGB(255, 34, 34, 34),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Center(
-                          child: value
-                              ? const Icon(
-                                  Icons.check,
-                                  color: Colors.green,
-                                  size: 50,
-                                )
-                              : IconOveride
+                      child: Stack(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              gradient: RadialGradient(
+                                radius: 1.0,
+                                colors: [
+                                  Color.fromARGB(255, 34, 34, 34),
+                                  Colors.black.withOpacity(0.45),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Center(
+                              child: value
                                   ? const Icon(
-                                      Icons.close,
-                                      color: Colors.red,
-                                      size: 50,
+                                      Icons.check_rounded,
+                                      color: Colors.green,
+                                      size: 80,
+                                      weight: 1700,
                                     )
-                                  : const SizedBox.shrink()),
+                                  : IconOveride
+                                      ? const Icon(
+                                          Icons.close,
+                                          color: Colors.red,
+                                          size: 80,
+                                        )
+                                      : const SizedBox.shrink()),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -102,7 +121,6 @@ Widget buildCheckBoxFull(String title, bool value, Function(bool) onChanged,
                   child: DottedBorder(
                     borderType: BorderType.RRect,
                     radius: const Radius.circular(12),
-                    padding: const EdgeInsets.all(6),
                     color: value ? Colors.green : Colors.red,
                     dashPattern: const [8, 4],
                     strokeWidth: 2,
@@ -115,20 +133,37 @@ Widget buildCheckBoxFull(String title, bool value, Function(bool) onChanged,
                             : const Color.fromARGB(255, 34, 34, 34),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Center(
-                          child: value
-                              ? const Icon(
-                                  Icons.check,
-                                  color: Colors.green,
-                                  size: 50,
-                                )
-                              : IconOveride
+                      child: Stack(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              gradient: RadialGradient(
+                                radius: 1.0,
+                                colors: [
+                                  Color.fromARGB(255, 34, 34, 34),
+                                  Colors.black.withOpacity(0.45),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Center(
+                              child: value
                                   ? const Icon(
-                                      Icons.close,
-                                      color: Colors.red,
-                                      size: 50,
+                                      Icons.check_rounded,
+                                      color: Colors.green,
+                                      weight: 1700,
+                                      size: 80,
                                     )
-                                  : const SizedBox.shrink()),
+                                  : IconOveride
+                                      ? const Icon(
+                                          Icons.close,
+                                          color: Colors.red,
+                                          size: 50,
+                                        )
+                                      : const SizedBox.shrink()),
+                        ],
+                      ),
                     ),
                   ),
                 ),
