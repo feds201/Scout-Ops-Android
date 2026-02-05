@@ -120,6 +120,17 @@ class _TeleOperatedState extends State<TeleOperated> {
           buildPhaseSele(context, (int shift) {
 
           }),
+      const Text(
+        '*Hold the timer and let go when the robot stops shooting*',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          color: Colors.yellow,
+          fontStyle: FontStyle.italic,
+          fontSize: 15,
+          fontFamily: 'MuseoModerno',
+          fontWeight: FontWeight.w700,
+        ),
+      ),
           TklKeyboard(
             currentTime: shootingTime1,
             onChange: (double time) {
@@ -139,6 +150,17 @@ class _TeleOperatedState extends State<TeleOperated> {
             doChangenakedversion: () {
               UpdateData();
             },
+          ),
+          const Text(
+            '*Shooting Cycles is updated when the timer button is let go*',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.yellow,
+              fontStyle: FontStyle.italic,
+              fontSize: 15,
+              fontFamily: 'MuseoModerno',
+              fontWeight: FontWeight.w700,
+            ),
           ),
           buildCounterShelf([
             CounterSettings((number) {

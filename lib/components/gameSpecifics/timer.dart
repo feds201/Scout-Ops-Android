@@ -61,8 +61,8 @@ class _TklKeyboardState extends State<TklKeyboard> with AutomaticKeepAliveClient
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
-        height: 450,
-        width: 400,
+        height: 480,
+        width: 420,
         decoration: BoxDecoration(
           color: const Color.fromRGBO(34, 34, 34, 1),
           borderRadius: BorderRadius.circular(25), // Outer rounded edges
@@ -151,7 +151,9 @@ class _TklKeyboardState extends State<TklKeyboard> with AutomaticKeepAliveClient
                   ),
                 ],
               ),
-
+              const SizedBox(
+                height: 20,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -160,12 +162,13 @@ class _TklKeyboardState extends State<TklKeyboard> with AutomaticKeepAliveClient
             onPressed: () {
               _resetStopwatch();
             },
+
             child: Container(
               alignment: Alignment.center,
               width: 140,
               height: 70,
               decoration: const BoxDecoration(
-                  color: Colors.yellow, shape: BoxShape.circle),
+                  color: const Color(0xFFFF69B4), shape: BoxShape.circle),
               child: const Text("RESET",
                   style: TextStyle(color: Colors.black, fontSize: 16)),
             ),
