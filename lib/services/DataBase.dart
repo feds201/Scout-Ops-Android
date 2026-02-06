@@ -759,14 +759,11 @@ class AutonPoints {
 
 // TeleOpPoints
 class TeleOpPoints {
-  int CoralScoringLevel1 = 0;
-  int CoralScoringLevel2 = 0;
-  int CoralScoringLevel3 = 0;
-  int CoralScoringLevel4 = 0;
-  int AlgaeScoringBarge = 0;
-  int AlgaeScoringProcessor = 0;
-  int AlgaePickUp = 0;
   double TotalShootingTime1 = 0;
+  double TotalShootingTimeA1 = 0;
+  double TotalShootingTimeA2 = 0;
+  double TotalShootingTimeI1 = 0;
+  double TotalShootingTimeI2 = 0;
   int TotalAmount1 = 0;
   int TotalAmountA1 = 0;
   int TotalAmountA2 = 0;
@@ -794,23 +791,19 @@ class TeleOpPoints {
   bool passingI1 = false;
   bool passingI2 = false;
 
-
   TeleOpPoints(
-    this.CoralScoringLevel1,
-    this.CoralScoringLevel2,
-    this.CoralScoringLevel3,
-    this.CoralScoringLevel4,
-    this.AlgaeScoringBarge,
-    this.AlgaeScoringProcessor,
-    this.AlgaePickUp,
-    this.TotalShootingTime1,
-    this.TotalAmount1,
-    this.TotalAmountA1,
-    this.TotalAmountA2,
-    this.TotalAmountI1,
-    this.TotalAmountI2,
-    this.TripAmount1,
-    this.Defense,
+      this.TotalShootingTime1,
+      this.TotalShootingTimeA1,
+      this.TotalShootingTimeA2,
+      this.TotalShootingTimeI1,
+      this.TotalShootingTimeI2,
+      this.TotalAmount1,
+      this.TotalAmountA1,
+      this.TotalAmountA2,
+      this.TotalAmountI1,
+      this.TotalAmountI2,
+      this.TripAmount1,
+      this.Defense,
       this.DefenseA1,
       this.DefenseA2,
       this.DefenseI1,
@@ -829,19 +822,15 @@ class TeleOpPoints {
       this.passingA1,
       this.passingA2,
       this.passingI1,
-      this.passingI2
-  );
+      this.passingI2);
 
   Map<String, dynamic> toJson() {
     return {
-      "CoralScoringLevel1": CoralScoringLevel1,
-      "CoralScoringLevel2": CoralScoringLevel2,
-      "CoralScoringLevel3": CoralScoringLevel3,
-      "CoralScoringLevel4": CoralScoringLevel4,
-      "AlgaeScoringBarge": AlgaeScoringBarge,
-      "AlgaeScoringProcessor": AlgaeScoringProcessor,
-      "AlgaePickUp": AlgaePickUp,
-      "TotalShootingTime": TotalShootingTime1,
+      "TotalShootingTime1": TotalShootingTime1,
+      "TotalShootingTimeA1": TotalShootingTimeA1,
+      "TotalShootingTimeA2": TotalShootingTimeA2,
+      "TotalShootingTimeI1": TotalShootingTimeI1,
+      "TotalShootingTimeI2": TotalShootingTimeI2,
       "TotalAmount1": TotalAmount1,
       "TotalAmountA1": TotalAmountA1,
       "TotalAmountA2": TotalAmountA2,
@@ -868,89 +857,78 @@ class TeleOpPoints {
       "passingA2": passingA2,
       "passingI1": passingI1,
       "passingI2": passingI2,
-
     };
   }
 
   String toCsv() {
-    return '${CoralScoringLevel1},${CoralScoringLevel2},${CoralScoringLevel3},${CoralScoringLevel4},${AlgaeScoringBarge},${AlgaeScoringProcessor},${AlgaePickUp},${TotalShootingTime1},${TotalAmount1}, ${TotalAmountA1}, ${TotalAmountA2}, ${TotalAmountI1}, ${TotalAmountI2}, ${TripAmount1}, ${NeutralTrips}, ${NeutralTripsA1}, ${NeutralTripsA2}, ${NeutralTripsI1}, ${NeutralTripsI2}, ${Defense} ${DefenseA1} ${DefenseA2} ${DefenseI1} ${DefenseI2}, ${FeedToHPStation} ${FeedToHPStationA1} ${FeedToHPStationA2} ${FeedToHPStationI1} ${FeedToHPStationI2}, ${passing} ${passingA1} ${passingA2} ${passingI1} ${passingI2}';
+    return '${TotalShootingTime1},${TotalShootingTimeA1},${TotalShootingTimeA2},${TotalShootingTimeI1},${TotalShootingTimeI2},${TotalAmount1}, ${TotalAmountA1}, ${TotalAmountA2}, ${TotalAmountI1}, ${TotalAmountI2}, ${TripAmount1}, ${NeutralTrips}, ${NeutralTripsA1}, ${NeutralTripsA2}, ${NeutralTripsI1}, ${NeutralTripsI2}, ${Defense} ${DefenseA1} ${DefenseA2} ${DefenseI1} ${DefenseI2}, ${FeedToHPStation} ${FeedToHPStationA1} ${FeedToHPStationA2} ${FeedToHPStationI1} ${FeedToHPStationI2}, ${passing} ${passingA1} ${passingA2} ${passingI1} ${passingI2}';
   }
 
   static TeleOpPoints fromJson(Map<String, dynamic> json) {
     return TeleOpPoints(
-      json['CoralScoringLevel1'] ?? 0,
-      json['CoralScoringLevel2'] ?? 0,
-      json['CoralScoringLevel3'] ?? 0,
-      json['CoralScoringLevel4'] ?? 0,
-      json['AlgaeScoringBarge'] ?? 0,
-      json['AlgaeScoringProcessor'] ?? 0,
-      json['AlgaePickUp'] ?? 0,
-      json['TotalShootingTime1'] ?? 0,
+      (json['TotalShootingTime1'] ?? json['TotalShootingTime'] ?? 0).toDouble(),
+      (json['TotalShootingTimeA1'] ?? 0).toDouble(),
+      (json['TotalShootingTimeA2'] ?? 0).toDouble(),
+      (json['TotalShootingTimeI1'] ?? 0).toDouble(),
+      (json['TotalShootingTimeI2'] ?? 0).toDouble(),
       json['TotalAmount1'] ?? 0,
       json['TotalAmountA1'] ?? 0,
       json['TotalAmountA2'] ?? 0,
       json['TotalAmountI1'] ?? 0,
       json['TotalAmountI2'] ?? 0,
       json['TripAmount1'] ?? 0,
-      json['NeutralTrips'] ?? 0,
-      json['NeutralTripsA1'] ?? 0,
-      json['NeutralTripsA2'] ?? 0,
-      json['NeutralTripsI1'] ?? 0,
-      json['NeutralTripsI2'] ?? 0,
-      json['Defense'] ?? 0,
-      json['DefenseA1'] ?? 0,
-      json['DefenseA2'] ?? 0,
-      json['DefenseI1'] ?? 0,
-      json['DefenseI2'] ?? 0,
-      json['FeedToHPStation'] ?? 0,
-      json['FeedToHPStationA1'] ?? 0,
-      json['FeedToHPStationA2'] ?? 0,
-      json['FeedToHPStationI1'] ?? 0,
-      json['FeedToHPStationI2'] ?? 0,
-      json['passing'] ?? 0,
-      json['passingA1'] ?? 0,
-      json['passingA2'] ?? 0,
-      json['passingI1'] ?? 0,
-      json['passingI2'] ?? 0,
+      json['Defense'] ?? false,
+      json['DefenseA1'] ?? false,
+      json['DefenseA2'] ?? false,
+      json['DefenseI1'] ?? false,
+      json['DefenseI2'] ?? false,
+      json['NeutralTrips'] ?? json['NeutralTips'] ?? 0,
+      json['NeutralTripsA1'] ?? json['NeutralTipsA1'] ?? 0,
+      json['NeutralTripsA2'] ?? json['NeutralTipsA2'] ?? 0,
+      json['NeutralTripsI1'] ?? json['NeutralTipsI1'] ?? 0,
+      json['NeutralTripsI2'] ?? json['NeutralTipsI2'] ?? 0,
+      json['FeedToHPStation'] ?? false,
+      json['FeedToHPStationA1'] ?? false,
+      json['FeedToHPStationA2'] ?? false,
+      json['FeedToHPStationI1'] ?? false,
+      json['FeedToHPStationI2'] ?? false,
+      json['passing'] ?? false,
+      json['passingA1'] ?? false,
+      json['passingA2'] ?? false,
+      json['passingI1'] ?? false,
+      json['passingI2'] ?? false,
     );
   }
 
   @override
   String toString() {
-    return 'TeleOpPoints{CoralScoringLevel1: $CoralScoringLevel1, CoralScoringLevel2: $CoralScoringLevel2, CoralScoringLevel3: $CoralScoringLevel3, CoralScoringLevel4: $CoralScoringLevel4, AlgaeScoringBarge: $AlgaeScoringBarge, AlgaeScoringProcessor: $AlgaeScoringProcessor, TotalShootingTime1: $TotalShootingTime1, TotalAmount1 $TotalAmount1, TotalAmountA1 $TotalAmountA1, TotalAmountA2 $TotalAmountA2, TotalAmountI1 $TotalAmountI1, TotalAmountI2 $TotalAmountI2, TripAmount1 $TripAmount1, NeutralTips $NeutralTrips, NeutralTipsA1 $NeutralTripsA1, NeutralTipsA2 $NeutralTripsA2, NeutralTipsI1 $NeutralTripsI1, NeutralTipsI2 $NeutralTripsI2, Defense: $Defense DefenseA1: $DefenseA1, DefenseA2: $DefenseA2, DefenseI1: $DefenseI1, DefenseI2: $DefenseI2, FeedToHPStation: $FeedToHPStation FeedToHPStationA1: $FeedToHPStationA1, FeedToHPStationA2: $FeedToHPStationA2 FeedToHPStationI1: $FeedToHPStationI1, FeedToHPStationI2: $FeedToHPStationI2, passing: $passing, passingA1: $passingA1, passingA2: $passingA2, passingI1: $passingI1 passingI2: $passingI2}';
+    return 'TeleOpPoints{TotalShootingTime1: $TotalShootingTime1, TotalShootingTimeA1: $TotalShootingTimeA1, TotalShootingTimeA2: $TotalShootingTimeA2, TotalShootingTimeI1: $TotalShootingTimeI1, TotalShootingTimeI2: $TotalShootingTimeI2, TotalAmount1 $TotalAmount1, TotalAmountA1 $TotalAmountA1, TotalAmountA2 $TotalAmountA2, TotalAmountI1 $TotalAmountI1, TotalAmountI2 $TotalAmountI2, TripAmount1 $TripAmount1, NeutralTips $NeutralTrips, NeutralTipsA1 $NeutralTripsA1, NeutralTipsA2 $NeutralTripsA2, NeutralTipsI1 $NeutralTripsI1, NeutralTipsI2 $NeutralTripsI2, Defense: $Defense DefenseA1: $DefenseA1, DefenseA2: $DefenseA2, DefenseI1: $DefenseI1, DefenseI2: $DefenseI2, FeedToHPStation: $FeedToHPStation FeedToHPStationA1: $FeedToHPStationA1, FeedToHPStationA2: $FeedToHPStationA2 FeedToHPStationI1: $FeedToHPStationI1, FeedToHPStationI2: $FeedToHPStationI2, passing: $passing, passingA1: $passingA1, passingA2: $passingA2, passingI1: $passingI1 passingI2: $passingI2}';
   }
 
-  setCoralScoringL1(int value) {
-    CoralScoringLevel1 = value;
-  }
-
-  setCoralScoringL2(int value) {
-    CoralScoringLevel2 = value;
-  }
-
-  setCoralScoringL3(int value) {
-    CoralScoringLevel3 = value;
-  }
-
-  setCoralScoringL4(int value) {
-    CoralScoringLevel4 = value;
-  }
-
-  setAlgaeScoringProcessor(int value) {
-    AlgaeScoringProcessor = value;
-  }
-
-  setAlgaeScoringBarge(int value) {
-    AlgaeScoringBarge = value;
-  }
-
-  setTotalShootingTime1(double value){
+  setTotalShootingTime1(double value) {
     TotalShootingTime1 = value;
   }
 
-  setTotalAmount1(int value){
+  setTotalShootingTimeA1(double value) {
+    TotalShootingTimeA1 = value;
+  }
+
+  setTotalShootingTimeA2(double value) {
+    TotalShootingTimeA2 = value;
+  }
+
+  setTotalShootingTimeI1(double value) {
+    TotalShootingTimeI1 = value;
+  }
+
+  setTotalShootingTimeI2(double value) {
+    TotalShootingTimeI2 = value;
+  }
+
+  setTotalAmount1(int value) {
     TotalAmount1 = value;
   }
+
   setTotalAmountA1(int value) {
     TotalAmountA1 = value;
   }
@@ -967,28 +945,27 @@ class TeleOpPoints {
     TotalAmountI2 = value;
   }
 
-
-  setTripAmount1(int value){
+  setTripAmount1(int value) {
     TripAmount1 = value;
   }
 
-  setNeutralTrips(int value){
+  setNeutralTrips(int value) {
     NeutralTrips = value;
   }
 
-  setNeutralTripsA1(int value){
+  setNeutralTripsA1(int value) {
     NeutralTripsA1 = value;
   }
 
-  setNeutralTripsA2(int value){
+  setNeutralTripsA2(int value) {
     NeutralTripsA2 = value;
   }
 
-  setNeutralTripsI1(int value){
+  setNeutralTripsI1(int value) {
     NeutralTripsI1 = value;
   }
 
-  setNeutralTripsI2(int value){
+  setNeutralTripsI2(int value) {
     NeutralTripsI2 = value;
   }
 
@@ -1051,7 +1028,6 @@ class TeleOpPoints {
   setPassingI2(bool value) {
     passingI2 = value;
   }
-
 }
 
 // EndPoints
@@ -1199,7 +1175,11 @@ class LocalDataBase {
       json['AlgaeScoringBarge'] ?? 0,
       json['AlgaeScoringProcessor'] ?? 0,
       json['AlgaePickUp'] ?? 0,
-      (json['TotalShootingTime1'] ?? 0).toDouble(),
+      (json['TotalShootingTime1'] ?? json['TotalShootingTime'] ?? 0).toDouble(),
+      (json['TotalShootingTimeA1'] ?? 0).toDouble(),
+      (json['TotalShootingTimeA2'] ?? 0).toDouble(),
+      (json['TotalShootingTimeI1'] ?? 0).toDouble(),
+      (json['TotalShootingTimeI2'] ?? 0).toDouble(),
       json['TotalAmount1'] ?? 0,
       json['TotalAmountA1'] ?? 0,
       json['TotalAmountA2'] ?? 0,
@@ -1212,13 +1192,6 @@ class LocalDataBase {
       json['DefenseI1'] ?? false,
       json['DefenseI2'] ?? false,
       json['NeutralTrips'] ?? 0,
-      json['NeutralTripsA1'] ?? 0,
-      json['NeutralTripsA2'] ?? 0,
-      json['NeutralTripsI1'] ?? 0,
-      json['NeutralTripsI2'] ?? 0,
-      json['FeedToHPStation'] ?? false,
-      json['FeedToHPStationA1'] ?? false,
-      json['FeedToHPStationA2'] ?? false,
       json['FeedToHPStationI1'] ?? false,
       json['FeedToHPStationI2'] ?? false,
       json['passing'] ?? false,
@@ -1239,7 +1212,6 @@ class LocalDataBase {
       data['EndgameActions'] ?? "",
     );
   }
-
 
   static PitRecord mapToPitRecord(Map<dynamic, dynamic> data) {
     return PitRecord(

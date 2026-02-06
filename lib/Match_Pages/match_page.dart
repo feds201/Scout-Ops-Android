@@ -644,8 +644,39 @@ class MatchPageState extends State<MatchPage>
     int batteryPercentage = await _getBatteryPercentage();
 
     MatchRecord matchRecord = MatchRecord(
-      AutonPoints(false, false, false, 0.0,0, false, "", false),
-      TeleOpPoints(0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0, false,false,false,false,false,0,0,0,0,0, false,false,false,false,false,false,false,false,false,false),
+      AutonPoints(false, false, false, 0.0, 0, false, "", false),
+      TeleOpPoints(
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          false,
+          false,
+          false,
+          false,
+          false,
+          0,
+          0,
+          0,
+          0,
+          0,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false),
       EndPoints(false, false, false, "", 0.0, ""),
       teamNumber: teamNNumber.replaceAll('frc', ''),
       scouterName: _scouterName,
@@ -656,7 +687,6 @@ class MatchPageState extends State<MatchPage>
       eventKey: match['event_key'],
       batteryPercentage: batteryPercentage,
     );
-
 
     Navigator.push(
       context,

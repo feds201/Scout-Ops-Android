@@ -153,7 +153,7 @@ class EndGameState extends State<EndGame> {
               });
               UpdateData(); // Resets the values in your matchRecord
             },
-            doChangenakedversion: () {
+            doChangeNoIncrement : () {
               UpdateData(); // Updates without changing values
             },
           ),

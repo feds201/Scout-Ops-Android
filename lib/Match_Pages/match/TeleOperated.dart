@@ -27,7 +27,11 @@ class _TeleOperatedState extends State<TeleOperated> {
   late int algaeScoringProcessor;
   late int algaeScoringBarge;
   late double shootingTime1;
-  late int amount1 = 0;
+  late double shootingTimeA1;
+  late double shootingTimeA2;
+  late double shootingTimeI1;
+  late double shootingTimeI2;
+  late int amount = 0;
   late int amountA1 = 0;
   late int amountA2 = 0;
   late int amountI1 = 0;
@@ -66,16 +70,12 @@ class _TeleOperatedState extends State<TeleOperated> {
     assignedStation = widget.matchRecord.station;
     matchKey = widget.matchRecord.matchKey;
     allianceColor = widget.matchRecord.allianceColor;
-
-    coralScoreL1 = widget.matchRecord.teleOpPoints.CoralScoringLevel1;
-    coralScoreL2 = widget.matchRecord.teleOpPoints.CoralScoringLevel2;
-    coralScoreL3 = widget.matchRecord.teleOpPoints.CoralScoringLevel3;
-    coralScoreL4 = widget.matchRecord.teleOpPoints.CoralScoringLevel4;
-    algaeScoringProcessor =
-        widget.matchRecord.teleOpPoints.AlgaeScoringProcessor;
-    algaeScoringBarge = widget.matchRecord.teleOpPoints.AlgaeScoringBarge;
     shootingTime1 = widget.matchRecord.teleOpPoints.TotalShootingTime1;
-    amount1 = widget.matchRecord.teleOpPoints.TotalAmount1;
+    shootingTimeA1 = widget.matchRecord.teleOpPoints.TotalShootingTimeA1;
+    shootingTimeA2 = widget.matchRecord.teleOpPoints.TotalShootingTimeA2;
+    shootingTimeI1 = widget.matchRecord.teleOpPoints.TotalShootingTimeI1;
+    shootingTimeI2 = widget.matchRecord.teleOpPoints.TotalShootingTimeI2;
+    amount = widget.matchRecord.teleOpPoints.TotalAmount1;
     amountA1 = widget.matchRecord.teleOpPoints.TotalAmountA1;
     amountA2 = widget.matchRecord.teleOpPoints.TotalAmountA2;
     amountI1 = widget.matchRecord.teleOpPoints.TotalAmountI1;
@@ -102,18 +102,13 @@ class _TeleOperatedState extends State<TeleOperated> {
     passingI1 = widget.matchRecord.teleOpPoints.passingI1;
     passingI2 = widget.matchRecord.teleOpPoints.passingI2;
 
-    algaePickUp = widget.matchRecord.teleOpPoints.AlgaePickUp;
-
     teleOpPoints = TeleOpPoints(
-      coralScoreL1,
-      coralScoreL2,
-      coralScoreL3,
-      coralScoreL4,
-      algaeScoringBarge,
-      algaeScoringProcessor,
-      algaePickUp,
       shootingTime1,
-      amount1,
+      shootingTimeA1,
+      shootingTimeA2,
+      shootingTimeI1,
+      shootingTimeI2,
+      amount,
       amountA1,
       amountA2,
       amountI1,
@@ -145,15 +140,12 @@ class _TeleOperatedState extends State<TeleOperated> {
 
   void UpdateData() {
     teleOpPoints = TeleOpPoints(
-      coralScoreL1,
-      coralScoreL2,
-      coralScoreL3,
-      coralScoreL4,
-      algaeScoringBarge,
-      algaeScoringProcessor,
-      algaePickUp,
       shootingTime1,
-      amount1,
+      shootingTimeA1,
+      shootingTimeA2,
+      shootingTimeI1,
+      shootingTimeI2,
+      amount,
       amountA1,
       amountA2,
       amountI1,
@@ -180,17 +172,14 @@ class _TeleOperatedState extends State<TeleOperated> {
       passingI1,
       passingI2,
     );
-    widget.matchRecord.teleOpPoints.CoralScoringLevel1 = coralScoreL1;
-    widget.matchRecord.teleOpPoints.CoralScoringLevel2 = coralScoreL2;
-    widget.matchRecord.teleOpPoints.CoralScoringLevel3 = coralScoreL3;
-    widget.matchRecord.teleOpPoints.CoralScoringLevel4 = coralScoreL4;
-    widget.matchRecord.teleOpPoints.AlgaeScoringProcessor =
-        algaeScoringProcessor;
-    widget.matchRecord.teleOpPoints.AlgaeScoringBarge = algaeScoringBarge;
-    widget.matchRecord.teleOpPoints.AlgaePickUp = algaePickUp;
+
     widget.matchRecord.teleOpPoints.Defense = defense;
     widget.matchRecord.teleOpPoints.TotalShootingTime1 = shootingTime1;
-    widget.matchRecord.teleOpPoints.TotalAmount1 = amount1;
+    widget.matchRecord.teleOpPoints.TotalShootingTimeA1 = shootingTimeA1;
+    widget.matchRecord.teleOpPoints.TotalShootingTimeA2 = shootingTimeA2;
+    widget.matchRecord.teleOpPoints.TotalShootingTimeI1 = shootingTimeI1;
+    widget.matchRecord.teleOpPoints.TotalShootingTimeI2 = shootingTimeI2;
+    widget.matchRecord.teleOpPoints.TotalAmount1 = amount;
     widget.matchRecord.teleOpPoints.TotalAmountA1 = amountA1;
     widget.matchRecord.teleOpPoints.TotalAmountA2 = amountA2;
     widget.matchRecord.teleOpPoints.TotalAmountI1 = amountI1;
@@ -262,72 +251,77 @@ class _TeleOperatedState extends State<TeleOperated> {
   Widget _buildTransitionPhase() {
     return Column(
       children: [
-        _buildPhasePlaceholder("Transition"),
         TklKeyboard(
           currentTime: shootingTime1,
           onChange: (double time) {
             shootingTime1 = time;
           },
           doChange: () {
-            amount1++;
+            setState(() {
+              amount++;
+            });
             UpdateData();
           },
           doChangeResetter: () {
-            amount1 = 0;
-            shootingTime1 = 0.0;
+            setState(() {
+              amount = 0;
+              shootingTime1 = 0.0;
+            });
             UpdateData();
           },
-          doChangenakedversion: () {
+          doChangeNoIncrement: () {
             UpdateData();
           },
         ),
-        buildCounterShelf([
-          CounterSettings((number) {
-            setState(() {
-              amount1++;
-              UpdateData();
-            });
-          }, (number) {
-            setState(() {
-              amount1--;
-              UpdateData();
-            });
-          },
-              icon: Icons.import_contacts,
-              number: amount1,
-              counterText: 'Total Shooting Cycles',
-              color: Colors.black12)
-        ]),
-        buildCounter(
-          "Trips to Neutral Zone",
-          neutralTrips,
-          (int value) {
-            setState(() {
-              neutralTrips = value;
-            });
-          },
-          color: Colors.amber,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: buildCounter("Shooting Cycle", amount, (int value) {
+                  setState(() {
+                    amount = value;
+                  });
+                  UpdateData();
+                }, color: Colors.yellow),
+              ),
+              Expanded(
+                child: buildCounter("Neutral Trips", neutralTrips, (int value) {
+                  setState(() {
+                    neutralTrips = value;
+                  });
+                  UpdateData();
+                }, color: Colors.yellow),
+              ),
+            ],
+          ),
         ),
-        Row(
-          children: [
-            Expanded(
-              child: buildCheckBoxHalf("Feed to HP Station", feedtoHPStation,
-                  (bool value) {
-                setState(() {
-                  feedtoHPStation = value;
-                });
-                UpdateData();
-              }),
-            ),
-            Expanded(
-              child: buildCheckBoxHalf("Passing", passing, (bool value) {
-                setState(() {
-                  passing = value;
-                });
-                UpdateData();
-              }),
-            ),
-          ],
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: buildCheckBoxHalf("Feed to HP", feedtoHPStation,
+                    (bool value) {
+                  setState(() {
+                    feedtoHPStation = value;
+                  });
+                  UpdateData();
+                }),
+              ),
+              Expanded(
+                child: buildCheckBoxHalf("Passing", passing, (bool value) {
+                  setState(() {
+                    passing = value;
+                  });
+                  UpdateData();
+                }),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          height: 8,
         ),
         buildCheckBoxFull("Defense", defense, (bool value) {
           setState(() {
@@ -342,72 +336,79 @@ class _TeleOperatedState extends State<TeleOperated> {
   Widget _buildActive1Phase() {
     return Column(
       children: [
-        _buildPhasePlaceholder("Active 1"),
         TklKeyboard(
-          currentTime: shootingTime1,
+          currentTime: shootingTimeA1,
           onChange: (double time) {
-            shootingTime1 = time;
+            shootingTimeA1 = time;
           },
           doChange: () {
-            amountA1++;
+            setState(() {
+              amountA1++;
+            });
             UpdateData();
           },
           doChangeResetter: () {
-            amountA1 = 0;
-            shootingTime1 = 0.0;
+            setState(() {
+              amountA1 = 0;
+              shootingTimeA1 = 0.0;
+            });
+
             UpdateData();
           },
-          doChangenakedversion: () {
+          doChangeNoIncrement: () {
             UpdateData();
           },
         ),
-        buildCounterShelf([
-          CounterSettings((number) {
-            setState(() {
-              amountA1++;
-              UpdateData();
-            });
-          }, (number) {
-            setState(() {
-              amountA1--;
-              UpdateData();
-            });
-          },
-              icon: Icons.import_contacts,
-              number: amountA1,
-              counterText: 'Total Shooting Cycles',
-              color: Colors.black12)
-        ]),
-        buildCounter(
-          "Trips to Neutral Zone",
-          neutralTripsA1,
-          (int value) {
-            setState(() {
-              neutralTripsA1 = value;
-            });
-          },
-          color: Colors.amber,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: buildCounter("Shooting Cycle", amountA1, (int value) {
+                  setState(() {
+                    amountA1 = value;
+                  });
+                  UpdateData();
+                }, color: Colors.yellow),
+              ),
+              Expanded(
+                child:
+                    buildCounter("Neutral Trips", neutralTripsA1, (int value) {
+                  setState(() {
+                    neutralTripsA1 = value;
+                  });
+                  UpdateData();
+                }, color: Colors.yellow),
+              ),
+            ],
+          ),
         ),
-        Row(
-          children: [
-            Expanded(
-              child: buildCheckBoxHalf("Feed to HP Station", feedtoHPStationA1,
-                  (bool value) {
-                setState(() {
-                  feedtoHPStationA1 = value;
-                });
-                UpdateData();
-              }),
-            ),
-            Expanded(
-              child: buildCheckBoxHalf("Passing", passingA1, (bool value) {
-                setState(() {
-                  passingA1 = value;
-                });
-                UpdateData();
-              }),
-            ),
-          ],
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: buildCheckBoxHalf("Feed to HP", feedtoHPStationA1,
+                    (bool value) {
+                  setState(() {
+                    feedtoHPStationA1 = value;
+                  });
+                  UpdateData();
+                }),
+              ),
+              Expanded(
+                child: buildCheckBoxHalf("Passing", passingA1, (bool value) {
+                  setState(() {
+                    passingA1 = value;
+                  });
+                  UpdateData();
+                }),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          height: 8,
         ),
         buildCheckBoxFull("Defense", defenseA1, (bool value) {
           setState(() {
@@ -422,72 +423,78 @@ class _TeleOperatedState extends State<TeleOperated> {
   Widget _buildActive2Phase() {
     return Column(
       children: [
-        _buildPhasePlaceholder("Active 2"),
         TklKeyboard(
-          currentTime: shootingTime1,
+          currentTime: shootingTimeA2,
           onChange: (double time) {
-            shootingTime1 = time;
+            shootingTimeA2 = time;
           },
           doChange: () {
-            amountA2++;
+            setState(() {
+              amountA2++;
+            });
             UpdateData();
           },
           doChangeResetter: () {
-            amountA2 = 0;
-            shootingTime1 = 0.0;
+            setState(() {
+              amountA2 = 0;
+              shootingTimeA2 = 0.0;
+            });
             UpdateData();
           },
-          doChangenakedversion: () {
+          doChangeNoIncrement: () {
             UpdateData();
           },
         ),
-        buildCounterShelf([
-          CounterSettings((number) {
-            setState(() {
-              amountA2++;
-              UpdateData();
-            });
-          }, (number) {
-            setState(() {
-              amountA2--;
-              UpdateData();
-            });
-          },
-              icon: Icons.import_contacts,
-              number: amountA2,
-              counterText: 'Total Shooting Cycles',
-              color: Colors.black12)
-        ]),
-        buildCounter(
-          "Trips to Neutral Zone",
-          neutralTripsA2,
-          (int value) {
-            setState(() {
-              neutralTripsA2 = value;
-            });
-          },
-          color: Colors.amber,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: buildCounter("Shooting Cycle", amountA2, (int value) {
+                  setState(() {
+                    amountA2 = value;
+                  });
+                  UpdateData();
+                }, color: Colors.yellow),
+              ),
+              Expanded(
+                child:
+                    buildCounter("Neutral Trips", neutralTripsA2, (int value) {
+                  setState(() {
+                    neutralTripsA2 = value;
+                  });
+                  UpdateData();
+                }, color: Colors.yellow),
+              ),
+            ],
+          ),
         ),
-        Row(
-          children: [
-            Expanded(
-              child: buildCheckBoxHalf("Feed to HP Station", feedtoHPStationA2,
-                  (bool value) {
-                setState(() {
-                  feedtoHPStationA2 = value;
-                });
-                UpdateData();
-              }),
-            ),
-            Expanded(
-              child: buildCheckBoxHalf("Passing", passingA2, (bool value) {
-                setState(() {
-                  passingA2 = value;
-                });
-                UpdateData();
-              }),
-            ),
-          ],
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: buildCheckBoxHalf("Feed to HP", feedtoHPStationA2,
+                    (bool value) {
+                  setState(() {
+                    feedtoHPStationA2 = value;
+                  });
+                  UpdateData();
+                }),
+              ),
+              Expanded(
+                child: buildCheckBoxHalf("Passing", passingA2, (bool value) {
+                  setState(() {
+                    passingA2 = value;
+                  });
+                  UpdateData();
+                }),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          height: 8,
         ),
         buildCheckBoxFull("Defense", defenseA2, (bool value) {
           setState(() {
@@ -502,38 +509,77 @@ class _TeleOperatedState extends State<TeleOperated> {
   Widget _buildInactive1Phase() {
     return Column(
       children: [
-        _buildPhasePlaceholder("Inactive 1"),
-        buildCounter(
-          "Trips to Neutral Zone",
-          neutralTripsI1,
-          (int value) {
-            setState(() {
-              neutralTripsI1 = value;
-            });
+        TklKeyboard(
+          currentTime: shootingTimeI1,
+          onChange: (double time) {
+            shootingTimeI1 = time;
           },
-          color: Colors.amber,
+          doChange: () {
+            setState(() {
+              amountI1++;
+            });
+            UpdateData();
+          },
+          doChangeResetter: () {
+            setState(() {
+              amountI1 = 0;
+              shootingTimeI1 = 0.0;
+            });
+            UpdateData();
+          },
+          doChangeNoIncrement: () {
+            UpdateData();
+          },
         ),
-        Row(
-          children: [
-            Expanded(
-              child: buildCheckBoxHalf("Feed to HP Station", feedtoHPStationI1,
-                  (bool value) {
-                setState(() {
-                  feedtoHPStationI1 = value;
-                });
-                UpdateData();
-              }),
-            ),
-            Expanded(
-              child: buildCheckBoxHalf("Passing", passingI1, (bool value) {
-                setState(() {
-                  passingI1 = value;
-                });
-                UpdateData();
-              }),
-            ),
-          ],
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: buildCounter("Shooting Cycle", amountI1, (int value) {
+                  setState(() {
+                    amountI1 = value;
+                  });
+                  UpdateData();
+                }, color: Colors.yellow),
+              ),
+              Expanded(
+                child:
+                    buildCounter("Neutral Trips", neutralTripsI1, (int value) {
+                  setState(() {
+                    neutralTripsI1 = value;
+                  });
+                  UpdateData();
+                }, color: Colors.yellow),
+              ),
+            ],
+          ),
         ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: buildCheckBoxHalf("Feed to HP", feedtoHPStationI1,
+                    (bool value) {
+                  setState(() {
+                    feedtoHPStationI1 = value;
+                  });
+                  UpdateData();
+                }),
+              ),
+              Expanded(
+                child: buildCheckBoxHalf("Passing", passingI1, (bool value) {
+                  setState(() {
+                    passingI1 = value;
+                  });
+                  UpdateData();
+                }),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: 8),
         buildCheckBoxFull("Defense", defenseI1, (bool value) {
           setState(() {
             defenseI1 = value;
@@ -547,38 +593,77 @@ class _TeleOperatedState extends State<TeleOperated> {
   Widget _buildInactive2Phase() {
     return Column(
       children: [
-        _buildPhasePlaceholder("Inactive 2"),
-        buildCounter(
-          "Trips to Neutral Zone",
-          neutralTripsI2,
-          (int value) {
-            setState(() {
-              neutralTripsI2 = value;
-            });
+        TklKeyboard(
+          currentTime: shootingTimeI2,
+          onChange: (double time) {
+            shootingTimeI2 = time;
           },
-          color: Colors.amber,
+          doChange: () {
+            setState(() {
+              amountI2++;
+            });
+            UpdateData();
+          },
+          doChangeResetter: () {
+            setState(() {
+              amountI2 = 0;
+              shootingTimeI2 = 0.0;
+            });
+            UpdateData();
+          },
+          doChangeNoIncrement: () {
+            UpdateData();
+          },
         ),
-        Row(
-          children: [
-            Expanded(
-              child: buildCheckBoxHalf("Feed to HP Station", feedtoHPStationI2,
-                  (bool value) {
-                setState(() {
-                  feedtoHPStationI2 = value;
-                });
-                UpdateData();
-              }),
-            ),
-            Expanded(
-              child: buildCheckBoxHalf("Passing", passingI2, (bool value) {
-                setState(() {
-                  passingI2 = value;
-                });
-                UpdateData();
-              }),
-            ),
-          ],
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: buildCounter("Shooting Cycle", amountI2, (int value) {
+                  setState(() {
+                    amountI2 = value;
+                  });
+                  UpdateData();
+                }, color: Colors.yellow),
+              ),
+              Expanded(
+                child:
+                    buildCounter("Neutral Trips", neutralTripsI2, (int value) {
+                  setState(() {
+                    neutralTripsI2 = value;
+                  });
+                  UpdateData();
+                }, color: Colors.yellow),
+              ),
+            ],
+          ),
         ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: buildCheckBoxHalf("Feed to HP", feedtoHPStationI2,
+                    (bool value) {
+                  setState(() {
+                    feedtoHPStationI2 = value;
+                  });
+                  UpdateData();
+                }),
+              ),
+              Expanded(
+                child: buildCheckBoxHalf("Passing", passingI2, (bool value) {
+                  setState(() {
+                    passingI2 = value;
+                  });
+                  UpdateData();
+                }),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: 8),
         buildCheckBoxFull("Defense", defenseI2, (bool value) {
           setState(() {
             defenseI2 = value;

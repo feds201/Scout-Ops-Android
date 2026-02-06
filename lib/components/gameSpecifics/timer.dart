@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 class TklKeyboard extends StatefulWidget {
   final Function(double) onChange;
   final Function() doChange;
-  final Function() doChangenakedversion;
+  final Function() doChangeNoIncrement ;
   final Function() doChangeResetter;
   double currentTime;
 
@@ -15,7 +15,7 @@ class TklKeyboard extends StatefulWidget {
       required this.onChange,
       required this.currentTime,
       required this.doChange,
-      required this.doChangenakedversion,
+      required this.doChangeNoIncrement ,
       required this.doChangeResetter});
 
   @override
@@ -154,7 +154,7 @@ class _TklKeyboardState extends State<TklKeyboard>
                                       _localTime -= 0.30;
                                     });
                                     widget.onChange(_localTime);
-                                    widget.doChangenakedversion();
+                                    widget.doChangeNoIncrement ();
                                   },
                                 ),
                                 // HOLD button
@@ -203,7 +203,7 @@ class _TklKeyboardState extends State<TklKeyboard>
                                       _localTime += 0.30;
                                     });
                                     widget.onChange(_localTime);
-                                    widget.doChangenakedversion();
+                                    widget.doChangeNoIncrement ();
                                   },
                                 ),
                               ],

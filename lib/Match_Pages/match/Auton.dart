@@ -205,7 +205,7 @@ class AutonState extends State<Auton> {
               shootingTime = 0.0;
               UpdateData();
             },
-            doChangenakedversion: () {
+            doChangeNoIncrement : () {
               UpdateData();
             },
           ),
