@@ -7,7 +7,7 @@ import 'package:hive/hive.dart';
 import 'package:scouting_app/Pit_Checklist/CheckLists.dart';
 import 'package:scouting_app/components/Inspiration.dart';
 import 'package:scouting_app/components/ScoutersList.dart';
-import 'package:scouting_app/components/Insults.dart';
+import 'package:scouting_app/components/Facts.dart';
 import 'package:scouting_app/home_page.dart';
 import 'package:scouting_app/main.dart';
 import 'package:scouting_app/services/Colors.dart';

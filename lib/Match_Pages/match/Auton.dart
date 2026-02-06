@@ -186,23 +186,20 @@ class AutonState extends State<Auton> {
               UpdateData();
             },
           ),
-          buildCounterShelf([
-            CounterSettings((number) {
+          const SizedBox(height: 12), // spacing
+
+// Total Shooting Cycles counter
+          buildCounter(
+            "Total Shooting Cycles",
+            amount,
+                (int value) {
               setState(() {
-                amount++;
-                UpdateData();
+                amount = value;
               });
-            }, (number) {
-              setState(() {
-                amount--;
-                UpdateData();
-              });
+              UpdateData();
             },
-                icon: Icons.import_contacts,
-                number: amount,
-                counterText: 'Total Shooting Cycles',
-                color: Colors.black12)
-          ]),
+            color: Colors.amber,
+          ),
           buildCheckBoxFull("Grabbed Balls From Neutral Zone", zone,
               (bool value) {
             setState(() {
