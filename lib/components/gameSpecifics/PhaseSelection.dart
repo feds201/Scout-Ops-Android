@@ -144,13 +144,13 @@ Widget buildPhaseSele(
                         child: Row(
                           children: [
                             buildPhaseButton(
-                              label: "1",
+                              label: "A1",
                               id: 1,
                               baseColor: const Color(0xFF57E62E),
                               fontSize: 40,
                             ),
                             buildPhaseButton(
-                              label: "2",
+                              label: "A2",
                               id: 2,
                               baseColor: const Color(0xFF4C6D3A),
                               fontSize: 40,
@@ -163,13 +163,13 @@ Widget buildPhaseSele(
                         child: Row(
                           children: [
                             buildPhaseButton(
-                              label: "1",
+                              label: "U1",
                               id: 3,
                               baseColor: const Color(0xFFE9B86A),
                               fontSize: 40,
                             ),
                             buildPhaseButton(
-                              label: "2",
+                              label: "U2",
                               id: 4,
                               baseColor: const Color(0xFFE0B15D),
                               fontSize: 40,

@@ -4,6 +4,7 @@ import 'package:scouting_app/components/QrGenerator.dart';
 import 'package:scouting_app/components/gameSpecifics/climb.dart';
 // import 'package:scouting_app/components/gameSpecifics/climb.dart';
 import 'package:scouting_app/main.dart';
+import '../../components/gameSpecifics/timer.dart';
 import '../../components/slider.dart';
 import '../../services/DataBase.dart';
 import 'package:scouting_app/components/CounterShelf.dart';
@@ -30,6 +31,9 @@ class EndGameState extends State<EndGame> {
   late String allianceColor;
   late int matchNumber;
   late int neutralTrips;
+  //timer
+  double endgameTime = 0.0;
+  int endgameActions = 0;
 
   TextEditingController commentController = TextEditingController();
 
@@ -56,23 +60,28 @@ class EndGameState extends State<EndGame> {
     commentController.text = widget.matchRecord.endPoints.Comments;
     neutralTrips = 0;
 
-    endPoints =
-        EndPoints(deep_climb, shallow_climb, park, commentController.text);
   }
 
   void UpdateData() {
     deep_climb = selectedLevel == 3;
     shallow_climb = selectedLevel == 2;
-    endPoints =
-        EndPoints(deep_climb, shallow_climb, park, commentController.text);
+    park = selectedLevel == null;
+
+    // Use the correct field names from your EndPoints class
     widget.matchRecord.endPoints.Deep_Climb = deep_climb;
     widget.matchRecord.endPoints.Shallow_Climb = shallow_climb;
     widget.matchRecord.endPoints.Park = park;
     widget.matchRecord.endPoints.Comments = commentController.text;
-    widget.matchRecord.endPoints = endPoints;
 
+    // Timer and endgame actions
+    widget.matchRecord.endPoints.endgameTime = endgameTime;
+    widget.matchRecord.endPoints.endgameActions = endgameActions as String;
+
+    endPoints = widget.matchRecord.endPoints;
     saveState();
   }
+
+
 
   void saveState() {
     LocalDataBase.putData('endPoints', endPoints.toJson());
@@ -119,6 +128,48 @@ class EndGameState extends State<EndGame> {
             },
             color: Colors.amber,
           ),
+          // Endgame Timer
+          TklKeyboard(
+            currentTime: endgameTime,
+            onChange: (double time) {
+              setState(() {
+                endgameTime = time;
+              });
+            },
+            doChange: () {
+              setState(() {
+                endgameActions++;
+              });
+              UpdateData(); // Saves the updated endgame values
+            },
+            doChangeResetter: () {
+              setState(() {
+                endgameActions = 0;
+                endgameTime = 0.0;
+              });
+              UpdateData(); // Resets the values in your matchRecord
+            },
+            doChangenakedversion: () {
+              UpdateData(); // Updates without changing values
+            },
+          ),
+
+          const SizedBox(height: 12), // spacing
+
+// Total Shooting Cycles counter
+          buildCounter(
+            "Total Shooting Cycles",
+            endgameActions,
+                (int value) {
+              setState(() {
+                endgameActions = value;
+              });
+              UpdateData();
+            },
+            color: Colors.amber,
+          ),
+
+
           buildClimbImage(selectedLevel, park, (int? newLevel) {
             setState(() {
               selectedLevel = newLevel;

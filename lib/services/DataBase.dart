@@ -951,7 +951,6 @@ class TeleOpPoints {
   setTotalAmount1(int value){
     TotalAmount1 = value;
   }
-
   setTotalAmountA1(int value) {
     TotalAmountA1 = value;
   }
@@ -1060,6 +1059,8 @@ class EndPoints {
   bool Deep_Climb = false;
   bool Shallow_Climb = false;
   bool Park = false;
+  double endgameTime;
+  String endgameActions;
   String Comments = '';
 
   EndPoints(
@@ -1067,6 +1068,8 @@ class EndPoints {
     this.Shallow_Climb,
     this.Park,
     this.Comments,
+    this.endgameTime,
+    this.endgameActions,
   );
 
   Map<String, dynamic> toJson() {
@@ -1074,6 +1077,8 @@ class EndPoints {
       "Deep_Climb": Deep_Climb,
       "Shallow_Climb": Shallow_Climb,
       "Park": Park,
+      "endgameTime": endgameTime,
+      "endgameActions": endgameActions,
       "Comments": Comments,
     };
   }
@@ -1083,13 +1088,15 @@ class EndPoints {
       json['Deep_Climb'] ?? 0,
       json['Shallow_Climb'] ?? 0,
       json['Park'] ?? 0,
+      json['endgameTime'] ?? 0.0,
+      json['endgameActions'] ?? '',
       json['Comments'] ?? 0,
     );
   }
 
   @override
   String toString() {
-    return 'EndPoints{Deep_Climb: $Deep_Climb, Shallow_Climb: $Shallow_Climb, Park: $Park, Comments: $Comments}';
+    return 'EndPoints{Deep_Climb: $Deep_Climb, Shallow_Climb: $Shallow_Climb, Park: $Park, endgameTime: $endgameTime, endgameActions: $endgameActions, Comments: $Comments}';
   }
 
   String toCsv() {
@@ -1183,53 +1190,56 @@ class LocalDataBase {
     );
   }
 
-  static TeleOpPoints mapToTeleOpPoints(Map<dynamic, dynamic> data) {
+  static TeleOpPoints fromJson(Map<String, dynamic> json) {
     return TeleOpPoints(
-      data['CoralScoringLevel1'] ?? 0,
-      data['CoralScoringLevel2'] ?? 0,
-      data['CoralScoringLevel3'] ?? 0,
-      data['CoralScoringLevel4'] ?? 0,
-      data['AlgaeScoringProcessor'] ?? 0,
-      data['AlgaeScoringBarge'] ?? 0,
-      data['AlgaePickUp'] ?? 0,
-      data['TotalShootingTime1'] ?? 0,
-      data['TotalAmount1'] ?? 0,
-      data['TotalAmountA1'] ?? 0,
-      data['TotalAmountA2'] ?? 0,
-      data['TotalAmountI1'] ?? 0,
-      data['TotalAmountI2'] ?? 0,
-      data['TripAmount1'] ?? 0,
-      data['NeutralTips'] ?? 0,
-      data['NeutralTipsA1'] ?? 0,
-      data['NeutralTipsA2'] ?? 0,
-      data['NeutralTipsI1'] ?? 0,
-      data['NeutralTipsI2'] ?? 0,
-      data['Defended'] ?? false,
-      data['DefendedA1'] ?? false,
-      data['DefendedA2'] ?? false,
-      data['DefendedI1'] ?? false,
-      data['DefendedI2'] ?? false,
-      data['FeedToHPStation'] ?? false,
-      data['FeedToHPStationA1'] ?? false,
-      data['FeedToHPStationA2'] ?? false,
-      data['FeedToHPStationI1'] ?? false,
-      data['FeedToHPStationI2'] ?? false,
-      data['passing'] ?? false,
-      data['passingA1'] ?? false,
-      data['passingA2'] ?? false,
-      data['passingI1'] ?? false,
-      data['passingI2'] ?? false,
+      json['CoralScoringLevel1'] ?? 0,
+      json['CoralScoringLevel2'] ?? 0,
+      json['CoralScoringLevel3'] ?? 0,
+      json['CoralScoringLevel4'] ?? 0,
+      json['AlgaeScoringBarge'] ?? 0,
+      json['AlgaeScoringProcessor'] ?? 0,
+      json['AlgaePickUp'] ?? 0,
+      (json['TotalShootingTime1'] ?? 0).toDouble(),
+      json['TotalAmount1'] ?? 0,
+      json['TotalAmountA1'] ?? 0,
+      json['TotalAmountA2'] ?? 0,
+      json['TotalAmountI1'] ?? 0,
+      json['TotalAmountI2'] ?? 0,
+      json['TripAmount1'] ?? 0,
+      json['Defense'] ?? false,
+      json['DefenseA1'] ?? false,
+      json['DefenseA2'] ?? false,
+      json['DefenseI1'] ?? false,
+      json['DefenseI2'] ?? false,
+      json['NeutralTrips'] ?? 0,
+      json['NeutralTripsA1'] ?? 0,
+      json['NeutralTripsA2'] ?? 0,
+      json['NeutralTripsI1'] ?? 0,
+      json['NeutralTripsI2'] ?? 0,
+      json['FeedToHPStation'] ?? false,
+      json['FeedToHPStationA1'] ?? false,
+      json['FeedToHPStationA2'] ?? false,
+      json['FeedToHPStationI1'] ?? false,
+      json['FeedToHPStationI2'] ?? false,
+      json['passing'] ?? false,
+      json['passingA1'] ?? false,
+      json['passingA2'] ?? false,
+      json['passingI1'] ?? false,
+      json['passingI2'] ?? false,
     );
   }
 
   static EndPoints mapToEndPoints(Map<dynamic, dynamic> data) {
     return EndPoints(
-      data['TrapScored'] ?? 0,
-      data['SpotlightLevel'] ?? 0,
-      data['Harmonize'] ?? false,
+      data['Deep_Climb'] ?? false,
+      data['Shallow_Climb'] ?? false,
       data['Park'] ?? false,
+      data['Comments'] ?? "",
+      (data['EndgameTime'] ?? 0).toDouble(),
+      data['EndgameActions'] ?? "",
     );
   }
+
 
   static PitRecord mapToPitRecord(Map<dynamic, dynamic> data) {
     return PitRecord(

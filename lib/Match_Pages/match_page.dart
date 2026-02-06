@@ -646,7 +646,7 @@ class MatchPageState extends State<MatchPage>
     MatchRecord matchRecord = MatchRecord(
       AutonPoints(false, false, false, 0.0,0, false, "", false),
       TeleOpPoints(0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0, false,false,false,false,false,0,0,0,0,0, false,false,false,false,false,false,false,false,false,false),
-      EndPoints(false, false, false, ""),
+      EndPoints(false, false, false, "", 0.0, ""),
       teamNumber: teamNNumber.replaceAll('frc', ''),
       scouterName: _scouterName,
       matchKey: match['key'].toString(),
@@ -656,6 +656,7 @@ class MatchPageState extends State<MatchPage>
       eventKey: match['event_key'],
       batteryPercentage: batteryPercentage,
     );
+
 
     Navigator.push(
       context,
