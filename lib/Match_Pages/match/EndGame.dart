@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:scouting_app/components/CheckBox.dart';
 import 'package:scouting_app/components/CounterShelf.dart';
 import 'package:scouting_app/components/QrGenerator.dart';
+import 'package:scouting_app/components/gameSpecifics/MultiPointSelector.dart';
 import 'package:scouting_app/components/gameSpecifics/climb.dart';
-// import 'package:scouting_app/components/gameSpecifics/climb.dart';
 import 'package:scouting_app/main.dart';
 
 import '../../components/TeamInfo.dart';
@@ -40,6 +40,10 @@ class EndGameState extends State<EndGame> {
   //timer
   double endgameTime = 0.0;
   int endgameActions = 0;
+  String drawingData = '';
+  List<List<Offset>> initialStrokes = [];
+  Alliance mapcolor = Alliance.blue;
+  bool isPageScrollable = true;
 
   TextEditingController commentController = TextEditingController();
 
@@ -51,6 +55,11 @@ class EndGameState extends State<EndGame> {
     assignedStation = widget.matchRecord.station;
     matchKey = widget.matchRecord.matchKey;
     allianceColor = widget.matchRecord.allianceColor;
+    if (allianceColor == "Blue") {
+      mapcolor = Alliance.blue;
+    } else if (allianceColor == "Red") {
+      mapcolor = Alliance.red;
+    }
 
     // Load values from endPoints
     // ClimbStatus stores the specific ID (1-9) or 0 for none
@@ -64,6 +73,8 @@ class EndGameState extends State<EndGame> {
     neutralTrips = 0;
     endgameTime = widget.matchRecord.endPoints.endgameTime;
     endgameActions = widget.matchRecord.endPoints.endgameActions;
+    drawingData = widget.matchRecord.endPoints.drawingData;
+    initialStrokes = _parseDrawingData(drawingData);
   }
 
   void UpdateData() {
@@ -80,9 +91,51 @@ class EndGameState extends State<EndGame> {
     // Timer and endgame actions
     widget.matchRecord.endPoints.endgameTime = endgameTime;
     widget.matchRecord.endPoints.endgameActions = endgameActions;
+    widget.matchRecord.endPoints.drawingData = drawingData;
 
     endPoints = widget.matchRecord.endPoints;
     saveState();
+  }
+
+  // Minimalist serialization: "x,y,x,y;x,y"
+  String _serializeStrokes(List<List<Offset>> strokes) {
+    if (strokes.isEmpty) return "";
+    StringBuffer buffer = StringBuffer();
+    for (int i = 0; i < strokes.length; i++) {
+      if (i > 0) buffer.write(";");
+      List<Offset> stroke = strokes[i];
+      for (int j = 0; j < stroke.length; j++) {
+        if (j > 0) buffer.write(",");
+        // Truncate to 1 decimal place to save space
+        buffer.write(
+            "${stroke[j].dx.toStringAsFixed(1)},${stroke[j].dy.toStringAsFixed(1)}");
+      }
+    }
+    return buffer.toString();
+  }
+
+  List<List<Offset>> _parseDrawingData(String data) {
+    if (data.isEmpty) return [];
+    List<List<Offset>> strokes = [];
+    try {
+      List<String> strokeStrings = data.split(';');
+      for (String s in strokeStrings) {
+        if (s.isEmpty) continue;
+        List<String> coords = s.split(',');
+        List<Offset> stroke = [];
+        for (int i = 0; i < coords.length; i += 2) {
+          if (i + 1 < coords.length) {
+            double x = double.parse(coords[i]);
+            double y = double.parse(coords[i + 1]);
+            stroke.add(Offset(x, y));
+          }
+        }
+        if (stroke.isNotEmpty) strokes.add(stroke);
+      }
+    } catch (e) {
+      log("Error parsing drawing data: $e");
+    }
+    return strokes;
   }
 
   void saveState() {
@@ -102,6 +155,7 @@ class EndGameState extends State<EndGame> {
     // print(LocalDataBase.getData('Settings.apiKey'));
     // print(endPoints.Comments);
     return SingleChildScrollView(
+      physics: isPageScrollable ? null : const NeverScrollableScrollPhysics(),
       child: Column(
         children: [
           MatchInfo(
@@ -110,6 +164,30 @@ class EndGameState extends State<EndGame> {
             allianceColor: allianceColor,
             onPressed: () {
               // print('Team Info START button pressed');
+            },
+          ),
+          TklKeyboard(
+            currentTime: endgameTime,
+            onChange: (double time) {
+              setState(() {
+                endgameTime = time;
+              });
+            },
+            doChange: () {
+              setState(() {
+                endgameActions++;
+              });
+              UpdateData(); // Saves the updated endgame values
+            },
+            doChangeResetter: () {
+              setState(() {
+                endgameActions = 0;
+                endgameTime = 0.0;
+              });
+              UpdateData(); // Resets the values in your matchRecord
+            },
+            doChangeNoIncrement: () {
+              UpdateData(); // Updates without changing values
             },
           ),
           Padding(
@@ -164,30 +242,6 @@ class EndGameState extends State<EndGame> {
           SizedBox(
             height: 9,
           ),
-          TklKeyboard(
-            currentTime: endgameTime,
-            onChange: (double time) {
-              setState(() {
-                endgameTime = time;
-              });
-            },
-            doChange: () {
-              setState(() {
-                endgameActions++;
-              });
-              UpdateData(); // Saves the updated endgame values
-            },
-            doChangeResetter: () {
-              setState(() {
-                endgameActions = 0;
-                endgameTime = 0.0;
-              });
-              UpdateData(); // Resets the values in your matchRecord
-            },
-            doChangeNoIncrement: () {
-              UpdateData(); // Updates without changing values
-            },
-          ),
 
           const SizedBox(height: 12), // spacing
 
@@ -211,14 +265,6 @@ class EndGameState extends State<EndGame> {
               color: islightmode()
                   ? const Color.fromARGB(255, 255, 255, 255)
                   : const Color.fromARGB(255, 34, 34, 34),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.2),
-                  spreadRadius: 2,
-                  blurRadius: 8,
-                  offset: const Offset(0, 3),
-                ),
-              ],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -297,6 +343,24 @@ class EndGameState extends State<EndGame> {
             ),
           ),
           const SizedBox(height: 6),
+          // Whiteboard (MultiPointSelector)
+          MultiPointSelector(
+            blueAllianceImagePath: 'assets/2026/BlueAlliance_StartPosition.png',
+            redAllianceImagePath: 'assets/2026/RedAlliance_StartPosition.png',
+            alliance: mapcolor,
+            initialStrokes: initialStrokes,
+            onStrokesChanged: (strokes) {
+              setState(() {
+                drawingData = _serializeStrokes(strokes);
+              });
+              UpdateData();
+            },
+            onLockStateChanged: (locked) {
+              setState(() {
+                isPageScrollable = locked;
+              });
+            },
+          ),
           const SizedBox(height: 6),
           Padding(
             padding: const EdgeInsets.all(8.0),

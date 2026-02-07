@@ -90,7 +90,7 @@ class _TklKeyboardState extends State<TklKeyboard>
     super.build(context);
 
     // Fixed height prevents unbounded constraints while allowing full width.
-    const double designHeight = 500;
+    const double designHeight = 450;
 
     return Center(
       child: SizedBox(
@@ -120,8 +120,35 @@ class _TklKeyboardState extends State<TklKeyboard>
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(16, 20, 16, 18),
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
+                            SizedBox(
+                              height: 50,
+                            ),
+                            Container(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 12),
+                              decoration: BoxDecoration(
+                                color: Colors.yellow.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                    color: Colors.yellow.withOpacity(0.3)),
+                              ),
+                              child: const Text(
+                                "Cycle Counter increments when timer's held",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Color(0xFFEFC80C),
+                                  fontStyle: FontStyle.italic,
+                                  fontSize: 14,
+                                  fontFamily: 'MuseoModerno',
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
                             // Timer Display
                             Container(
                               margin:
@@ -148,6 +175,9 @@ class _TklKeyboardState extends State<TklKeyboard>
                               ),
                             ),
                             // Control Buttons
+                            SizedBox(
+                              height: 20,
+                            ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [

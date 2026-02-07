@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:developer' as developer;
 import 'dart:io';
 
 import 'package:flutter/painting.dart';
@@ -1046,6 +1045,7 @@ class EndPoints {
   double endgameTime;
   int endgameActions;
   String Comments = '';
+  String drawingData = ''; // Format: "s:x,y,x,y;s:x,y..."
 
   EndPoints(
     this.ClimbStatus,
@@ -1055,6 +1055,7 @@ class EndPoints {
     this.Comments,
     this.endgameTime,
     this.endgameActions,
+    this.drawingData,
   );
 
   Map<String, dynamic> toJson() {
@@ -1066,6 +1067,7 @@ class EndPoints {
       "endgameTime": endgameTime,
       "endgameActions": endgameActions,
       "Comments": Comments,
+      "DrawingData": drawingData,
     };
   }
 
@@ -1078,16 +1080,17 @@ class EndPoints {
       json['Comments'] ?? '',
       (json['endgameTime'] ?? 0.0).toDouble(),
       json['endgameActions'] ?? 0,
+      json['DrawingData'] ?? '',
     );
   }
 
   @override
   String toString() {
-    return 'EndPoints{ClimbStatus: $ClimbStatus, Park: $Park, FeedToHP: $FeedToHP, Passing: $Passing, endgameTime: $endgameTime, endgameActions: $endgameActions, Comments: $Comments}';
+    return 'EndPoints{ClimbStatus: $ClimbStatus, Park: $Park, FeedToHP: $FeedToHP, Passing: $Passing, endgameTime: $endgameTime, endgameActions: $endgameActions, Comments: $Comments, DrawingData: $drawingData}';
   }
 
   String toCsv() {
-    return '$ClimbStatus,$Park,$FeedToHP,$Passing,$endgameTime,$endgameActions,$Comments';
+    return '$ClimbStatus,$Park,$FeedToHP,$Passing,$endgameTime,$endgameActions,$Comments,$drawingData';
   }
 
   @override
@@ -1192,38 +1195,38 @@ class LocalDataBase {
 
   static TeleOpPoints fromJson(Map<String, dynamic> json) {
     return TeleOpPoints(
-      json['CoralScoringLevel1'] ?? 0,
-      json['CoralScoringLevel2'] ?? 0,
-      json['CoralScoringLevel3'] ?? 0,
-      json['CoralScoringLevel4'] ?? 0,
-      json['AlgaeScoringBarge'] ?? 0,
-      json['AlgaeScoringProcessor'] ?? 0,
-      json['AlgaePickUp'] ?? 0,
-      (json['TotalShootingTime1'] ?? json['TotalShootingTime'] ?? 0).toDouble(),
-      (json['TotalShootingTimeA1'] ?? 0).toDouble(),
-      (json['TotalShootingTimeA2'] ?? 0).toDouble(),
-      (json['TotalShootingTimeI1'] ?? 0).toDouble(),
-      (json['TotalShootingTimeI2'] ?? 0).toDouble(),
-      json['TotalAmount1'] ?? 0,
-      json['TotalAmountA1'] ?? 0,
-      json['TotalAmountA2'] ?? 0,
-      json['TotalAmountI1'] ?? 0,
-      json['TotalAmountI2'] ?? 0,
-      json['TripAmount1'] ?? 0,
-      json['Defense'] ?? false,
-      json['DefenseA1'] ?? false,
-      json['DefenseA2'] ?? false,
-      json['DefenseI1'] ?? false,
-      json['DefenseI2'] ?? false,
-      json['NeutralTrips'] ?? 0,
-      json['FeedToHPStationI1'] ?? false,
-      json['FeedToHPStationI2'] ?? false,
-      json['passing'] ?? false,
-      json['passingA1'] ?? false,
-      json['passingA2'] ?? false,
-      json['passingI1'] ?? false,
-      json['passingI2'] ?? false,
-    );
+        (json['TotalShootingTime1'] ?? json['TotalShootingTime'] ?? 0)
+            .toDouble(),
+        (json['TotalShootingTimeA1'] ?? 0).toDouble(),
+        (json['TotalShootingTimeA2'] ?? 0).toDouble(),
+        (json['TotalShootingTimeI1'] ?? 0).toDouble(),
+        (json['TotalShootingTimeI2'] ?? 0).toDouble(),
+        json['TotalAmount1'] ?? 0,
+        json['TotalAmountA1'] ?? 0,
+        json['TotalAmountA2'] ?? 0,
+        json['TotalAmountI1'] ?? 0,
+        json['TotalAmountI2'] ?? 0,
+        json['TripAmount1'] ?? 0,
+        json['Defense'] ?? false,
+        json['DefenseA1'] ?? false,
+        json['DefenseA2'] ?? false,
+        json['DefenseI1'] ?? false,
+        json['DefenseI2'] ?? false,
+        json['NeutralTrips'] ?? 0,
+        json['NeutralTripsA1'] ?? 0,
+        json['NeutralTripsA2'] ?? 0,
+        json['NeutralTripsI1'] ?? 0,
+        json['NeutralTripsI2'] ?? 0,
+        json['FeedToHPStation'] ?? false,
+        json['FeedToHPStationA1'] ?? false,
+        json['FeedToHPStationA2'] ?? false,
+        json['FeedToHPStationI1'] ?? false,
+        json['FeedToHPStationI2'] ?? false,
+        json['passing'] ?? false,
+        json['passingA1'] ?? false,
+        json['passingA2'] ?? false,
+        json['passingI1'] ?? false,
+        json['passingI2'] ?? false);
   }
 
   static EndPoints mapToEndPoints(Map<dynamic, dynamic> data) {
@@ -1235,6 +1238,7 @@ class LocalDataBase {
       data['Comments'] ?? "",
       (data['EndgameTime'] ?? 0).toDouble(),
       data['EndgameActions'] ?? 0,
+      data['DrawingData'] ?? '',
     );
   }
 

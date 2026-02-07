@@ -21,13 +21,6 @@ class TeleOperated extends StatefulWidget {
 }
 
 class _TeleOperatedState extends State<TeleOperated> {
-  late int coralScoreL1;
-  late int coralScoreL2;
-  late int coralScoreL3;
-  late int coralScoreL4;
-  late int algaePickUp;
-  late int algaeScoringProcessor;
-  late int algaeScoringBarge;
   late double shootingTime1;
   late double shootingTimeA1;
   late double shootingTimeA2;
@@ -511,35 +504,17 @@ class _TeleOperatedState extends State<TeleOperated> {
   Widget _buildInactive1Phase() {
     return Column(
       children: [
-        TklKeyboard(
-          currentTime: shootingTimeI1,
-          onChange: (double time) {
-            shootingTimeI1 = time;
-          },
-          doChange: () {
-            setState(() {
-              amountI1++;
-            });
-            UpdateData();
-          },
-          doChangeResetter: () {
-            setState(() {
-              amountI1 = 0;
-              shootingTimeI1 = 0.0;
-            });
-            UpdateData();
-          },
-          doChangeNoIncrement: () {
-            UpdateData();
-          },
-        ),
-        SizedBox(height: 8),
         buildCounterFull("Neutral Trips", neutralTripsI1, (int value) {
           setState(() {
             neutralTripsI1 = value;
           });
           UpdateData();
         }, color: Colors.yellow),
+        SizedBox(height: 8),
+        buildCheckBoxFull("Shooting", false, (bool value) {
+          setState(() {});
+          UpdateData();
+        }),
         SizedBox(height: 8),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -579,35 +554,16 @@ class _TeleOperatedState extends State<TeleOperated> {
   Widget _buildInactive2Phase() {
     return Column(
       children: [
-        TklKeyboard(
-          currentTime: shootingTimeI2,
-          onChange: (double time) {
-            shootingTimeI2 = time;
-          },
-          doChange: () {
-            setState(() {
-              amountI2++;
-            });
-            UpdateData();
-          },
-          doChangeResetter: () {
-            setState(() {
-              amountI2 = 0;
-              shootingTimeI2 = 0.0;
-            });
-            UpdateData();
-          },
-          doChangeNoIncrement: () {
-            UpdateData();
-          },
-        ),
-        SizedBox(height: 8),
         buildCounterFull("Neutral Trips", neutralTripsI2, (int value) {
           setState(() {
             neutralTripsI2 = value;
           });
           UpdateData();
         }, color: Colors.yellow),
+        buildCheckBoxFull("Shooting", false, (bool value) {
+          setState(() {});
+          UpdateData();
+        }),
         SizedBox(height: 8),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),

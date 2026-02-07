@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:scouting_app/Qualitative/qualitative.dart';
-import 'package:scouting_app/components/Inspiration.dart';
 import 'package:scouting_app/components/Facts.dart';
+import 'package:scouting_app/components/Inspiration.dart';
 import 'package:scouting_app/components/MatchSelection.dart';
 import 'package:scouting_app/components/ScoutersList.dart';
 import 'package:scouting_app/home_page.dart';
@@ -41,6 +41,8 @@ class MatchPageState extends State<MatchPage>
     // Load default data on init
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadDefaultDataIfNeeded();
+      MatchDataBase.LoadAll();
+      setState(() {});
     });
   }
 
@@ -404,6 +406,8 @@ class MatchPageState extends State<MatchPage>
         .map((team) => team.toString().replaceAll('frc', ''))
         .toList();
 
+    bool isScouted = MatchDataBase.GetData(match['key'].toString()) != null;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       child: Card(
@@ -413,8 +417,8 @@ class MatchPageState extends State<MatchPage>
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
           side: BorderSide(
-            color: themeColor.withOpacity(0.2),
-            width: 1,
+            color: isScouted ? Colors.green : themeColor.withOpacity(0.2),
+            width: isScouted ? 2 : 1,
           ),
         ),
         child: InkWell(
@@ -433,12 +437,14 @@ class MatchPageState extends State<MatchPage>
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: themeColor.withOpacity(0.1),
+                        color: isScouted
+                            ? Colors.green.withOpacity(0.1)
+                            : themeColor.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(
-                        matchIcon,
-                        color: themeColor,
+                        isScouted ? Icons.check_circle : matchIcon,
+                        color: isScouted ? Colors.green : themeColor,
                         size: 24,
                       ),
                     ),
@@ -452,15 +458,18 @@ class MatchPageState extends State<MatchPage>
                             style: GoogleFonts.museoModerno(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: themeColor,
+                              color: isScouted ? Colors.green : themeColor,
                             ),
                           ),
                           Text(
-                            '$matchTypeName Match',
+                            isScouted ? 'Scouted' : '$matchTypeName Match',
                             style: TextStyle(
                               fontSize: 14,
                               color:
                                   islightmode() ? Colors.black : Colors.white,
+                              fontWeight: isScouted
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
                             ),
                           ),
                         ],
@@ -691,7 +700,7 @@ class MatchPageState extends State<MatchPage>
             false,
             false,
             false),
-        EndPoints(0, false, false, false, "", 0.0, 0),
+        EndPoints(0, false, false, false, "", 0.0, 0, ""),
         teamNumber: teamNNumber.replaceAll('frc', ''),
         scouterName: _scouterName,
         matchKey: match['key'].toString(),
